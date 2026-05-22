@@ -1,4 +1,8 @@
 # 🌍 Wanderlust – Full Stack Travel Platform
+<img width="1919" height="1079" alt="WNADERLUST1" src="https://github.com/user-attachments/assets/0f5fe871-7975-4e8c-b91c-785e7af924f5" />
+<img width="540" height="1078" alt="WANDERLSUT2" src="https://github.com/user-attachments/assets/1ae66be5-f1ab-46b7-9ff0-bf3d5ffe703c" />
+<img width="989" height="687" alt="WANDERLUST3" src="https://github.com/user-attachments/assets/af8092a4-a814-448f-9aae-65dffdb8b58d" />
+<img width="1156" height="823" alt="WANDERLUST4" src="https://github.com/user-attachments/assets/69ce0c03-cc64-4c3e-acd7-e4fc56bdd12b" />
 
 Wanderlust is a full-stack travel listing and review platform where users can explore, create, review, and manage travel destinations. The platform provides secure authentication, cloud-based image uploads, interactive maps, and a responsive user experience.
 
