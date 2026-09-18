@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { listingService } from '../../services/listingService';
 import { bookingService } from '../../services/bookingService';
 import { useAuth } from '../../context/AuthContext';
+import LocationMap from '../../components/Map/LocationMap';
 
 const ListingDetailsPage = () => {
   const { id } = useParams();
@@ -20,6 +21,12 @@ const ListingDetailsPage = () => {
   const [guestPhone, setGuestPhone] = useState('');
   const [bookingMessage, setBookingMessage] = useState({ type: '', text: '' });
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
+
+  // Review state
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     fetchListing();
@@ -93,6 +100,51 @@ const ListingDetailsPage = () => {
     }
   };
 
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    if (!reviewComment.trim()) {
+      setReviewMessage({ type: 'danger', text: 'Please enter your review feedback.' });
+      return;
+    }
+
+    setReviewSubmitting(true);
+    setReviewMessage({ type: '', text: '' });
+
+    try {
+      const res = await listingService.addReview(id, {
+        rating: Number(reviewRating),
+        comment: reviewComment.trim(),
+      });
+      if (res.success) {
+        setReviewMessage({ type: 'success', text: 'Thank you! Your review has been submitted.' });
+        setReviewComment('');
+        setReviewRating(5);
+        fetchListing();
+      }
+    } catch (err) {
+      setReviewMessage({
+        type: 'danger',
+        text: err.response?.data?.message || 'Failed to submit review. Please try again.',
+      });
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  const handleReviewDelete = async (reviewId) => {
+    if (!window.confirm('Delete this review?')) return;
+    try {
+      await listingService.deleteReview(id, reviewId);
+      fetchListing();
+    } catch (err) {
+      console.error('Failed to delete review:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center py-5">
@@ -114,17 +166,33 @@ const ListingDetailsPage = () => {
 
   const imageUrl = listing.image?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';
   const price = Number(listing.price) || 0;
+  const reviewsCount = listing.reviews?.length || 0;
+  const avgRating = reviewsCount > 0
+    ? (listing.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0) / reviewsCount).toFixed(1)
+    : '4.9';
 
   return (
-    <div className="container my-5">
+    <div className="container my-4 my-md-5">
       {/* Title Header */}
       <div className="mb-3">
-        <h2 className="fw-bold mb-1">{listing.title}</h2>
+        <h2 className="fw-bold mb-1 text-dark">{listing.title}</h2>
         <div className="d-flex flex-wrap align-items-center gap-3 text-muted small">
-          <span><i className="fa-solid fa-star text-warning me-1"></i>4.92 &bull; {listing.reviews?.length || 0} reviews</span>
-          <span><i className="fa-solid fa-location-dot text-danger me-1"></i>{listing.location}, {listing.country}</span>
-          {listing.category && <span className="badge bg-light text-dark border rounded-pill">{listing.category}</span>}
-          {listing.propertyType && <span className="badge bg-danger bg-opacity-10 text-danger rounded-pill">{listing.propertyType}</span>}
+          <span>
+            <i className="fa-solid fa-star text-warning me-1"></i>
+            {avgRating} &bull; {reviewsCount} {reviewsCount === 1 ? 'review' : 'reviews'}
+          </span>
+          <span>
+            <i className="fa-solid fa-location-dot text-danger me-1"></i>
+            {listing.location}, {listing.country}
+          </span>
+          {listing.category && (
+            <span className="badge bg-light text-dark border rounded-pill">{listing.category}</span>
+          )}
+          {listing.propertyType && (
+            <span className="badge bg-danger bg-opacity-10 text-danger rounded-pill">
+              {listing.propertyType}
+            </span>
+          )}
         </div>
       </div>
 
@@ -150,7 +218,9 @@ const ListingDetailsPage = () => {
               Hosted by {listing.owner?.username || 'WanderLust Verified Host'}
             </h5>
             <p className="text-muted small mb-0">
-              {listing.organization ? `Managed by ${listing.organization.name || 'Hospitality Group'}` : 'Dedicated host & verified stay'}
+              {listing.organization
+                ? `Managed by ${listing.organization.name || 'Hospitality Group'}`
+                : 'Dedicated host & verified stay'}
             </p>
           </div>
 
@@ -160,6 +230,26 @@ const ListingDetailsPage = () => {
               {listing.description}
             </p>
           </div>
+
+          {/* Amenities & Features */}
+          {listing.amenities && listing.amenities.length > 0 && (
+            <div className="mb-5 pb-4 border-bottom">
+              <h5 className="fw-bold mb-3">
+                <i className="fa-solid fa-wand-magic-sparkles text-danger me-2"></i>What this place offers
+              </h5>
+              <div className="d-flex flex-wrap gap-2">
+                {listing.amenities.map((item, idx) => (
+                  <span
+                    key={idx}
+                    className="badge bg-light text-dark border px-3 py-2 rounded-pill fs-6 fw-normal d-inline-flex align-items-center gap-2"
+                  >
+                    <i className="fa-solid fa-check text-success"></i>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Available Rooms */}
           <div className="mb-5">
@@ -229,7 +319,9 @@ const ListingDetailsPage = () => {
               <div className="border rounded-3 overflow-hidden mb-3">
                 <div className="row g-0 border-bottom">
                   <div className="col-6 p-2 border-end">
-                    <label className="form-label small fw-bold text-uppercase text-muted m-0" style={{ fontSize: '0.65rem' }}>Check-In</label>
+                    <label className="form-label small fw-bold text-uppercase text-muted m-0" style={{ fontSize: '0.65rem' }}>
+                      Check-In
+                    </label>
                     <input
                       type="date"
                       className="form-control border-0 p-0 shadow-none small"
@@ -239,7 +331,9 @@ const ListingDetailsPage = () => {
                     />
                   </div>
                   <div className="col-6 p-2">
-                    <label className="form-label small fw-bold text-uppercase text-muted m-0" style={{ fontSize: '0.65rem' }}>Check-Out</label>
+                    <label className="form-label small fw-bold text-uppercase text-muted m-0" style={{ fontSize: '0.65rem' }}>
+                      Check-Out
+                    </label>
                     <input
                       type="date"
                       className="form-control border-0 p-0 shadow-none small"
@@ -250,7 +344,9 @@ const ListingDetailsPage = () => {
                   </div>
                 </div>
                 <div className="p-2">
-                  <label className="form-label small fw-bold text-uppercase text-muted m-0" style={{ fontSize: '0.65rem' }}>Guests</label>
+                  <label className="form-label small fw-bold text-uppercase text-muted m-0" style={{ fontSize: '0.65rem' }}>
+                    Guests
+                  </label>
                   <input
                     type="number"
                     min="1"
@@ -282,6 +378,134 @@ const ListingDetailsPage = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Guest Reviews Section */}
+      <div className="mt-5 pt-4 border-top">
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+          <h4 className="fw-bold mb-0">
+            <i className="fa-solid fa-star text-warning me-2"></i>
+            {avgRating} &bull; {reviewsCount} {reviewsCount === 1 ? 'Review' : 'Reviews'}
+          </h4>
+        </div>
+
+        {/* Write a Review Box */}
+        <div className="card border-0 bg-light rounded-4 p-4 mb-4 shadow-sm">
+          <h6 className="fw-bold mb-2">Share your experience</h6>
+          {user ? (
+            <form onSubmit={handleReviewSubmit}>
+              {reviewMessage.text && (
+                <div className={`alert alert-${reviewMessage.type} small py-2 rounded-3`}>
+                  {reviewMessage.text}
+                </div>
+              )}
+              <div className="row g-3 mb-3">
+                <div className="col-auto">
+                  <label className="form-label small fw-semibold mb-1">Rating</label>
+                  <select
+                    className="form-select form-select-sm rounded-pill"
+                    value={reviewRating}
+                    onChange={(e) => setReviewRating(e.target.value)}
+                  >
+                    <option value="5">⭐⭐⭐⭐⭐ (5 - Exceptional)</option>
+                    <option value="4">⭐⭐⭐⭐ (4 - Great)</option>
+                    <option value="3">⭐⭐⭐ (3 - Average)</option>
+                    <option value="2">⭐⭐ (2 - Below expectation)</option>
+                    <option value="1">⭐ (1 - Disappointing)</option>
+                  </select>
+                </div>
+                <div className="col-12">
+                  <textarea
+                    rows="3"
+                    className="form-control rounded-3"
+                    placeholder="Tell future travelers what you loved about this space, hospitality, and surroundings..."
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="btn btn-dark btn-sm rounded-pill px-4"
+                disabled={reviewSubmitting}
+              >
+                {reviewSubmitting ? 'Posting...' : 'Submit Review'}
+              </button>
+            </form>
+          ) : (
+            <p className="text-muted small mb-0">
+              <Link to="/login" className="fw-bold text-danger">Log in</Link> to leave a verified guest review.
+            </p>
+          )}
+        </div>
+
+        {/* Existing Reviews Grid */}
+        {listing.reviews && listing.reviews.length > 0 ? (
+          <div className="row row-cols-1 row-cols-md-2 g-4 mb-5">
+            {listing.reviews.map((rev) => (
+              <div className="col" key={rev._id}>
+                <div className="card h-100 border-0 rounded-4 p-3 shadow-sm bg-white">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div className="d-flex align-items-center gap-2">
+                      <div className="bg-danger bg-opacity-10 text-danger rounded-circle p-2 d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                        <i className="fa-solid fa-user"></i>
+                      </div>
+                      <div>
+                        <h6 className="fw-bold mb-0 small text-dark">
+                          {rev.author?.username || 'Verified Traveler'}
+                        </h6>
+                        <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                          {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : 'Recent Guest'}
+                        </small>
+                      </div>
+                    </div>
+                    <div className="text-warning small">
+                      {Array.from({ length: rev.rating || 5 }).map((_, i) => (
+                        <i key={i} className="fa-solid fa-star"></i>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-secondary small mb-2">{rev.comment}</p>
+                  {user && rev.author && (user._id === rev.author._id || user.role === 'ADMIN') && (
+                    <div className="text-end mt-auto">
+                      <button
+                        onClick={() => handleReviewDelete(rev._id)}
+                        className="btn btn-link btn-sm text-danger text-decoration-none p-0 small"
+                      >
+                        <i className="fa-solid fa-trash me-1"></i>Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted small mb-5">No reviews yet. Be the first to experience this destination!</p>
+        )}
+      </div>
+
+      {/* Where You'll Be - Location Map Section */}
+      <div className="mt-4 pt-4 border-top">
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h4 className="fw-bold mb-1">
+              <i className="fa-solid fa-map-location-dot text-danger me-2"></i>
+              Where you'll be
+            </h4>
+            <p className="text-muted small mb-0">
+              <i className="fa-solid fa-location-dot text-danger me-1"></i>
+              {listing.location}, {listing.country}
+            </p>
+          </div>
+          <span className="badge bg-light text-secondary border px-3 py-2 rounded-pill small">
+            <i className="fa-solid fa-compass text-danger me-1"></i> Interactive Mapbox View
+          </span>
+        </div>
+
+        {/* Location Map Interactive Component */}
+        <LocationMap listing={listing} />
       </div>
     </div>
   );

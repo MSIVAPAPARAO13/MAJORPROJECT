@@ -12,4 +12,16 @@ export const listingService = {
     const response = await api.get(`/listings/${id}`);
     return response.data;
   },
+
+  // Add a review
+  async addReview(listingId, reviewData) {
+    const response = await api.post(`/listings/${listingId}/reviews`, { review: reviewData });
+    return response.data;
+  },
+
+  // Delete a review
+  async deleteReview(listingId, reviewId) {
+    const response = await api.delete(`/listings/${listingId}/reviews/${reviewId}`);
+    return response.data;
+  },
 };
