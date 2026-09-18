@@ -1,0 +1,101 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      
+      <!-- Customer Header Profile Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-circle">
+              <i class="fa-solid fa-user fa-2x"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-0">Hello, <%= user.username %>!</h4>
+              <p class="text-muted small mb-0"><%= user.email %> &bull; <span class="badge bg-light text-dark border"><%= user.role %></span></p>
+            </div>
+          </div>
+          <div>
+            <a href="/listings" class="btn btn-danger rounded-pill px-4 shadow-sm">
+              <i class="fa-solid fa-compass me-1"></i> Explore Stays
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-4">
+          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small">Total Bookings</span>
+            <h3 class="fw-bold my-1 text-danger"><%= bookings.length %></h3>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small">Reviews Written</span>
+            <h3 class="fw-bold my-1 text-primary"><%= reviews.length %></h3>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small">Account Type</span>
+            <h4 class="fw-bold my-1 text-success">Verified Traveler</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- User's Bookings -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Your Stays & Trips</h5>
+          <a href="/bookings" class="text-danger small fw-semibold text-decoration-none">View All</a>
+        </div>
+
+        <% if (bookings && bookings.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Property</th>
+                  <th>Dates</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let b of bookings.slice(0, 5)) { %>
+                  <tr>
+                    <td>
+                      <b><%= b.property ? b.property.title : 'Property' %></b>
+                      <small class="text-muted d-block"><%= b.property ? b.property.location : '' %></small>
+                    </td>
+                    <td>
+                      <small>
+                        <%= new Date(b.checkIn).toLocaleDateString() %> &mdash; <%= new Date(b.checkOut).toLocaleDateString() %>
+                      </small>
+                    </td>
+                    <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
+                    <td>
+                      <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : (b.status === 'CANCELLED' ? 'bg-danger' : 'bg-secondary') %>">
+                        <%= b.status %>
+                      </span>
+                    </td>
+                    <td>
+                      <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill">View Receipt</a>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-muted mb-0 py-3 text-center">You have no active bookings. Start exploring destinations!</p>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</div>

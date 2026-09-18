@@ -1,0 +1,69 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-md-11">
+      
+      <!-- Page Header -->
+      <div class="mb-4 text-center">
+        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-semibold mb-2">User Agreement</span>
+        <h1 class="fw-bold mb-2">Terms of Service</h1>
+        <p class="text-muted small">Effective Date: September 2026 &bull; Version 2.0</p>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <div class="mb-4 pb-3 border-bottom">
+          <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-file-contract text-danger me-2"></i>Welcome to WanderLust</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            These Terms of Service ("Terms") govern your access to and use of the <b>WanderLust</b> website, services, APIs, and multi-tenant property management platform. By accessing or using our platform as a traveler, property host, or enterprise manager, you agree to be bound by these Terms.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">1. Booking & Reservation Policies</h5>
+          <ul class="text-secondary" style="line-height: 1.8;">
+            <li><b>Instant Booking Confirmation:</b> Reservations are confirmed atomically in real-time upon checkout. Double-booking conflicts are automatically blocked by the system.</li>
+            <li><b>Check-in & Check-out:</b> Standard check-in starts at 2:00 PM local property time, and check-out is by 11:00 AM unless prior arrangements are confirmed with the host.</li>
+            <li><b>Cancellation & Refunds:</b> Guests can cancel reservations through their Customer Dashboard. Cancellations made more than 48 hours prior to check-in receive a full refund.</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">2. Host & Property Management Rules</h5>
+          <ul class="text-secondary" style="line-height: 1.8;">
+            <li><b>Accurate Descriptions:</b> Property managers must provide truthful titles, photographs, room capacities, amenities, and geographic coordinates.</li>
+            <li><b>Fair Pricing:</b> Base night rates must be transparently declared. Any local taxes (including 18% GST) are calculated dynamically at checkout.</li>
+            <li><b>Safety & Standards:</b> All accommodations must comply with local safety, fire, and hospitality regulations.</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">3. Multi-Tenant SaaS Responsibilities</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            Organizations operating multiple properties under a tenant profile are responsible for maintaining authorized member roles (`OWNER`, `MANAGER`, `STAFF`). Any unauthorized access attempts across tenant boundaries will result in immediate suspension.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">4. Review & Community Guidelines</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            Reviews must reflect genuine guest experiences. Defamatory, abusive, or fraudulent ratings will be investigated and removed by platform administrators.
+          </p>
+        </div>
+
+        <div>
+          <h5 class="fw-bold text-dark mb-2">5. Governing Law & Inquiries</h5>
+          <p class="text-secondary mb-0" style="line-height: 1.8;">
+            These Terms are governed by applicable hospitality and digital commerce regulations. For legal inquiries, contact <a href="mailto:legal@wanderlust.com" class="text-danger fw-semibold">legal@wanderlust.com</a>.
+          </p>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/listings" class="btn btn-outline-secondary rounded-pill px-4 me-2">Back to Explore</a>
+        <a href="/privacy" class="btn btn-danger rounded-pill px-4">Read Privacy Policy</a>
+      </div>
+
+    </div>
+  </div>
+</div>

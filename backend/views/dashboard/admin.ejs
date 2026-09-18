@@ -1,0 +1,86 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="fa-solid fa-screwdriver-wrench text-danger me-2"></i>Platform Administration</h2>
+      <p class="text-muted small mb-0">System-wide multi-tenant hospitality monitoring and metrics.</p>
+    </div>
+    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6">SUPERADMIN MODE</span>
+  </div>
+
+  <!-- Platform KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <span class="text-muted small">Total Users</span>
+        <h3 class="fw-bold my-1 text-dark"><%= metrics.totalUsers %></h3>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <span class="text-muted small">Organizations</span>
+        <h3 class="fw-bold my-1 text-primary"><%= metrics.totalOrganizations %></h3>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <span class="text-muted small">Properties</span>
+        <h3 class="fw-bold my-1 text-danger"><%= metrics.totalProperties %></h3>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <span class="text-muted small">Total Rooms</span>
+        <h3 class="fw-bold my-1 text-info"><%= metrics.totalRooms %></h3>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <span class="text-muted small">Bookings</span>
+        <h3 class="fw-bold my-1 text-warning"><%= metrics.totalBookings %></h3>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <span class="text-muted small">Gross Revenue</span>
+        <h4 class="fw-bold my-1 text-success">&#8377; <%= Number(metrics.totalRevenue).toLocaleString("en-IN") %></h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent System Activity -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <h5 class="fw-bold mb-3">Recent Platform Bookings</h5>
+    <% if (metrics.recentBookings && metrics.recentBookings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Property</th>
+              <th>Guest</th>
+              <th>Dates</th>
+              <th>Revenue</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let b of metrics.recentBookings) { %>
+              <tr>
+                <td><span class="font-monospace small">#<%= b._id.toString().substring(18) %></span></td>
+                <td><%= b.property ? b.property.title : 'Property' %></td>
+                <td><%= b.guest ? b.guest.username : (b.guestDetails ? b.guestDetails.name : 'User') %></td>
+                <td><small><%= new Date(b.checkIn).toLocaleDateString() %> &rarr; <%= new Date(b.checkOut).toLocaleDateString() %></small></td>
+                <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
+                <td><span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : 'bg-secondary' %>"><%= b.status %></span></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="text-muted mb-0">No bookings recorded on the platform yet.</p>
+    <% } %>
+  </div>
+</div>

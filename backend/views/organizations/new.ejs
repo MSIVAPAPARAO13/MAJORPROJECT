@@ -1,0 +1,48 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <h3 class="fw-bold mb-1"><i class="fa-solid fa-building text-danger me-2"></i>Register Hospitality Organization</h3>
+        <p class="text-muted small mb-4">Set up a tenant organization to manage multiple properties, teams, and rooms in one unified dashboard.</p>
+
+        <form action="/organizations" method="POST" class="needs-validation" novalidate>
+          
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold">Organization / Business Name</label>
+            <input type="text" class="form-control" id="name" name="organization[name]" placeholder="e.g. Zostel Hospitality Group" required>
+            <div class="invalid-feedback">Please enter the organization name.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label fw-semibold">Description</label>
+            <textarea class="form-control" id="description" name="organization[description]" rows="3" placeholder="Brief summary of your hospitality business, brand, and operations..."></textarea>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="contactEmail" class="form-label fw-semibold">Business Email</label>
+              <input type="email" class="form-control" id="contactEmail" name="organization[contactEmail]" placeholder="contact@hospitality.com">
+            </div>
+            <div class="col-sm-6">
+              <label for="phone" class="form-label fw-semibold">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="organization[phone]" placeholder="+91 9876543210">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="address" class="form-label fw-semibold">Headquarters Address</label>
+            <input type="text" class="form-control" id="address" name="organization[address]" placeholder="e.g. MG Road, Bengaluru, India">
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/dashboard" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+            <button type="submit" class="btn btn-danger px-5 rounded-pill shadow-sm">Register Tenant</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

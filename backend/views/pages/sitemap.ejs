@@ -1,0 +1,76 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      
+      <!-- Page Header -->
+      <div class="mb-4 text-center">
+        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-semibold mb-2">Platform Navigation</span>
+        <h1 class="fw-bold mb-2">Platform Sitemap</h1>
+        <p class="text-muted small">Complete index of public routes, category catalogs, and SaaS management portals.</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- 1. Exploration & Discovery -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-compass text-danger me-2"></i>Explore Stays</h5>
+            <ul class="list-unstyled mb-0" style="line-height: 2;">
+              <li><a href="/listings" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Explore All Properties</a></li>
+              <li><a href="/listings?category=Hostels" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Backpacker Hostels</a></li>
+              <li><a href="/listings?category=Rooms" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Private Rooms</a></li>
+              <li><a href="/listings?category=Trending" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Trending Stays</a></li>
+              <li><a href="/listings?category=Iconic%20Cities" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Iconic Cities</a></li>
+              <li><a href="/listings?category=Mountains" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Mountain Chalets</a></li>
+              <li><a href="/listings?category=Castles" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Castles & Forts</a></li>
+              <li><a href="/listings?category=Amazing%20pool" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Amazing Pool Villas</a></li>
+              <li><a href="/listings?category=Camping" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Glamping & Campsites</a></li>
+              <li><a href="/listings?category=Farms" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Countryside Farms</a></li>
+              <li><a href="/listings?category=Arctic" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Arctic Igloos & Lodges</a></li>
+              <li><a href="/listings?category=Domes" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Geodesic Eco Domes</a></li>
+              <li><a href="/listings?category=Boats" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Houseboats & Yachts</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2. Hospitality SaaS & Hosting -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i>Hosting & SaaS Portals</h5>
+            <ul class="list-unstyled mb-0" style="line-height: 2;">
+              <li><a href="/listings/new" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-primary small"></i> List New Property</a></li>
+              <li><a href="/organizations/new" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-primary small"></i> Register Organization</a></li>
+              <li><a href="/dashboard" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-primary small"></i> Property Owner Dashboard</a></li>
+              <li><a href="/dashboard" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-primary small"></i> Admin Control Center</a></li>
+              <li><a href="/bookings" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-primary small"></i> Guest Reservations Portal</a></li>
+            </ul>
+
+            <h5 class="fw-bold text-dark mt-4 mb-3"><i class="fa-solid fa-user-lock text-success me-2"></i>Accounts & Security</h5>
+            <ul class="list-unstyled mb-0" style="line-height: 2;">
+              <li><a href="/login" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-success small"></i> User Login</a></li>
+              <li><a href="/signup" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-success small"></i> Create Account</a></li>
+              <li><a href="/logout" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-success small"></i> Logout</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. Trust, Support & Legal -->
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-shield-halved text-info me-2"></i>Trust & Legal Policies</h5>
+            <ul class="list-unstyled mb-0" style="line-height: 2;">
+              <li><a href="/trust" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-info small"></i> Verified Stays Guarantee</a></li>
+              <li><a href="/trust#support" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-info small"></i> 24/7 Booking Support</a></li>
+              <li><a href="/trust#security" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-info small"></i> Secure Payments & Privacy</a></li>
+              <li><a href="/privacy" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-info small"></i> Privacy Policy</a></li>
+              <li><a href="/terms" class="text-decoration-none text-secondary"><i class="fa-solid fa-angle-right me-1 text-info small"></i> Terms of Service</a></li>
+              <li><a href="/sitemap" class="text-decoration-none text-secondary fw-bold text-danger"><i class="fa-solid fa-angle-right me-1 text-danger small"></i> Platform Sitemap (Current)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

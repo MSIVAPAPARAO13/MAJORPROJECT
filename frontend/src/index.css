@@ -1,0 +1,139 @@
+:root {
+  --primary-color: #fe424d;
+  --primary-hover: #e03943;
+  --secondary-color: #0d6efd;
+  --dark-color: #222222;
+  --muted-color: #717171;
+  --border-color: #ebebeb;
+  --bg-subtle: #f8f9fa;
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --card-hover-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 50rem;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  color: var(--dark-color);
+  background-color: #ffffff;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Navbar */
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: -0.5px;
+}
+
+.search-input:focus {
+  box-shadow: none;
+  border-color: var(--primary-color);
+}
+
+/* Category Filter Bar */
+.category-filter-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 transparent;
+  white-space: nowrap;
+}
+
+.category-filter-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-filter-container::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+
+.category-item {
+  text-align: center;
+  margin-right: 2rem;
+  opacity: 0.65;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+}
+
+.category-item:hover,
+.category-item.active {
+  opacity: 1;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.category-item i {
+  font-size: 1.25rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.category-item p {
+  font-size: 0.75rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Listing Card */
+.listing-card {
+  border: none !important;
+  border-radius: var(--radius-md);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.listing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.card-img-top {
+  border-radius: var(--radius-md);
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.listing-card:hover .card-img-top {
+  transform: scale(1.02);
+}
+
+/* Footer Interaction */
+footer a.text-secondary {
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+footer a.text-secondary:hover {
+  color: var(--primary-color) !important;
+  text-decoration: underline !important;
+}
+
+footer .d-flex.gap-3 a i {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+footer .d-flex.gap-3 a:hover i {
+  color: var(--primary-color) !important;
+  transform: translateY(-2px);
+}

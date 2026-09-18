@@ -1,0 +1,248 @@
+<% layout('layouts/boilerplate') %>
+
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  const listing = <%- JSON.stringify(listing) %>;
+</script>
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-md-11">
+      
+      <!-- Property Title & Meta -->
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <div>
+          <h2 class="fw-bold mb-1"><%= listing.title %></h2>
+          <p class="text-muted mb-0">
+            <i class="fa-solid fa-location-dot text-danger me-1"></i>
+            <%= listing.location %>, <%= listing.country %>
+            <span class="badge bg-secondary ms-2"><%= listing.propertyType || 'Apartment' %></span>
+            <span class="badge bg-light text-dark border ms-1"><%= listing.category || 'Rooms' %></span>
+          </p>
+        </div>
+        <div class="text-end">
+          <h3 class="fw-bold text-danger mb-0">&#8377; <%= Number(listing.price).toLocaleString("en-IN") %></h3>
+          <small class="text-muted">base rate / night</small>
+        </div>
+      </div>
+
+      <!-- Property Image Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <% const heroImage = (listing.image && listing.image.url) ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80'; %>
+        <img 
+          src="<%= heroImage %>" 
+          class="card-img-top" 
+          alt="<%= listing.title %>" 
+          style="max-height: 480px; object-fit: cover;"
+          onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';"
+        />
+        <div class="card-body p-4 bg-white">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-3 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-light rounded-circle p-2 text-danger">
+                <i class="fa-solid fa-user-tie fa-lg"></i>
+              </div>
+              <div>
+                <p class="mb-0 fw-semibold">Hosted by @<%= listing.owner ? listing.owner.username : 'WanderLust Host' %></p>
+                <small class="text-muted"><%= listing.owner && listing.owner.email ? listing.owner.email : 'Verified Host' %></small>
+              </div>
+            </div>
+            <div>
+              <a href="/listings/<%= listing._id %>/bookings/new" class="btn btn-danger btn-lg px-4 rounded-pill shadow-sm">
+                <i class="fa-solid fa-calendar-check me-2"></i>Book This Property
+              </a>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h5 class="fw-bold">About this space</h5>
+            <p class="text-secondary" style="line-height: 1.7;"><%= listing.description %></p>
+          </div>
+
+          <!-- Amenities -->
+          <% if (listing.amenities && listing.amenities.length > 0) { %>
+            <div class="mt-4 pt-3 border-top">
+              <h5 class="fw-bold mb-3">Amenities & Features</h5>
+              <div class="d-flex flex-wrap gap-2">
+                <% for (let item of listing.amenities) { %>
+                  <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fs-6 fw-normal">
+                    <i class="fa-solid fa-check text-success me-1"></i> <%= item %>
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Owner Actions (Edit / Delete) -->
+      <% if (currentUser && listing.owner && (listing.owner._id.equals(currentUser._id) || currentUser.role === 'ADMIN')) { %>
+        <div class="card bg-light border-0 p-3 mb-4 rounded-3 d-flex flex-row justify-content-between align-items-center flex-wrap gap-2">
+          <span class="text-secondary small fw-semibold"><i class="fa-solid fa-shield-halved text-success me-1"></i> You have management permissions for this property.</span>
+          <div class="d-flex gap-2">
+            <a href="/listings/<%= listing._id %>/rooms/new" class="btn btn-outline-primary btn-sm rounded-pill">
+              <i class="fa-solid fa-plus me-1"></i> Add Room
+            </a>
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-dark btn-sm rounded-pill">
+              <i class="fa-solid fa-pen-to-square me-1"></i> Edit Property
+            </a>
+            <form method="post" action="/listings/<%= listing._id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this property? All associated rooms and reviews will be removed.');">
+              <button class="btn btn-outline-danger btn-sm rounded-pill">
+                <i class="fa-solid fa-trash me-1"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Available Rooms Section -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h4 class="fw-bold mb-1"><i class="fa-solid fa-door-open text-danger me-2"></i>Available Rooms & Options</h4>
+            <p class="text-muted small mb-0">Select your preferred room type and lock in your reservation.</p>
+          </div>
+          <% if (currentUser && listing.owner && (listing.owner._id.equals(currentUser._id) || currentUser.role === 'ADMIN')) { %>
+            <a href="/listings/<%= listing._id %>/rooms/new" class="btn btn-sm btn-outline-danger rounded-pill">
+              <i class="fa-solid fa-plus"></i> Add New Room
+            </a>
+          <% } %>
+        </div>
+
+        <% if (listing.rooms && listing.rooms.length > 0) { %>
+          <div class="row row-cols-1 row-cols-md-2 g-3 mt-1">
+            <% for (let room of listing.rooms) { %>
+              <div class="col">
+                <div class="card h-100 border rounded-3 p-3 shadow-none bg-light bg-opacity-50">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <h6 class="fw-bold mb-0">Room <%= room.roomNumber %> &mdash; <%= room.roomType %></h6>
+                      <small class="text-muted"><i class="fa-solid fa-user-group me-1"></i>Capacity: Up to <%= room.capacity %> guests</small>
+                    </div>
+                    <span class="badge <%= room.status === 'AVAILABLE' ? 'bg-success' : 'bg-secondary' %>"><%= room.status %></span>
+                  </div>
+
+                  <% if (room.amenities && room.amenities.length > 0) { %>
+                    <div class="small text-muted mb-2">
+                      <% for (let am of room.amenities) { %>
+                        <span class="badge bg-white text-secondary border me-1"><%= am %></span>
+                      <% } %>
+                    </div>
+                  <% } %>
+
+                  <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+                    <div>
+                      <span class="fw-bold text-dark fs-5">&#8377; <%= Number(room.price).toLocaleString("en-IN") %></span>
+                      <small class="text-muted">/ night</small>
+                    </div>
+                    <div>
+                      <% if (room.status === 'AVAILABLE') { %>
+                        <a href="/listings/<%= listing._id %>/bookings/new?roomId=<%= room._id %>" class="btn btn-sm btn-danger rounded-pill px-3">
+                          Book Room
+                        </a>
+                      <% } else { %>
+                        <button class="btn btn-sm btn-secondary rounded-pill px-3" disabled>Unavailable</button>
+                      <% } %>
+                      
+                      <% if (currentUser && listing.owner && (listing.owner._id.equals(currentUser._id) || currentUser.role === 'ADMIN')) { %>
+                        <form method="post" action="/listings/<%= listing._id %>/rooms/<%= room._id %>?_method=DELETE" class="d-inline ms-1" onsubmit="return confirm('Remove room <%= room.roomNumber %>?');">
+                          <button class="btn btn-sm btn-outline-danger border-0"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% } else { %>
+          <div class="text-center py-4 bg-light rounded-3">
+            <p class="text-muted mb-2">No individual rooms configured yet.</p>
+            <a href="/listings/<%= listing._id %>/bookings/new" class="btn btn-danger btn-sm rounded-pill">Book Entire Property</a>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <h4 class="fw-bold mb-3"><i class="fa-solid fa-star text-warning me-2"></i>Guest Reviews</h4>
+
+        <!-- Leave a Review Form -->
+        <% if (currentUser) { %>
+          <div class="bg-light p-3 rounded-3 mb-4">
+            <h6 class="fw-bold mb-2">Leave a Review</h6>
+            <form action="/listings/<%= listing._id %>/reviews" method="post" novalidate class="needs-validation">
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Rating</label>
+                <fieldset class="starability-slot">
+                  <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                  <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                  <label for="first-rate1" title="1 star">1 star</label>
+                  <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                  <label for="first-rate2" title="2 stars">2 stars</label>
+                  <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                  <label for="first-rate3" title="3 stars">3 stars</label>
+                  <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                  <label for="first-rate4" title="4 stars">4 stars</label>
+                  <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                  <label for="first-rate5" title="5 stars">5 stars</label>
+                </fieldset>
+              </div>
+
+              <div class="mb-3">
+                <label for="comment" class="form-label small fw-semibold">Your Experience</label>
+                <textarea id="comment" name="review[comment]" cols="30" rows="3" class="form-control" placeholder="Share your experience staying here..." required></textarea>
+                <div class="invalid-feedback">Please enter your feedback before submitting.</div>
+              </div>
+
+              <button class="btn btn-dark btn-sm rounded-pill px-4">Submit Review</button>
+            </form>
+          </div>
+        <% } else { %>
+          <div class="alert alert-light border py-2 px-3 mb-4 rounded-3 small">
+            <a href="/login" class="fw-bold text-danger text-decoration-none">Log in</a> to write a review for this property.
+          </div>
+        <% } %>
+
+        <!-- Existing Reviews Grid -->
+        <% if (listing.reviews && listing.reviews.length > 0) { %>
+          <div class="row row-cols-1 row-cols-md-2 g-3">
+            <% for (let review of listing.reviews) { %>
+              <div class="col">
+                <div class="card h-100 border rounded-3 p-3 bg-light bg-opacity-25">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-circle-user fa-lg text-secondary"></i>
+                      <span class="fw-semibold">@<%= review.author ? review.author.username : 'Guest' %></span>
+                    </div>
+                    <p class="starability-result mb-0" data-rating="<%= review.rating %>"></p>
+                  </div>
+                  <p class="card-text text-secondary mb-2 small"><%= review.comment %></p>
+                  
+                  <% if (currentUser && review.author && (review.author._id.equals(currentUser._id) || currentUser.role === 'ADMIN')) { %>
+                    <form class="mt-auto text-end" method="post" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                      <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none small"><i class="fa-solid fa-trash me-1"></i>Delete</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% } else { %>
+          <p class="text-muted mb-0 small">No reviews yet. Be the first to share your experience!</p>
+        <% } %>
+      </div>
+
+      <!-- Map Section (Fixed location & exact coordinates) -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <h4 class="fw-bold mb-1"><i class="fa-solid fa-map-location-dot text-danger me-2"></i>Where You'll Be</h4>
+        <p class="text-muted small mb-3"><%= listing.location %>, <%= listing.country %></p>
+        <div id="map" style="height: 380px; width: 100%; border-radius: 1rem;" class="shadow-sm"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Map script execution -->
+<script src="/js/map.js"></script>

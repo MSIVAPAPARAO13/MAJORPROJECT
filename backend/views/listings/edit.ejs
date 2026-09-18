@@ -1,0 +1,103 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row mt-4 mb-5 justify-content-center">
+  <div class="col-lg-8 col-md-10">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+      <h3 class="fw-bold mb-1"><i class="fa-solid fa-pen-to-square text-danger me-2"></i>Edit Property</h3>
+      <p class="text-muted mb-4 small">Update property details, amenities, rates, and imagery.</p>
+
+      <form method="post" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+        
+        <!-- Property Title -->
+        <div class="mb-3">
+          <label for="title" class="form-label fw-semibold">Title</label>
+          <input type="text" id="title" name="listing[title]" value="<%= listing.title %>" class="form-control" required />
+          <div class="invalid-feedback">Please enter a valid title.</div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label fw-semibold">Description</label>
+          <textarea id="description" name="listing[description]" rows="4" class="form-control" required><%= listing.description %></textarea>
+          <div class="invalid-feedback">Please enter a description.</div>
+        </div>
+
+        <!-- Property Type & Category -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="propertyType" class="form-label fw-semibold">Property Type</label>
+            <select class="form-select" id="propertyType" name="listing[propertyType]">
+              <% const pTypes = ["Hostel", "Hotel", "Apartment", "Guest House", "Resort", "Homestay"]; %>
+              <% for (let pt of pTypes) { %>
+                <option value="<%= pt %>" <%= listing.propertyType === pt ? 'selected' : '' %>><%= pt %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="category" class="form-label fw-semibold">Theme Category</label>
+            <select class="form-select" id="category" name="listing[category]">
+              <% const cats = ["Rooms", "Hostels", "Trending", "Iconic Cities", "Mountains", "Castles", "Amazing pool", "Camping", "Farms", "Arctic", "Domes", "Boats"]; %>
+              <% for (let c of cats) { %>
+                <option value="<%= c %>" <%= listing.category === c ? 'selected' : '' %>><%= c %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <!-- Current Image Preview & Upload Replacement -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold d-block">Current Cover Image</label>
+          <% if (originalImageUrl) { %>
+            <img src="<%= originalImageUrl %>" class="rounded-3 mb-2 shadow-sm border" style="max-height: 160px; object-fit: cover;" alt="Listing Image" />
+          <% } %>
+          <label for="image" class="form-label small text-muted d-block">Upload Replacement Image (Optional)</label>
+          <input type="file" id="image" name="listing[image]" class="form-control" accept="image/*" />
+        </div>
+
+        <!-- Price, Location, Country -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label for="price" class="form-label fw-semibold">Base Price per Night (&#8377;)</label>
+            <input type="number" id="price" name="listing[price]" value="<%= listing.price %>" min="0" class="form-control" required />
+            <div class="invalid-feedback">Price should be valid.</div>
+          </div>
+          <div class="col-md-4">
+            <label for="location" class="form-label fw-semibold">Location / City</label>
+            <input type="text" id="location" name="listing[location]" value="<%= listing.location %>" class="form-control" required />
+            <div class="invalid-feedback">Location should be valid.</div>
+          </div>
+          <div class="col-md-4">
+            <label for="country" class="form-label fw-semibold">Country</label>
+            <input type="text" id="country" name="listing[country]" value="<%= listing.country %>" class="form-control" required />
+            <div class="invalid-feedback">Country should be valid.</div>
+          </div>
+        </div>
+
+        <!-- Amenities Selection -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold d-block">Amenities Available</label>
+          <div class="row g-2">
+            <% const sampleAmenities = ["Free WiFi", "Air Conditioning", "Free Breakfast", "Swimming Pool", "Kitchen", "Free Parking", "Workspace", "Pet Friendly"]; %>
+            <% for (let item of sampleAmenities) { %>
+              <div class="col-md-3 col-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="listing[amenities]" value="<%= item %>" id="amenity_<%= item.replace(/\s+/g, '') %>" <%= listing.amenities && listing.amenities.includes(item) ? 'checked' : '' %>>
+                  <label class="form-check-label small" for="amenity_<%= item.replace(/\s+/g, '') %>">
+                    <%= item %>
+                  </label>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Submit Controls -->
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+          <button class="btn btn-danger px-5 rounded-pill shadow-sm" type="submit">Update Property</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

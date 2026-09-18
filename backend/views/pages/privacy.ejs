@@ -1,0 +1,88 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-md-11">
+      
+      <!-- Page Header -->
+      <div class="mb-4 text-center">
+        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-semibold mb-2">Legal & Compliance</span>
+        <h1 class="fw-bold mb-2">Privacy Policy</h1>
+        <p class="text-muted small">Effective Date: September 2026 &bull; Last Updated: Today</p>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <div class="mb-4 pb-3 border-bottom">
+          <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-shield-halved text-danger me-2"></i>Our Commitment to Your Privacy</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            At <b>WanderLust</b>, we take the confidentiality of your personal information seriously. This Privacy Policy details how we collect, process, safeguard, and disclose data when you use our multi-tenant property management platform, explore listings, and make reservations.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">1. Information We Collect</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            We collect information you provide directly to us when creating an account, registering an organization, listing properties, or placing a booking:
+          </p>
+          <ul class="text-secondary" style="line-height: 1.8;">
+            <li><b>Account Identifiers:</b> Username, email address, password hash, role (`CUSTOMER`, `OWNER`, `MANAGER`), and phone number.</li>
+            <li><b>Reservation Information:</b> Check-in and check-out dates, guest count, guest name, contact phone, and stay preferences.</li>
+            <li><b>Property Listings:</b> Property title, geolocation coordinates, descriptions, room pricing, and photos uploaded via Cloudinary.</li>
+            <li><b>Technical & Session Telemetry:</b> HTTP session cookies (`connect.sid`), IP addresses, and client device headers.</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">2. How We Use Your Data</h5>
+          <ul class="text-secondary" style="line-height: 1.8;">
+            <li>To process instant reservations and enforce atomic double-booking prevention.</li>
+            <li>To authenticate property owners and verify tenant authorization boundaries.</li>
+            <li>To forward-geocode property addresses into Mapbox GeoJSON coordinates.</li>
+            <li>To display guest reviews and ratings on verified stays.</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">3. Third-Party Integrations</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            We integrate with trusted enterprise services to deliver core features:
+          </p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border">
+                <h6 class="fw-bold mb-1"><i class="fa-solid fa-map-pin text-primary me-2"></i>Mapbox GL</h6>
+                <small class="text-muted">Used strictly for forward geocoding and rendering interactive location maps. Your personal user data is never sent to Mapbox.</small>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border">
+                <h6 class="fw-bold mb-1"><i class="fa-solid fa-cloud text-info me-2"></i>Cloudinary</h6>
+                <small class="text-muted">Used to store, optimize, and securely deliver high-resolution property cover and room imagery over a global CDN.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="fw-bold text-dark mb-2">4. Tenant Isolation & Data Security</h5>
+          <p class="text-secondary" style="line-height: 1.8;">
+            WanderLust enforces strict backend tenant isolation. An organization’s internal room inventories, revenue analytics, and upcoming guest check-ins are restricted to authenticated owners and staff within that tenant.
+          </p>
+        </div>
+
+        <div>
+          <h5 class="fw-bold text-dark mb-2">5. Contact Our Privacy Team</h5>
+          <p class="text-secondary mb-0" style="line-height: 1.8;">
+            If you have questions regarding this Privacy Policy or wish to exercise data access or deletion requests, contact us at <a href="mailto:privacy@wanderlust.com" class="text-danger fw-semibold">privacy@wanderlust.com</a>.
+          </p>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/listings" class="btn btn-outline-secondary rounded-pill px-4 me-2">Back to Explore</a>
+        <a href="/terms" class="btn btn-danger rounded-pill px-4">View Terms of Service</a>
+      </div>
+
+    </div>
+  </div>
+</div>

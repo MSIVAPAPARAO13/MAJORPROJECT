@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' | WanderLust' : 'WanderLust | Vacation Rentals, Hostels & Boutique Stays' %></title>
+  <meta name="description" content="Discover and book handpicked vacation homes, backpacker hostels, boutique hotels, and luxury resorts across the globe on WanderLust.">
+  <meta name="keywords" content="vacation rentals, hostels, backpacker hostels, hotels, apartments, resorts, booking, wanderlust, travel accommodation">
+  <meta name="author" content="WanderLust Hospitality">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Social Sharing Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="WanderLust">
+  <meta property="og:title" content="WanderLust | Vacation Rentals, Hostels & Boutique Stays">
+  <meta property="og:description" content="Explore verified holiday rentals, social backpacker hubs, and private apartments with instant reservations and interactive maps.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- Twitter Card Data -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WanderLust | Vacation Rentals & Hostels">
+  <meta name="twitter:description" content="Find your next adventure. Verified vacation properties, hostels, and rooms with live availability.">
+
+  <!-- Google Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.4 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Starability Star Rating CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/starability/starability-slot.min.css">
+
+  <!-- Mapbox GL JS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/rating.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <header>
+    <%- include("../includes/navbar.ejs") %>
+  </header>
+
+  <main class="container my-4 flex-grow-1">
+    <%- include("../includes/flash.ejs") %>
+    <%- body %>
+  </main>
+
+  <%- include("../includes/footer.ejs") %>
+
+  <!-- Bootstrap 5.3.4 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+  <!-- Form Validation Script -->
+  <script src="/js/script.js"></script>
+</body>
+
+</html>

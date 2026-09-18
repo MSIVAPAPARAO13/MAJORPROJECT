@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row mt-4 mb-5 justify-content-center">
+  <div class="col-lg-5 col-md-7 col-sm-9">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+      <div class="text-center mb-4">
+        <i class="fa-regular fa-compass text-danger fa-3x mb-2"></i>
+        <h3 class="fw-bold mb-1">Welcome Back</h3>
+        <p class="text-muted small">Log in to manage properties or access your trip reservations.</p>
+      </div>
+
+      <form action="/login" method="POST" class="needs-validation" novalidate>
+        
+        <div class="mb-3">
+          <label for="username" class="form-label fw-semibold">Username</label>
+          <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required />
+          <div class="invalid-feedback">Please enter your username.</div>
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="form-label fw-semibold">Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required />
+          <div class="invalid-feedback">Please enter your password.</div>
+        </div>
+
+        <button class="btn btn-danger w-100 py-2 rounded-pill shadow-sm fw-semibold" type="submit">Log In</button>
+
+        <div class="text-center mt-3">
+          <span class="text-muted small">Don't have an account? </span>
+          <a href="/signup" class="text-danger fw-semibold small text-decoration-none">Sign up</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

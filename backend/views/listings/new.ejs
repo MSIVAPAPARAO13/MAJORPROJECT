@@ -1,0 +1,111 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row mt-4 mb-5 justify-content-center">
+  <div class="col-lg-8 col-md-10">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+      <h3 class="fw-bold mb-1"><i class="fa-solid fa-house-chimney text-danger me-2"></i>Add a New Property</h3>
+      <p class="text-muted mb-4 small">List your hostel, hotel, apartment, or resort on WanderLust.</p>
+
+      <form method="post" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+        
+        <!-- Property Title -->
+        <div class="mb-3">
+          <label for="title" class="form-label fw-semibold">Property Title</label>
+          <input type="text" id="title" name="listing[title]" placeholder="e.g., The Heritage Backpacker Hostel" class="form-control" required />
+          <div class="invalid-feedback">Please provide a property title.</div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label fw-semibold">Description</label>
+          <textarea id="description" name="listing[description]" rows="4" class="form-control" placeholder="Describe the atmosphere, unique highlights, and neighborhood..." required></textarea>
+          <div class="invalid-feedback">Please enter a short description.</div>
+        </div>
+
+        <!-- Property Type & Category -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="propertyType" class="form-label fw-semibold">Property Type</label>
+            <select class="form-select" id="propertyType" name="listing[propertyType]" required>
+              <option value="Hostel">Hostel</option>
+              <option value="Hotel">Hotel</option>
+              <option value="Apartment" selected>Apartment</option>
+              <option value="Guest House">Guest House</option>
+              <option value="Resort">Resort</option>
+              <option value="Homestay">Homestay</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="category" class="form-label fw-semibold">Theme Category</label>
+            <select class="form-select" id="category" name="listing[category]" required>
+              <option value="Rooms" selected>Rooms</option>
+              <option value="Hostels">Hostels</option>
+              <option value="Trending">Trending</option>
+              <option value="Iconic Cities">Iconic Cities</option>
+              <option value="Mountains">Mountains</option>
+              <option value="Castles">Castles</option>
+              <option value="Amazing pool">Amazing pool</option>
+              <option value="Camping">Camping</option>
+              <option value="Farms">Farms</option>
+              <option value="Arctic">Arctic</option>
+              <option value="Domes">Domes</option>
+              <option value="Boats">Boats</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-3">
+          <label for="image" class="form-label fw-semibold">Cover Image</label>
+          <input type="file" id="image" name="listing[image]" class="form-control" accept="image/*" required />
+          <div class="form-text small">Upload a high-resolution photo showcasing your property.</div>
+          <div class="invalid-feedback">Please choose a cover photo.</div>
+        </div>
+
+        <!-- Price & Location Info -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label for="price" class="form-label fw-semibold">Base Price per Night (&#8377;)</label>
+            <input type="number" id="price" name="listing[price]" placeholder="1500" min="0" class="form-control" required />
+            <div class="invalid-feedback">Please enter a valid price.</div>
+          </div>
+          <div class="col-md-4">
+            <label for="location" class="form-label fw-semibold">City / Location</label>
+            <input type="text" id="location" name="listing[location]" placeholder="e.g., Jaipur, Rajasthan" class="form-control" required />
+            <div class="invalid-feedback">Please enter the location.</div>
+          </div>
+          <div class="col-md-4">
+            <label for="country" class="form-label fw-semibold">Country</label>
+            <input type="text" id="country" name="listing[country]" placeholder="e.g., India" class="form-control" required />
+            <div class="invalid-feedback">Please enter the country.</div>
+          </div>
+        </div>
+
+        <!-- Amenities -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold d-block">Amenities Available</label>
+          <div class="row g-2">
+            <% const sampleAmenities = ["Free WiFi", "Air Conditioning", "Free Breakfast", "Swimming Pool", "Kitchen", "Free Parking", "Workspace", "Pet Friendly"]; %>
+            <% for (let item of sampleAmenities) { %>
+              <div class="col-md-3 col-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="listing[amenities]" value="<%= item %>" id="amenity_<%= item.replace(/\s+/g, '') %>">
+                  <label class="form-check-label small" for="amenity_<%= item.replace(/\s+/g, '') %>">
+                    <%= item %>
+                  </label>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/listings" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+          <button class="btn btn-danger px-5 rounded-pill shadow-sm" type="submit">Create Property</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

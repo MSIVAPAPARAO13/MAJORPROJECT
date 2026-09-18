@@ -1,0 +1,108 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      
+      <!-- Confirmation Banner -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white text-center mb-4">
+        <div class="mb-3">
+          <span class="badge bg-success bg-opacity-10 text-success p-3 rounded-circle">
+            <i class="fa-solid fa-circle-check fa-3x"></i>
+          </span>
+        </div>
+        <h2 class="fw-bold mb-1">Reservation Confirmed!</h2>
+        <p class="text-muted">Booking Reference: <span class="badge bg-light text-dark border font-monospace fs-6">#<%= booking._id %></span></p>
+        
+        <div class="d-inline-flex justify-content-center gap-2 mt-2">
+          <span class="badge bg-success rounded-pill px-3 py-2"><i class="fa-solid fa-check me-1"></i> <%= booking.status %></span>
+          <span class="badge bg-light text-secondary border rounded-pill px-3 py-2">Instant Booking</span>
+        </div>
+      </div>
+
+      <!-- Booking Details Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <h5 class="fw-bold mb-3 pb-2 border-bottom">Stay Information</h5>
+        
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6">
+            <label class="text-muted small d-block">Property</label>
+            <h6 class="fw-bold mb-0"><%= booking.property ? booking.property.title : 'WanderLust Property' %></h6>
+            <p class="text-secondary small mb-0"><%= booking.property ? booking.property.location + ', ' + booking.property.country : '' %></p>
+          </div>
+          <div class="col-sm-6">
+            <label class="text-muted small d-block">Room Reserved</label>
+            <h6 class="fw-bold mb-0">Room <%= booking.room ? booking.room.roomNumber : '' %> &mdash; <%= booking.room ? booking.room.roomType : '' %></h6>
+            <p class="text-secondary small mb-0"><i class="fa-solid fa-users me-1"></i> <%= booking.guestsCount %> Guest(s)</p>
+          </div>
+        </div>
+
+        <div class="row g-3 p-3 bg-light rounded-3 mb-4">
+          <div class="col-6 text-center border-end">
+            <span class="text-muted small d-block">Check-in</span>
+            <span class="fw-bold fs-5 text-dark"><%= new Date(booking.checkIn).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+            <small class="text-muted d-block">From 2:00 PM</small>
+          </div>
+          <div class="col-6 text-center">
+            <span class="text-muted small d-block">Check-out</span>
+            <span class="fw-bold fs-5 text-dark"><%= new Date(booking.checkOut).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+            <small class="text-muted d-block">Until 11:00 AM</small>
+          </div>
+        </div>
+
+        <!-- Guest Contact Details -->
+        <h6 class="fw-bold mb-2">Guest Details</h6>
+        <div class="row g-2 text-secondary small mb-3">
+          <div class="col-sm-4">
+            <b>Name:</b> <%= booking.guestDetails ? booking.guestDetails.name : '' %>
+          </div>
+          <div class="col-sm-4">
+            <b>Email:</b> <%= booking.guestDetails ? booking.guestDetails.email : '' %>
+          </div>
+          <div class="col-sm-4">
+            <b>Phone:</b> <%= booking.guestDetails ? booking.guestDetails.phone : '' %>
+          </div>
+        </div>
+
+        <% if (booking.specialRequests) { %>
+          <div class="p-2 bg-light rounded-2 small text-muted mb-3">
+            <b>Special Requests:</b> <%= booking.specialRequests %>
+          </div>
+        <% } %>
+
+        <hr>
+
+        <!-- Payment Breakdown -->
+        <h6 class="fw-bold mb-2">Payment Summary</h6>
+        <div class="d-flex justify-content-between text-secondary small mb-1">
+          <span><%= booking.totalNights %> night(s) &times; &#8377; <%= Number(booking.pricePerNight).toLocaleString("en-IN") %></span>
+          <span>&#8377; <%= Number(booking.totalPrice).toLocaleString("en-IN") %></span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold fs-5 text-dark mt-2 pt-2 border-top">
+          <span>Total Paid</span>
+          <span class="text-danger">&#8377; <%= Number(booking.totalPrice).toLocaleString("en-IN") %></span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <a href="/listings" class="btn btn-outline-secondary rounded-pill px-4">
+          <i class="fa-solid fa-compass me-1"></i> Browse More
+        </a>
+        <div class="d-flex gap-2">
+          <a href="/dashboard" class="btn btn-dark rounded-pill px-4">
+            <i class="fa-solid fa-suitcase me-1"></i> View in Dashboard
+          </a>
+          <% if (booking.status !== 'CANCELLED') { %>
+            <form method="POST" action="/bookings/<%= booking._id %>/cancel" onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+              <button class="btn btn-outline-danger rounded-pill px-3">
+                <i class="fa-solid fa-xmark me-1"></i> Cancel Reservation
+              </button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

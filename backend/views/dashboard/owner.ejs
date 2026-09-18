@@ -1,0 +1,199 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4">
+  <!-- Dashboard Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="fa-solid fa-chart-line text-danger me-2"></i>Property Management Dashboard</h2>
+      <p class="text-muted small mb-0">Manage your real estate portfolio, room configurations, and guest reservations.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/organizations/new" class="btn btn-outline-dark rounded-pill px-3">
+        <i class="fa-solid fa-building me-1"></i> Register Organization
+      </a>
+      <a href="/listings/new" class="btn btn-danger rounded-pill px-4 shadow-sm">
+        <i class="fa-solid fa-plus me-1"></i> Add Property
+      </a>
+    </div>
+  </div>
+
+  <!-- Real Metrics Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold">Properties</span>
+            <h3 class="fw-bold mb-0 text-dark mt-1"><%= metrics.totalProperties %></h3>
+          </div>
+          <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+            <i class="fa-solid fa-hotel fa-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold">Total Rooms</span>
+            <h3 class="fw-bold mb-0 text-dark mt-1"><%= metrics.totalRooms %></h3>
+          </div>
+          <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle">
+            <i class="fa-solid fa-door-open fa-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold">Active Bookings</span>
+            <h3 class="fw-bold mb-0 text-dark mt-1"><%= metrics.activeBookingsCount %></h3>
+          </div>
+          <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle">
+            <i class="fa-solid fa-calendar-check fa-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted small fw-semibold">Total Revenue</span>
+            <h3 class="fw-bold mb-0 text-success mt-1">&#8377; <%= Number(metrics.totalRevenue).toLocaleString("en-IN") %></h3>
+          </div>
+          <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle">
+            <i class="fa-solid fa-indian-rupee-sign fa-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Properties List -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0">Your Properties</h5>
+      <span class="badge bg-light text-secondary border"><%= metrics.properties.length %> Active</span>
+    </div>
+
+    <% if (metrics.properties && metrics.properties.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Location</th>
+              <th>Base Rate</th>
+              <th>Rooms</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let p of metrics.properties) { %>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <% const pImg = (p.image && p.image.url) ? p.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=100&q=80'; %>
+                    <img src="<%= pImg %>" class="rounded-2" style="width: 45px; height: 45px; object-fit: cover;" alt="">
+                    <div>
+                      <a href="/listings/<%= p._id %>" class="fw-bold text-decoration-none text-dark"><%= p.title %></a>
+                      <small class="text-muted d-block"><%= p.category || 'Rooms' %></small>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge bg-secondary"><%= p.propertyType || 'Apartment' %></span></td>
+                <td><small><%= p.location %>, <%= p.country %></small></td>
+                <td><b>&#8377; <%= Number(p.price).toLocaleString("en-IN") %></b></td>
+                <td><span class="badge bg-light text-dark border"><%= p.rooms ? p.rooms.length : 0 %></span></td>
+                <td>
+                  <a href="/listings/<%= p._id %>/rooms/new" class="btn btn-sm btn-outline-primary rounded-pill me-1" title="Add Room">
+                    <i class="fa-solid fa-plus"></i> Room
+                  </a>
+                  <a href="/listings/<%= p._id %>/edit" class="btn btn-sm btn-outline-secondary rounded-pill me-1" title="Edit">
+                    <i class="fa-solid fa-pen"></i>
+                  </a>
+                  <a href="/listings/<%= p._id %>" class="btn btn-sm btn-outline-dark rounded-pill" title="View">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="text-center py-4 text-muted">
+        <p class="mb-2">You haven't added any properties yet.</p>
+        <a href="/listings/new" class="btn btn-danger btn-sm rounded-pill px-4">Create First Property</a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Recent Bookings Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0">Guest Bookings & Reservations</h5>
+      <span class="badge bg-light text-secondary border"><%= metrics.bookings.length %> Total</span>
+    </div>
+
+    <% if (metrics.bookings && metrics.bookings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Booking ID</th>
+              <th>Property & Room</th>
+              <th>Guest Details</th>
+              <th>Dates</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let b of metrics.bookings) { %>
+              <tr>
+                <td><span class="font-monospace small">#<%= b._id.toString().substring(18) %></span></td>
+                <td>
+                  <b><%= b.property ? b.property.title : 'Property' %></b>
+                  <small class="text-muted d-block">Room <%= b.room ? b.room.roomNumber + ' (' + b.room.roomType + ')' : '' %></small>
+                </td>
+                <td>
+                  <b><%= b.guestDetails ? b.guestDetails.name : 'Guest' %></b>
+                  <small class="text-muted d-block"><%= b.guestDetails ? b.guestDetails.phone : '' %></small>
+                </td>
+                <td>
+                  <small>
+                    <%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric' }) %> &mdash; 
+                    <%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric' }) %>
+                    (<%= b.totalNights %>n)
+                  </small>
+                </td>
+                <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
+                <td>
+                  <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : (b.status === 'CANCELLED' ? 'bg-danger' : 'bg-secondary') %>">
+                    <%= b.status %>
+                  </span>
+                </td>
+                <td>
+                  <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill">View</a>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="text-muted mb-0 py-3 text-center">No reservations placed yet.</p>
+    <% } %>
+  </div>
+
+</div>

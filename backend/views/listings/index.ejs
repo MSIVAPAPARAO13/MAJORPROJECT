@@ -1,0 +1,130 @@
+<% layout('layouts/boilerplate') %>
+
+<!-- Top Category Filters & Controls -->
+<section class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-2 gap-3" aria-label="Category Filters">
+  <!-- Active Category Filter Bar -->
+  <div class="filters-container flex-grow-1" role="tablist">
+    <% 
+      const categories = [
+        { name: "All", icon: "fa-solid fa-border-all" },
+        { name: "Hostels", icon: "fa-solid fa-users" },
+        { name: "Rooms", icon: "fa-solid fa-bed" },
+        { name: "Trending", icon: "fa-solid fa-fire" },
+        { name: "Iconic Cities", icon: "fa-solid fa-mountain-city" },
+        { name: "Mountains", icon: "fa-solid fa-mountain" },
+        { name: "Castles", icon: "fa-brands fa-fort-awesome" },
+        { name: "Amazing pool", icon: "fa-solid fa-person-swimming" },
+        { name: "Camping", icon: "fa-solid fa-campground" },
+        { name: "Farms", icon: "fa-solid fa-cow" },
+        { name: "Arctic", icon: "fa-solid fa-snowflake" },
+        { name: "Domes", icon: "fa-solid fa-igloo" },
+        { name: "Boats", icon: "fa-solid fa-ship" }
+      ];
+      const activeCat = typeof currentCategory !== 'undefined' ? currentCategory : 'All';
+    %>
+
+    <% for (let cat of categories) { %>
+      <a 
+        href="/listings<%= cat.name === 'All' ? '' : '?category=' + encodeURIComponent(cat.name) %>" 
+        class="filter-item text-decoration-none text-dark <%= activeCat === cat.name ? 'active' : '' %>"
+        role="tab"
+        aria-selected="<%= activeCat === cat.name %>"
+      >
+        <div><i class="<%= cat.icon %>"></i></div>
+        <p class="small"><%= cat.name %></p>
+      </a>
+    <% } %>
+  </div>
+
+  <!-- Tax Display Toggle Switch -->
+  <div class="tax-toggle shadow-sm border rounded-pill px-3 py-2 bg-white">
+    <div class="d-flex align-items-center gap-2 m-0">
+      <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
+        <input class="form-check-input m-0 cursor-pointer" style="float: none; width: 2.4rem; height: 1.25rem;" type="checkbox" role="switch" id="switchCheckDefault">
+      </div>
+      <label class="fw-semibold text-secondary small user-select-none m-0 ps-1 cursor-pointer" for="switchCheckDefault">Display total after taxes</label>
+    </div>
+  </div>
+</section>
+
+<!-- Active Search Indicator -->
+<% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+  <div class="alert alert-light border d-flex justify-content-between align-items-center py-2 px-3 mb-4 rounded-3 shadow-sm">
+    <span class="small"><i class="fa-solid fa-magnifying-glass me-2 text-danger"></i>Search results for: <b>"<%= searchQuery %>"</b> (<%= allListings.length %> found)</span>
+    <a href="/listings" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1">Clear Filter</a>
+  </div>
+<% } %>
+
+<!-- Listings Grid -->
+<% if (allListings && allListings.length > 0) { %>
+  <section class="row row-cols-lg-3 row-cols-md-2 row-cols-1 g-4 mt-1" aria-label="Properties Grid">
+    <% for (let listing of allListings) { %>
+      <div class="col">
+        <article class="card listing-card position-relative h-100 shadow-sm border-0">
+          <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark d-flex flex-column h-100">
+            <!-- Property Type Badge -->
+            <span class="badge bg-dark bg-opacity-75 text-white property-badge rounded-pill px-3 py-1">
+              <%= listing.propertyType || "Apartment" %>
+            </span>
+
+            <!-- Image with strict aspect ratio -->
+            <div class="img-wrapper">
+              <% const imgUrl = (listing.image && listing.image.url) ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'; %>
+              <img 
+                src="<%= imgUrl %>" 
+                class="card-img-top" 
+                alt="<%= listing.title %>" 
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80';"
+              />
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body px-1 pt-3 d-flex flex-column flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <h6 class="card-title fw-bold mb-0 text-truncate" style="max-width: 80%;">
+                  <%= listing.title %>
+                </h6>
+                <span class="small text-muted flex-shrink-0"><i class="fa-solid fa-star text-warning"></i> 4.8</span>
+              </div>
+              <p class="text-muted small mb-2 text-truncate">
+                <i class="fa-solid fa-location-dot me-1 text-danger"></i><%= listing.location %>, <%= listing.country %>
+              </p>
+              <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+                <p class="card-text mb-0">
+                  <span class="fs-5 fw-bold text-dark">&#8377; <%= Number(listing.price).toLocaleString("en-IN") %></span> 
+                  <span class="text-muted small">/ night</span>
+                  <i class="tax-info text-danger small">&nbsp;(+18% GST)</i>
+                </p>
+                <span class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1">View</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      </div>
+    <% } %>
+  </section>
+<% } else { %>
+  <!-- Empty Search/Filter State -->
+  <div class="text-center py-5 my-5 bg-light rounded-4 p-5 shadow-sm">
+    <div class="mb-3 text-muted">
+      <i class="fa-solid fa-hotel fa-4x text-secondary opacity-50"></i>
+    </div>
+    <h4 class="fw-bold">No Properties Found</h4>
+    <p class="text-muted">We couldn't find any properties matching your criteria. Try adjusting your search or category filter.</p>
+    <a href="/listings" class="btn btn-danger rounded-pill px-4 mt-2 shadow-sm">Browse All Properties</a>
+  </div>
+<% } %>
+
+<script>
+  // GST Tax Toggle Logic
+  const taxSwitch = document.getElementById("switchCheckDefault");
+  if (taxSwitch) {
+    taxSwitch.addEventListener("change", () => {
+      const taxInfoElements = document.getElementsByClassName("tax-info");
+      for (let info of taxInfoElements) {
+        info.style.display = taxSwitch.checked ? "inline" : "none";
+      }
+    });
+  }
+</script>

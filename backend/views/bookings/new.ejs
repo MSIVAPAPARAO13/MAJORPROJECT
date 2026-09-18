@@ -1,0 +1,260 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="mb-3">
+        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-muted small">
+          <i class="fa-solid fa-arrow-left me-1"></i> Back to <%= listing.title %>
+        </a>
+      </div>
+
+      <div class="row g-4">
+        <!-- Left: Booking Form -->
+        <div class="col-md-7">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h4 class="fw-bold mb-1"><i class="fa-solid fa-shield-halved text-danger me-2"></i>Confirm & Book</h4>
+            <p class="text-muted small mb-4">Enter your stay details and guest information.</p>
+
+            <form action="/listings/<%= listing._id %>/bookings" method="POST" class="needs-validation" novalidate id="bookingForm">
+              
+              <!-- Room Selection -->
+              <div class="mb-3">
+                <label for="roomId" class="form-label fw-semibold">Select Room</label>
+                <select class="form-select" id="roomId" name="booking[roomId]" required>
+                  <% for (let room of rooms) { %>
+                    <option 
+                      value="<%= room._id %>" 
+                      data-price="<%= room.price %>" 
+                      data-capacity="<%= room.capacity %>"
+                      <%= selectedRoom && selectedRoom._id.equals(room._id) ? 'selected' : '' %>
+                    >
+                      Room <%= room.roomNumber %> &mdash; <%= room.roomType %> (&#8377;<%= Number(room.price).toLocaleString("en-IN") %>/night, max <%= room.capacity %> guests)
+                    </option>
+                  <% } %>
+                </select>
+                <div class="invalid-feedback">Please select a room.</div>
+              </div>
+
+              <!-- Dates: Check-in & Check-out -->
+              <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                  <label for="checkIn" class="form-label fw-semibold">Check-in Date</label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="checkIn" 
+                    name="booking[checkIn]" 
+                    value="<%= queryCheckIn %>" 
+                    required 
+                  />
+                  <div class="invalid-feedback">Select a valid check-in date.</div>
+                </div>
+                <div class="col-sm-6">
+                  <label for="checkOut" class="form-label fw-semibold">Check-out Date</label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="checkOut" 
+                    name="booking[checkOut]" 
+                    value="<%= queryCheckOut %>" 
+                    required 
+                  />
+                  <div class="invalid-feedback">Check-out must be after check-in.</div>
+                </div>
+              </div>
+
+              <!-- Number of Guests -->
+              <div class="mb-3">
+                <label for="guestsCount" class="form-label fw-semibold">Number of Guests</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="guestsCount" 
+                  name="booking[guestsCount]" 
+                  value="<%= queryGuests %>" 
+                  min="1" 
+                  max="10" 
+                  required 
+                />
+                <div class="invalid-feedback">Please specify the guest count.</div>
+              </div>
+
+              <hr class="my-4">
+
+              <!-- Guest Personal Details -->
+              <h5 class="fw-bold mb-3">Primary Guest Information</h5>
+              
+              <div class="mb-3">
+                <label for="guestName" class="form-label fw-semibold">Full Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="guestName" 
+                  name="booking[guestName]" 
+                  value="<%= currentUser ? currentUser.username : '' %>" 
+                  placeholder="e.g., Jane Doe" 
+                  required 
+                />
+                <div class="invalid-feedback">Please enter your full name.</div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                  <label for="guestEmail" class="form-label fw-semibold">Email Address</label>
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    id="guestEmail" 
+                    name="booking[guestEmail]" 
+                    value="<%= currentUser ? currentUser.email : '' %>" 
+                    placeholder="name@example.com" 
+                    required 
+                  />
+                  <div class="invalid-feedback">Please provide a valid email.</div>
+                </div>
+                <div class="col-sm-6">
+                  <label for="guestPhone" class="form-label fw-semibold">Phone Number</label>
+                  <input 
+                    type="tel" 
+                    class="form-control" 
+                    id="guestPhone" 
+                    name="booking[guestPhone]" 
+                    value="<%= currentUser && currentUser.phone ? currentUser.phone : '' %>" 
+                    placeholder="+91 9876543210" 
+                    required 
+                  />
+                  <div class="invalid-feedback">Please provide a contact phone number.</div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="specialRequests" class="form-label fw-semibold">Special Requests (Optional)</label>
+                <textarea 
+                  class="form-control" 
+                  id="specialRequests" 
+                  name="booking[specialRequests]" 
+                  rows="2" 
+                  placeholder="Early check-in, dietary preferences, accessibility needs..."
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-danger btn-lg w-100 rounded-pill shadow-sm" id="confirmBtn">
+                <i class="fa-solid fa-lock me-2"></i>Confirm & Book Reservation
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Summary Card -->
+        <div class="col-md-5">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 100px;">
+            <h5 class="fw-bold mb-3">Reservation Summary</h5>
+            
+            <div class="d-flex gap-3 align-items-center mb-3 pb-3 border-bottom">
+              <% const sumImage = (listing.image && listing.image.url) ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80'; %>
+              <img src="<%= sumImage %>" class="rounded-3" style="width: 80px; height: 75px; object-fit: cover;" alt="<%= listing.title %>">
+              <div>
+                <h6 class="fw-bold mb-1 text-truncate" style="max-width: 200px;"><%= listing.title %></h6>
+                <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i><%= listing.location %></p>
+                <span class="badge bg-light text-dark border small mt-1"><%= listing.propertyType || 'Apartment' %></span>
+              </div>
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary small">Rate per night</span>
+                <span class="fw-semibold" id="rateDisplay">&#8377; <%= selectedRoom ? Number(selectedRoom.price).toLocaleString("en-IN") : Number(listing.price).toLocaleString("en-IN") %></span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary small">Duration</span>
+                <span class="fw-semibold" id="nightsDisplay">1 night</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary small">Subtotal</span>
+                <span class="fw-semibold" id="subtotalDisplay">&#8377; <%= selectedRoom ? Number(selectedRoom.price).toLocaleString("en-IN") : Number(listing.price).toLocaleString("en-IN") %></span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary small">Taxes & Fees (18% GST)</span>
+                <span class="fw-semibold text-muted" id="taxDisplay">&#8377; 0</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-top d-flex justify-content-between align-items-center mb-3">
+              <span class="fw-bold fs-5">Total (INR)</span>
+              <span class="fw-bold fs-4 text-danger" id="totalDisplay">&#8377; 0</span>
+            </div>
+
+            <div class="alert alert-light border rounded-3 small text-muted mb-0">
+              <i class="fa-solid fa-shield-check text-success me-1"></i>
+              <b>Guaranteed Reservation</b>: Instant booking confirmation upon submission.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Dynamic Pricing & Date Validation
+  const checkInInput = document.getElementById("checkIn");
+  const checkOutInput = document.getElementById("checkOut");
+  const roomSelect = document.getElementById("roomId");
+  const rateDisplay = document.getElementById("rateDisplay");
+  const nightsDisplay = document.getElementById("nightsDisplay");
+  const subtotalDisplay = document.getElementById("subtotalDisplay");
+  const taxDisplay = document.getElementById("taxDisplay");
+  const totalDisplay = document.getElementById("totalDisplay");
+
+  // Set minimum date to today
+  const today = new Date().toISOString().split("T")[0];
+  checkInInput.min = today;
+
+  function recalculate() {
+    const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+    const pricePerNight = selectedOption ? Number(selectedOption.getAttribute("data-price")) : Number("<%= listing.price %>");
+    
+    if (checkInInput.value) {
+      const nextDay = new Date(checkInInput.value);
+      nextDay.setDate(nextDay.getDate() + 1);
+      checkOutInput.min = nextDay.toISOString().split("T")[0];
+    }
+
+    let nights = 1;
+    if (checkInInput.value && checkOutInput.value) {
+      const start = new Date(checkInInput.value);
+      const end = new Date(checkOutInput.value);
+      const diffTime = end - start;
+      if (diffTime > 0) {
+        nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }
+    }
+
+    const subtotal = nights * pricePerNight;
+    const taxes = Math.round(subtotal * 0.18);
+    const total = subtotal + taxes;
+
+    rateDisplay.innerText = "₹" + pricePerNight.toLocaleString("en-IN");
+    nightsDisplay.innerText = nights + (nights === 1 ? " night" : " nights");
+    subtotalDisplay.innerText = "₹" + subtotal.toLocaleString("en-IN");
+    taxDisplay.innerText = "₹" + taxes.toLocaleString("en-IN");
+    totalDisplay.innerText = "₹" + total.toLocaleString("en-IN");
+  }
+
+  // Pre-fill tomorrow if no date specified
+  if (!checkInInput.value) {
+    checkInInput.value = today;
+  }
+  if (!checkOutInput.value) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    checkOutInput.value = tomorrow.toISOString().split("T")[0];
+  }
+
+  checkInInput.addEventListener("change", recalculate);
+  checkOutInput.addEventListener("change", recalculate);
+  roomSelect.addEventListener("change", recalculate);
+  recalculate();
+</script>
