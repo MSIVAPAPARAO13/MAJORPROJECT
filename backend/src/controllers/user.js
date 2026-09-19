@@ -6,8 +6,18 @@ module.exports.renderSignupForm = (req, res) => {
 
 module.exports.signup = async (req, res, next) => {
   try {
-    const { username, email, password, role, phone } = req.body;
-    const registeredUser = await userService.registerUser({ username, email, password, role, phone });
+    const { username, email, password, phone } = req.body;
+    // Requirement 7: Public signup MUST NOT accept client-supplied role, organization, or permissions.
+    // Every public signup is unconditionally assigned role: 'CUSTOMER'.
+    const registeredUser = await userService.registerUser({
+      username,
+      email,
+      password,
+      role: "CUSTOMER",
+      phone,
+      organization: null
+    });
+
     req.login(registeredUser, (err) => {
       if (err) return next(err);
       req.flash("success", `Welcome to WanderLust, ${registeredUser.username}!`);

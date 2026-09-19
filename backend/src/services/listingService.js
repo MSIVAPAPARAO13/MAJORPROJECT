@@ -118,6 +118,10 @@ async function updateListing(id, updateData, file) {
     };
   }
 
+  // Ensure ownership and tenant boundaries cannot be tampered with via updates
+  delete updateData.owner;
+  delete updateData.organization;
+
   // Apply scalar fields
   if (updateData.title) listing.title = updateData.title;
   if (updateData.description) listing.description = updateData.description;

@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const listingService = require("../../services/listingService");
 const reviewService = require("../../services/reviewService");
+const Review = require("../../models/review");
 const wrapAsync = require("../../utils/wrapAsync");
 
-// GET /api/listings - Retrieve all properties with search & category filters
+// GET /api/listings - Retrieve all properties (PUBLIC)
 router.get(
   "/",
   wrapAsync(async (req, res) => {
@@ -17,7 +18,7 @@ router.get(
   })
 );
 
-// GET /api/listings/:id - Retrieve single listing with populated relations
+// GET /api/listings/:id - Retrieve single listing (PUBLIC)
 router.get(
   "/:id",
   wrapAsync(async (req, res) => {
@@ -33,7 +34,7 @@ router.get(
   })
 );
 
-// POST /api/listings/:id/reviews - Submit review
+// POST /api/listings/:id/reviews - Submit review (Authenticated users)
 router.post(
   "/:id/reviews",
   wrapAsync(async (req, res) => {
@@ -50,7 +51,7 @@ router.post(
   })
 );
 
-// DELETE /api/listings/:id/reviews/:reviewId - Remove review
+// DELETE /api/listings/:id/reviews/:reviewId - Remove review (Author or Admin only)
 router.delete(
   "/:id/reviews/:reviewId",
   wrapAsync(async (req, res) => {
@@ -58,6 +59,17 @@ router.delete(
       return res.status(401).json({ success: false, message: "Please log in to delete a review" });
     }
     const { id, reviewId } = req.params;
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ success: false, message: "Review not found" });
+    }
+    const isAuthor = review.author && review.author.equals(req.user._id);
+    const isAdmin = req.user && req.user.role === "ADMIN";
+
+    if (!isAuthor && !isAdmin) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this review" });
+    }
+
     await reviewService.deleteReview(id, reviewId);
     res.json({
       success: true,
