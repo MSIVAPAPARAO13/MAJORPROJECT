@@ -1,5 +1,5 @@
 const listingService = require("../services/listingService");
-const wrapAsync = require("../utils/wrapAsync");
+const imageService = require("../services/imageService");
 
 module.exports.index = async (req, res) => {
   const allListings = await listingService.getAllListings(req.query);
@@ -27,10 +27,7 @@ module.exports.createListing = async (req, res) => {
 module.exports.renderEditForm = async (req, res) => {
   const { id } = req.params;
   const listing = await listingService.getListingById(id);
-  let originalImageUrl = listing.image && listing.image.url ? listing.image.url : "";
-  if (originalImageUrl.includes("/upload")) {
-    originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
-  }
+  const originalImageUrl = imageService.getThumbnailUrl(listing.image ? listing.image.url : "");
   res.render("listings/edit.ejs", { listing, originalImageUrl });
 };
 

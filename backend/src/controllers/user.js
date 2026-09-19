@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const userService = require("../services/userService");
 
 module.exports.renderSignupForm = (req, res) => {
   res.render("users/signup.ejs");
@@ -7,21 +7,11 @@ module.exports.renderSignupForm = (req, res) => {
 module.exports.signup = async (req, res, next) => {
   try {
     const { username, email, password, role, phone } = req.body;
-    const allowedRoles = ["CUSTOMER", "OWNER"];
-    const userRole = allowedRoles.includes(role) ? role : "CUSTOMER";
-
-    const newUser = new User({
-      username: username.trim(),
-      email: email.trim(),
-      role: userRole,
-      phone: phone ? phone.trim() : undefined
-    });
-
-    const registeredUser = await User.register(newUser, password);
+    const registeredUser = await userService.registerUser({ username, email, password, role, phone });
     req.login(registeredUser, (err) => {
       if (err) return next(err);
       req.flash("success", `Welcome to WanderLust, ${registeredUser.username}!`);
-      const redirectUrl = res.locals.redirectUrl || (userRole === "OWNER" ? "/dashboard" : "/listings");
+      const redirectUrl = res.locals.redirectUrl || "/listings";
       res.redirect(redirectUrl);
     });
   } catch (e) {
@@ -36,7 +26,7 @@ module.exports.renderLoginForm = (req, res) => {
 
 module.exports.login = async (req, res) => {
   req.flash("success", `Welcome back, ${req.user.username}!`);
-  const redirectUrl = res.locals.redirectUrl || (req.user.role === "OWNER" || req.user.role === "ADMIN" ? "/dashboard" : "/listings");
+  const redirectUrl = res.locals.redirectUrl || "/listings";
   res.redirect(redirectUrl);
 };
 

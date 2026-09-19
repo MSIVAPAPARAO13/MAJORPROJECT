@@ -1,5 +1,7 @@
 const Listing = require("../models/listing");
-const Room = require("../models/room");
+require("../models/user");
+require("../models/review");
+require("../models/organization");
 const mapService = require("./mapService");
 const imageService = require("./imageService");
 const ExpressError = require("../utils/ExpressError");
@@ -46,7 +48,7 @@ async function getAllListings(queryParams = {}) {
   return await Listing.find(filter).sort({ createdAt: -1 });
 }
 
-// Get single listing populated with owner, reviews (and review authors), and rooms
+// Get single listing populated with owner, reviews (and review authors)
 async function getListingById(id) {
   const listing = await Listing.findById(id)
     .populate({
@@ -54,13 +56,17 @@ async function getListingById(id) {
       populate: { path: "author" }
     })
     .populate("owner")
-    .populate("organization")
-    .populate("rooms");
+    .populate("organization");
 
   if (!listing) {
     throw new ExpressError("Listing not found", 404);
   }
   return listing;
+}
+
+// Get all listings for an organization
+async function getListingsByOrganization(orgId) {
+  return await Listing.find({ organization: orgId }).sort({ createdAt: -1 });
 }
 
 // Create new listing
@@ -92,25 +98,7 @@ async function createListing(listingData, user, file) {
     organization: user.organization || null
   });
 
-  const savedListing = await newListing.save();
-
-  // Create an automatic default room for this property so bookings work out of the box
-  const defaultRoom = new Room({
-    property: savedListing._id,
-    organization: user.organization || null,
-    roomNumber: "101",
-    roomType: propertyType === "Hostel" ? "Dormitory" : "Deluxe",
-    capacity: propertyType === "Hostel" ? 1 : 2,
-    price: Number(price),
-    amenities: savedListing.amenities,
-    status: "AVAILABLE"
-  });
-  await defaultRoom.save();
-
-  savedListing.rooms.push(defaultRoom._id);
-  await savedListing.save();
-
-  return savedListing;
+  return await newListing.save();
 }
 
 // Update listing
@@ -165,6 +153,7 @@ async function destroyListing(id) {
 module.exports = {
   getAllListings,
   getListingById,
+  getListingsByOrganization,
   createListing,
   updateListing,
   destroyListing,

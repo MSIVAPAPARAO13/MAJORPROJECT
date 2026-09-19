@@ -1,14 +1,4 @@
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapboxToken = process.env.MAP_TOKEN;
-
-let geocodingClient = null;
-if (mapboxToken) {
-  try {
-    geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
-  } catch (err) {
-    console.error("Failed to initialize Mapbox client:", err.message);
-  }
-}
+const { geocodingClient, mapboxToken } = require("../config/mapConfig");
 
 // Geocode an address/location string to GeoJSON coordinates [longitude, latitude]
 async function geocodeLocation(locationString, countryString = "") {
@@ -53,7 +43,7 @@ async function geocodeLocation(locationString, countryString = "") {
       }
     }
   } catch (err) {
-    console.error(`Mapbox geocoding error for query "${query}":`, err.message);
+    console.error(`[MapService Error] Mapbox geocoding error for query "${query}":`, err.message);
   }
 
   return {

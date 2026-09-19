@@ -15,6 +15,16 @@ function processUploadedImage(file) {
   };
 }
 
+function getThumbnailUrl(imageUrl, width = 250) {
+  if (!imageUrl || typeof imageUrl !== "string") {
+    return "";
+  }
+  if (imageUrl.includes("/upload")) {
+    return imageUrl.replace("/upload", `/upload/w_${width}`);
+  }
+  return imageUrl;
+}
+
 function processMultipleImages(files) {
   if (!files || files.length === 0) {
     return [
@@ -35,6 +45,7 @@ function processMultipleImages(files) {
 
 module.exports = {
   processUploadedImage,
+  getThumbnailUrl,
   processMultipleImages,
   DEFAULT_IMAGE_FALLBACK
 };
