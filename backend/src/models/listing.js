@@ -16,8 +16,11 @@ const listingSchema = new Schema({
   },
   propertyType: {
     type: String,
-    enum: ["Hostel", "Hotel", "Guest House", "Apartment", "Resort", "Homestay"],
-    default: "Apartment"
+    enum: [
+      "HOTEL", "HOSTEL", "APARTMENT", "VILLA", "RESORT", "GUESTHOUSE", "HOMESTAY", "OTHER",
+      "Hostel", "Hotel", "Guest House", "Apartment", "Resort", "Homestay", "Villa", "Other"
+    ],
+    default: "OTHER"
   },
   category: {
     type: String,

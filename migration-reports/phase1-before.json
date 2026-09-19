@@ -1,0 +1,66 @@
+{
+  "database": "wanderlust",
+  "timestamp": "2026-09-19T16:26:29.436Z",
+  "backupPath": "C:\\Users\\msiva\\wanderlust_mongodb_backups\\wanderlust_backup_2026-09-19T16-26-29-436Z",
+  "backupVerified": true,
+  "counts": {
+    "users": 6,
+    "listings": 65,
+    "reviews": 4,
+    "sessions": 37,
+    "organizations": 1,
+    "rooms": 134,
+    "bookings": 0,
+    "migrations": 0
+  },
+  "existingOrganization": {
+    "_id": "6aad82e0ebfd81e02e6dbf53",
+    "name": "WanderLust Global Hospitality Ltd",
+    "description": "Premier boutique stays, backpacker hostels, and luxury holiday resorts.",
+    "owner": "683362568e819485de9ccb5b",
+    "membersCount": 1,
+    "contactEmail": "msivapaparao@gmail.com",
+    "phone": "+91 9876543210",
+    "listingsReferencing": 65,
+    "decision": "REUSE_EXISTING_ORGANIZATION: Confirmed as the authoritative tenant for existing listings; no duplicate organization will be created."
+  },
+  "resolvedOwner": {
+    "_id": "683362568e819485de9ccb5b",
+    "username": "@msivapaparao",
+    "email": "msivapaparao@gmail.com",
+    "role": "OWNER",
+    "organization": "6aad82e0ebfd81e02e6dbf53"
+  },
+  "unassignedUsers": [
+    {
+      "_id": "683359b252631c111a714e94",
+      "username": "demo-user",
+      "email": "student@gmail.com",
+      "targetRole": "CUSTOMER"
+    },
+    {
+      "_id": "683374b152da479c363070ca",
+      "username": "Siva_papmsi",
+      "email": "23g2a05423@audisankara.ac.in",
+      "targetRole": "CUSTOMER"
+    },
+    {
+      "_id": "683729d36d2ee15d289dae8f",
+      "username": "sneha",
+      "email": "23g2a05423@audisankara.ac.in",
+      "targetRole": "CUSTOMER"
+    },
+    {
+      "_id": "68373e4fa76bb4c377cc0b86",
+      "username": "demo",
+      "email": "23G2A05363@gmail.com",
+      "targetRole": "CUSTOMER"
+    },
+    {
+      "_id": "6aad7477f1d6c46e82658eb7",
+      "username": "shyam vamsi",
+      "email": "siva@gmail.com",
+      "targetRole": "CUSTOMER"
+    }
+  ]
+}

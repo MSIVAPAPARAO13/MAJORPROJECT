@@ -1,0 +1,29 @@
+{
+  "database": "wanderlust",
+  "migration": "001_saas_foundation",
+  "timestamp": "2026-09-19T16:27:27.124Z",
+  "status": "SUCCESS",
+  "organization": {
+    "_id": "6aad82e0ebfd81e02e6dbf53",
+    "name": "WanderLust Global Hospitality Ltd",
+    "owner": "683362568e819485de9ccb5b"
+  },
+  "counts": {
+    "users": 6,
+    "listings": 65,
+    "reviews": 4,
+    "sessions": 37
+  },
+  "modifications": {
+    "usersUpdated": 5,
+    "listingsUpdated": 65
+  },
+  "verifications": {
+    "zeroOrphanListings": true,
+    "zeroOrphanUsers": true,
+    "sessionCountPreserved": true,
+    "reviewsPreserved": true,
+    "existingImageFieldPreserved": true,
+    "imagesArrayCreated": true
+  }
+}
