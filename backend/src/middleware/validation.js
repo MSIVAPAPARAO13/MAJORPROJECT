@@ -83,11 +83,14 @@ const validateSearchQuery = (req, res, next) => {
   next();
 };
 
+const { validateDashboardFilters } = require("../validators/dashboardValidator");
+
 module.exports = {
   validateListing,
   validateReview,
   validateOrganization,
   validateRoom,
   validateBooking,
-  validateSearchQuery
+  validateSearchQuery,
+  validateDashboardFilters
 };

@@ -58,6 +58,7 @@ roomSchema.index({ property: 1, roomNumber: 1 }, { unique: true });
 // Compound indexes for room-level criteria and availability discovery
 roomSchema.index({ property: 1, status: 1, capacity: 1, price: 1 });
 roomSchema.index({ status: 1, capacity: 1, price: 1 });
+roomSchema.index({ organization: 1, status: 1 }); // Optimizes organization room inventory status grouping
 
 const Room = mongoose.model("Room", roomSchema);
 module.exports = Room;

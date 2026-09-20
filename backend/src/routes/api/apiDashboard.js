@@ -1,39 +1,30 @@
 const express = require("express");
 const router = express.Router();
-const organizationService = require("../../services/organizationService");
-const bookingService = require("../../services/bookingService");
-const Listing = require("../../models/listing");
 const wrapAsync = require("../../utils/wrapAsync");
+const {
+  isLoggedIn,
+  requirePermission,
+  validateDashboardFilters
+} = require("../../middleware");
+const { PERMISSIONS } = require("../../config/permissions");
+const dashboardController = require("../../controllers/dashboardController");
 
-// GET /api/dashboard/metrics
+// GET /api/dashboard - Canonical REST analytics endpoint (Role-aware, Tenant-isolated)
+router.get(
+  "/",
+  isLoggedIn,
+  requirePermission(PERMISSIONS.DASHBOARD_VIEW),
+  validateDashboardFilters,
+  wrapAsync(dashboardController.renderDashboard)
+);
+
+// GET /api/dashboard/metrics - Backward-compatible endpoint
 router.get(
   "/metrics",
-  wrapAsync(async (req, res) => {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-      return res.status(401).json({ success: false, message: "Please log in" });
-    }
-
-    if (req.user.role === "ADMIN") {
-      const metrics = await organizationService.getPlatformMetrics();
-      return res.json({ success: true, role: "ADMIN", data: metrics });
-    }
-
-    if (req.user.role === "OWNER" || req.user.role === "MANAGER") {
-      const metrics = await organizationService.getTenantMetrics(req.user);
-      return res.json({ success: true, role: req.user.role, data: metrics });
-    }
-
-    // Customer metrics
-    const bookings = await bookingService.getUserBookings(req.user._id);
-    return res.json({
-      success: true,
-      role: "CUSTOMER",
-      data: {
-        totalTrips: bookings.length,
-        bookings,
-      },
-    });
-  })
+  isLoggedIn,
+  requirePermission(PERMISSIONS.DASHBOARD_VIEW),
+  validateDashboardFilters,
+  wrapAsync(dashboardController.renderDashboard)
 );
 
 module.exports = router;

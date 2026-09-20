@@ -5,26 +5,42 @@
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
       <h2 class="fw-bold mb-1"><i class="fa-solid fa-chart-line text-danger me-2"></i>Property Management Dashboard</h2>
-      <p class="text-muted small mb-0">Manage your real estate portfolio, room configurations, and guest reservations.</p>
+      <p class="text-muted small mb-0">Multi-tenant operational overview, booking metrics, and room inventory.</p>
     </div>
     <div class="d-flex gap-2">
-      <a href="/organizations/new" class="btn btn-outline-dark rounded-pill px-3">
-        <i class="fa-solid fa-building me-1"></i> Register Organization
-      </a>
       <a href="/listings/new" class="btn btn-danger rounded-pill px-4 shadow-sm">
         <i class="fa-solid fa-plus me-1"></i> Add Property
       </a>
     </div>
   </div>
 
-  <!-- Real Metrics Summary Cards -->
+  <!-- Date Range Filter Bar (Rule 3: Filters Analytics Metrics) -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-regular fa-calendar text-danger"></i>
+        <span class="fw-semibold small">Analytics Period:</span>
+        <span class="badge bg-light text-dark border"><%= data.dateFilter.label %></span>
+      </div>
+      <div class="btn-group btn-group-sm" role="group">
+        <a href="/dashboard?preset=today" class="btn btn-outline-secondary <%= data.dateFilter.preset === 'today' ? 'active' : '' %>">Today</a>
+        <a href="/dashboard?preset=7d" class="btn btn-outline-secondary <%= data.dateFilter.preset === '7d' ? 'active' : '' %>">7 Days</a>
+        <a href="/dashboard?preset=30d" class="btn btn-outline-secondary <%= data.dateFilter.preset === '30d' ? 'active' : '' %>">30 Days</a>
+        <a href="/dashboard?preset=90d" class="btn btn-outline-secondary <%= data.dateFilter.preset === '90d' ? 'active' : '' %>">90 Days</a>
+        <a href="/dashboard?preset=all" class="btn btn-outline-secondary <%= data.dateFilter.preset === 'all' ? 'active' : '' %>">All Time</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Summary KPI Cards -->
   <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
       <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
         <div class="d-flex align-items-center justify-content-between">
           <div>
             <span class="text-muted small fw-semibold">Properties</span>
-            <h3 class="fw-bold mb-0 text-dark mt-1"><%= metrics.totalProperties %></h3>
+            <h3 class="fw-bold mb-0 text-dark mt-1"><%= data.summary.totalProperties %></h3>
+            <small class="text-muted"><%= data.summary.totalRooms %> total rooms</small>
           </div>
           <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
             <i class="fa-solid fa-hotel fa-xl"></i>
@@ -37,11 +53,12 @@
       <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small fw-semibold">Total Rooms</span>
-            <h3 class="fw-bold mb-0 text-dark mt-1"><%= metrics.totalRooms %></h3>
+            <span class="text-muted small fw-semibold">Current Occupancy</span>
+            <h3 class="fw-bold mb-0 text-dark mt-1"><%= data.summary.currentlyOccupied %> <span class="fs-6 fw-normal text-muted">/ <%= data.summary.totalRooms %></span></h3>
+            <small class="text-muted"><%= data.summary.currentOccupancyRate %>% occupancy rate</small>
           </div>
           <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle">
-            <i class="fa-solid fa-door-open fa-xl"></i>
+            <i class="fa-solid fa-bed fa-xl"></i>
           </div>
         </div>
       </div>
@@ -51,8 +68,9 @@
       <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small fw-semibold">Active Bookings</span>
-            <h3 class="fw-bold mb-0 text-dark mt-1"><%= metrics.activeBookingsCount %></h3>
+            <span class="text-muted small fw-semibold">Period Bookings</span>
+            <h3 class="fw-bold mb-0 text-dark mt-1"><%= data.summary.totalBookings %></h3>
+            <small class="text-muted"><%= data.summary.activeUpcomingBookings %> upcoming</small>
           </div>
           <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle">
             <i class="fa-solid fa-calendar-check fa-xl"></i>
@@ -65,8 +83,9 @@
       <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small fw-semibold">Total Revenue</span>
-            <h3 class="fw-bold mb-0 text-success mt-1">&#8377; <%= Number(metrics.totalRevenue).toLocaleString("en-IN") %></h3>
+            <span class="text-muted small fw-semibold">Confirmed Booking Value</span>
+            <h3 class="fw-bold mb-0 text-success mt-1">&#8377; <%= Number(data.summary.confirmedCompletedValue).toLocaleString("en-IN") %></h3>
+            <small class="text-muted">+ &#8377; <%= Number(data.summary.pendingPipelineValue).toLocaleString("en-IN") %> pending</small>
           </div>
           <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle">
             <i class="fa-solid fa-indian-rupee-sign fa-xl"></i>
@@ -76,47 +95,184 @@
     </div>
   </div>
 
-  <!-- Properties List -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="fw-bold mb-0">Your Properties</h5>
-      <span class="badge bg-light text-secondary border"><%= metrics.properties.length %> Active</span>
+  <!-- Operational Snapshot & Booking Status Grid -->
+  <div class="row g-3 mb-4">
+    <!-- Booking Status Distribution -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-pie-chart text-danger me-2"></i>Booking Status Distribution</h5>
+        <div class="row g-2 text-center">
+          <div class="col-6 col-sm-3">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-warning text-dark mb-1">PENDING</span>
+              <h4 class="fw-bold mb-0"><%= data.bookingStatusBreakdown.PENDING %></h4>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-success mb-1">CONFIRMED</span>
+              <h4 class="fw-bold mb-0"><%= data.bookingStatusBreakdown.CONFIRMED %></h4>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-primary mb-1">COMPLETED</span>
+              <h4 class="fw-bold mb-0"><%= data.bookingStatusBreakdown.COMPLETED %></h4>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-danger mb-1">CANCELLED</span>
+              <h4 class="fw-bold mb-0"><%= data.bookingStatusBreakdown.CANCELLED %></h4>
+            </div>
+          </div>
+        </div>
+        <small class="text-muted d-block mt-3 text-center">
+          Cancelled bookings (<%= data.bookingStatusBreakdown.CANCELLED %>) are excluded from realized booking value.
+        </small>
+      </div>
     </div>
 
-    <% if (metrics.properties && metrics.properties.length > 0) { %>
+    <!-- Room Inventory Status -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-door-open text-danger me-2"></i>Room Operational Status</h5>
+        <div class="row g-2 text-center">
+          <div class="col-4">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-success mb-1">AVAILABLE</span>
+              <h4 class="fw-bold mb-0 text-success"><%= data.summary.availableRooms %></h4>
+              <small class="text-muted">Ready for check-in</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-danger mb-1">IN-HOUSE</span>
+              <h4 class="fw-bold mb-0 text-danger"><%= data.summary.currentlyOccupied %></h4>
+              <small class="text-muted">Currently occupied</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 bg-light rounded-3 border">
+              <span class="badge bg-secondary mb-1">MAINTENANCE</span>
+              <h4 class="fw-bold mb-0 text-secondary"><%= data.summary.maintenanceRooms %></h4>
+              <small class="text-muted">Out of service</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Daily Flow: Upcoming Check-Ins & Check-Outs -->
+  <div class="row g-3 mb-4">
+    <!-- Upcoming Check-Ins -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0"><i class="fa-solid fa-plane-arrival text-success me-2"></i>Upcoming Check-Ins</h5>
+          <span class="badge bg-light text-dark border"><%= data.upcomingCheckIns.length %> Scheduled</span>
+        </div>
+        <% if (data.upcomingCheckIns && data.upcomingCheckIns.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Booking</th>
+                  <th>Guest</th>
+                  <th>Check-In</th>
+                  <th>Room</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let b of data.upcomingCheckIns) { %>
+                  <tr>
+                    <td><span class="font-monospace small">#<%= b.bookingNumber || b._id.toString().substring(18) %></span></td>
+                    <td><%= b.guest ? b.guest.username : (b.guestDetails ? b.guestDetails.name : 'Guest') %></td>
+                    <td><small class="fw-semibold"><%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric' }) %></small></td>
+                    <td><span class="badge bg-light text-dark border"><%= b.room ? b.room.roomNumber : '-' %></span></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-muted small text-center py-4 mb-0">No upcoming check-ins scheduled.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Upcoming Check-Outs -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0"><i class="fa-solid fa-plane-departure text-warning me-2"></i>Upcoming Check-Outs</h5>
+          <span class="badge bg-light text-dark border"><%= data.upcomingCheckOuts.length %> Scheduled</span>
+        </div>
+        <% if (data.upcomingCheckOuts && data.upcomingCheckOuts.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Booking</th>
+                  <th>Guest</th>
+                  <th>Check-Out</th>
+                  <th>Room</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let b of data.upcomingCheckOuts) { %>
+                  <tr>
+                    <td><span class="font-monospace small">#<%= b.bookingNumber || b._id.toString().substring(18) %></span></td>
+                    <td><%= b.guest ? b.guest.username : (b.guestDetails ? b.guestDetails.name : 'Guest') %></td>
+                    <td><small class="fw-semibold"><%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric' }) %></small></td>
+                    <td><span class="badge bg-light text-dark border"><%= b.room ? b.room.roomNumber : '-' %></span></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-muted small text-center py-4 mb-0">No upcoming check-outs scheduled.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Performance Summary Table (Zero N+1, Bounded) -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0"><i class="fa-solid fa-building-user text-danger me-2"></i>Property Portfolio Performance</h5>
+      <span class="badge bg-light text-secondary border"><%= data.propertyBreakdown.length %> Properties</span>
+    </div>
+
+    <% if (data.propertyBreakdown && data.propertyBreakdown.length > 0) { %>
       <div class="table-responsive">
         <table class="table table-hover align-middle">
           <thead class="table-light">
             <tr>
               <th>Property</th>
-              <th>Type</th>
               <th>Location</th>
-              <th>Base Rate</th>
               <th>Rooms</th>
+              <th>Bookings</th>
+              <th>Confirmed Value</th>
+              <th>Pending Value</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <% for (let p of metrics.properties) { %>
+            <% for (let p of data.propertyBreakdown) { %>
               <tr>
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <% const pImg = (p.image && p.image.url) ? p.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=100&q=80'; %>
-                    <img src="<%= pImg %>" class="rounded-2" style="width: 45px; height: 45px; object-fit: cover;" alt="">
-                    <div>
-                      <a href="/listings/<%= p._id %>" class="fw-bold text-decoration-none text-dark"><%= p.title %></a>
-                      <small class="text-muted d-block"><%= p.category || 'Rooms' %></small>
-                    </div>
-                  </div>
+                  <a href="/listings/<%= p._id %>" class="fw-bold text-decoration-none text-dark"><%= p.title %></a>
+                  <small class="text-muted d-block"><%= p.propertyType || 'Apartment' %></small>
                 </td>
-                <td><span class="badge bg-secondary"><%= p.propertyType || 'Apartment' %></span></td>
                 <td><small><%= p.location %>, <%= p.country %></small></td>
-                <td><b>&#8377; <%= Number(p.price).toLocaleString("en-IN") %></b></td>
-                <td><span class="badge bg-light text-dark border"><%= p.rooms ? p.rooms.length : 0 %></span></td>
+                <td><span class="badge bg-light text-dark border"><%= p.roomCount %> rooms</span></td>
+                <td><b><%= p.bookingCount %></b></td>
+                <td><span class="text-success fw-bold">&#8377; <%= Number(p.confirmedValue).toLocaleString("en-IN") %></span></td>
+                <td><span class="text-muted">&#8377; <%= Number(p.pendingValue).toLocaleString("en-IN") %></span></td>
                 <td>
-                  <a href="/listings/<%= p._id %>/rooms/new" class="btn btn-sm btn-outline-primary rounded-pill me-1" title="Add Room">
-                    <i class="fa-solid fa-plus"></i> Room
-                  </a>
                   <a href="/listings/<%= p._id %>/edit" class="btn btn-sm btn-outline-secondary rounded-pill me-1" title="Edit">
                     <i class="fa-solid fa-pen"></i>
                   </a>
@@ -131,7 +287,7 @@
       </div>
     <% } else { %>
       <div class="text-center py-4 text-muted">
-        <p class="mb-2">You haven't added any properties yet.</p>
+        <p class="mb-2">No properties found for this organization.</p>
         <a href="/listings/new" class="btn btn-danger btn-sm rounded-pill px-4">Create First Property</a>
       </div>
     <% } %>
@@ -140,35 +296,35 @@
   <!-- Recent Bookings Table -->
   <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="fw-bold mb-0">Guest Bookings & Reservations</h5>
-      <span class="badge bg-light text-secondary border"><%= metrics.bookings.length %> Total</span>
+      <h5 class="fw-bold mb-0"><i class="fa-solid fa-receipt text-danger me-2"></i>Recent Reservations</h5>
+      <span class="badge bg-light text-secondary border"><%= data.recentBookings.length %> Most Recent</span>
     </div>
 
-    <% if (metrics.bookings && metrics.bookings.length > 0) { %>
+    <% if (data.recentBookings && data.recentBookings.length > 0) { %>
       <div class="table-responsive">
         <table class="table table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>Booking ID</th>
+              <th>Booking Number</th>
               <th>Property & Room</th>
               <th>Guest Details</th>
               <th>Dates</th>
-              <th>Total</th>
+              <th>Total Price</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            <% for (let b of metrics.bookings) { %>
+            <% for (let b of data.recentBookings) { %>
               <tr>
-                <td><span class="font-monospace small">#<%= b._id.toString().substring(18) %></span></td>
+                <td><span class="font-monospace small">#<%= b.bookingNumber || b._id.toString().substring(18) %></span></td>
                 <td>
                   <b><%= b.property ? b.property.title : 'Property' %></b>
-                  <small class="text-muted d-block">Room <%= b.room ? b.room.roomNumber + ' (' + b.room.roomType + ')' : '' %></small>
+                  <small class="text-muted d-block"><%= b.room ? 'Room ' + b.room.roomNumber : '' %></small>
                 </td>
                 <td>
-                  <b><%= b.guestDetails ? b.guestDetails.name : 'Guest' %></b>
-                  <small class="text-muted d-block"><%= b.guestDetails ? b.guestDetails.phone : '' %></small>
+                  <b><%= b.guest ? b.guest.username : (b.guestDetails ? b.guestDetails.name : 'Guest') %></b>
+                  <small class="text-muted d-block"><%= b.guest ? b.guest.email : '' %></small>
                 </td>
                 <td>
                   <small>
@@ -179,12 +335,12 @@
                 </td>
                 <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
                 <td>
-                  <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : (b.status === 'CANCELLED' ? 'bg-danger' : 'bg-secondary') %>">
+                  <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : (b.status === 'CANCELLED' ? 'bg-danger' : (b.status === 'COMPLETED' ? 'bg-primary' : 'bg-warning text-dark')) %>">
                     <%= b.status %>
                   </span>
                 </td>
                 <td>
-                  <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill">View</a>
+                  <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill">View Details</a>
                 </td>
               </tr>
             <% } %>
@@ -195,5 +351,4 @@
       <p class="text-muted mb-0 py-3 text-center">No reservations placed yet.</p>
     <% } %>
   </div>
-
 </div>

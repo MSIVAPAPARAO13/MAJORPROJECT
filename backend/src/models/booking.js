@@ -76,9 +76,12 @@ const bookingSchema = new Schema({
   }
 }, { timestamps: true });
 
-// Compound indexes for fast availability overlap checks and queries
+// Compound indexes for fast availability overlap checks and dashboard queries
 bookingSchema.index({ room: 1, status: 1, checkIn: 1, checkOut: 1 });
 bookingSchema.index({ organization: 1, status: 1 });
+bookingSchema.index({ organization: 1, createdAt: -1 }); // Optimizes recent bookings per organization
+bookingSchema.index({ organization: 1, checkIn: 1, status: 1 }); // Optimizes upcoming check-ins per organization
+bookingSchema.index({ organization: 1, checkOut: 1, status: 1 }); // Optimizes upcoming check-outs per organization
 bookingSchema.index({ guest: 1, createdAt: -1 });
 
 const Booking = mongoose.model("Booking", bookingSchema);

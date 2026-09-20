@@ -1,9 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
-const { isLoggedIn } = require("../middleware");
+const {
+  isLoggedIn,
+  requirePermission,
+  validateDashboardFilters
+} = require("../middleware");
+const { PERMISSIONS } = require("../config/permissions");
 const dashboardController = require("../controllers/dashboardController");
 
-router.get("/", isLoggedIn, wrapAsync(dashboardController.renderDashboard));
+// Canonical Dashboard Route (Role-aware, Tenant-isolated, RBAC-protected)
+router.get(
+  "/",
+  isLoggedIn,
+  requirePermission(PERMISSIONS.DASHBOARD_VIEW),
+  validateDashboardFilters,
+  wrapAsync(dashboardController.renderDashboard)
+);
 
 module.exports = router;

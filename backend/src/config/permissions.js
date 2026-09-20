@@ -33,6 +33,10 @@ const PERMISSIONS = {
   IMAGE_REORDER: "image:reorder",
   IMAGE_SET_PRIMARY: "image:set_primary",
 
+  // Dashboards & Analytics (Phase 8)
+  DASHBOARD_VIEW: "dashboard:view",
+  ANALYTICS_VIEW: "analytics:view",
+
   // Reviews
   REVIEW_CREATE: "review:create",
   REVIEW_DELETE_OWN: "review:delete_own",
@@ -67,6 +71,8 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.IMAGE_DELETE,
     PERMISSIONS.IMAGE_REORDER,
     PERMISSIONS.IMAGE_SET_PRIMARY,
+    PERMISSIONS.DASHBOARD_VIEW,
+    PERMISSIONS.ANALYTICS_VIEW,
     PERMISSIONS.REVIEW_CREATE,
     PERMISSIONS.REVIEW_DELETE_OWN,
     PERMISSIONS.REVIEW_DELETE_ANY,
@@ -94,6 +100,8 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.IMAGE_DELETE,
     PERMISSIONS.IMAGE_REORDER,
     PERMISSIONS.IMAGE_SET_PRIMARY,
+    PERMISSIONS.DASHBOARD_VIEW,
+    PERMISSIONS.ANALYTICS_VIEW,
     PERMISSIONS.REVIEW_CREATE,
     PERMISSIONS.REVIEW_DELETE_OWN,
     PERMISSIONS.USER_VIEW
@@ -116,6 +124,8 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.IMAGE_DELETE,
     PERMISSIONS.IMAGE_REORDER,
     PERMISSIONS.IMAGE_SET_PRIMARY,
+    PERMISSIONS.DASHBOARD_VIEW,
+    PERMISSIONS.ANALYTICS_VIEW,
     PERMISSIONS.REVIEW_CREATE,
     PERMISSIONS.REVIEW_DELETE_OWN,
     PERMISSIONS.USER_VIEW
@@ -131,6 +141,7 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.BOOKING_CANCEL,
     PERMISSIONS.IMAGE_VIEW,
     PERMISSIONS.IMAGE_UPLOAD,
+    PERMISSIONS.DASHBOARD_VIEW,
     PERMISSIONS.REVIEW_CREATE,
     PERMISSIONS.REVIEW_DELETE_OWN
   ],
@@ -140,6 +151,7 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.BOOKING_CREATE,
     PERMISSIONS.BOOKING_VIEW,
     PERMISSIONS.BOOKING_CANCEL,
+    PERMISSIONS.DASHBOARD_VIEW,
     PERMISSIONS.REVIEW_CREATE,
     PERMISSIONS.REVIEW_DELETE_OWN
   ]
@@ -147,27 +159,31 @@ const ROLE_PERMISSIONS = {
 
 // Check if user has a specific role
 function hasRole(user, ...roles) {
-  if (!user || !user.role) return false;
-  return roles.includes(user.role);
+  const role = typeof user === "string" ? user : user?.role;
+  if (!role) return false;
+  return roles.includes(role);
 }
 
 // Check if user has any of the specified roles
 function hasAnyRole(user, roles) {
-  if (!user || !user.role || !Array.isArray(roles)) return false;
-  return roles.includes(user.role);
+  const role = typeof user === "string" ? user : user?.role;
+  if (!role || !Array.isArray(roles)) return false;
+  return roles.includes(role);
 }
 
 // Check if user has a specific permission
 function hasPermission(user, permission) {
-  if (!user || !user.role) return false;
-  const permissions = ROLE_PERMISSIONS[user.role] || [];
+  const role = typeof user === "string" ? user : user?.role;
+  if (!role) return false;
+  const permissions = ROLE_PERMISSIONS[role] || [];
   return permissions.includes(permission);
 }
 
 // Check if user has any of the specified permissions
 function hasAnyPermission(user, permissions) {
-  if (!user || !user.role || !Array.isArray(permissions)) return false;
-  const userPermissions = ROLE_PERMISSIONS[user.role] || [];
+  const role = typeof user === "string" ? user : user?.role;
+  if (!role || !Array.isArray(permissions)) return false;
+  const userPermissions = ROLE_PERMISSIONS[role] || [];
   return permissions.some((p) => userPermissions.includes(p));
 }
 

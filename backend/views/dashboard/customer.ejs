@@ -2,7 +2,7 @@
 
 <div class="container my-4">
   <div class="row justify-content-center">
-    <div class="col-lg-10">
+    <div class="col-lg-11">
       
       <!-- Customer Header Profile Card -->
       <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
@@ -12,61 +12,111 @@
               <i class="fa-solid fa-user fa-2x"></i>
             </div>
             <div>
-              <h4 class="fw-bold mb-0">Hello, <%= user.username %>!</h4>
+              <h4 class="fw-bold mb-0">Welcome, <%= user.username %>!</h4>
               <p class="text-muted small mb-0"><%= user.email %> &bull; <span class="badge bg-light text-dark border"><%= user.role %></span></p>
             </div>
           </div>
           <div>
             <a href="/listings" class="btn btn-danger rounded-pill px-4 shadow-sm">
-              <i class="fa-solid fa-compass me-1"></i> Explore Stays
+              <i class="fa-solid fa-compass me-1"></i> Discover Stays
             </a>
           </div>
         </div>
       </div>
 
-      <!-- Quick Metrics -->
+      <!-- Quick Personal Trip Metrics -->
       <div class="row g-3 mb-4">
-        <div class="col-sm-4">
+        <div class="col-6 col-md-3">
           <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
-            <span class="text-muted small">Total Bookings</span>
-            <h3 class="fw-bold my-1 text-danger"><%= bookings.length %></h3>
+            <span class="text-muted small text-uppercase fw-semibold">Total Stays</span>
+            <h3 class="fw-bold my-1 text-dark"><%= data.summary.totalTrips %></h3>
+            <small class="text-muted"><%= data.summary.pastCount %> Completed</small>
           </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-6 col-md-3">
           <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
-            <span class="text-muted small">Reviews Written</span>
-            <h3 class="fw-bold my-1 text-primary"><%= reviews.length %></h3>
+            <span class="text-muted small text-uppercase fw-semibold">Upcoming</span>
+            <h3 class="fw-bold my-1 text-primary"><%= data.summary.upcomingCount %></h3>
+            <small class="text-muted">Future bookings</small>
           </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-6 col-md-3">
           <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
-            <span class="text-muted small">Account Type</span>
-            <h4 class="fw-bold my-1 text-success">Verified Traveler</h4>
+            <span class="text-muted small text-uppercase fw-semibold">Active Stays</span>
+            <h3 class="fw-bold my-1 text-info"><%= data.summary.activeStaysCount %></h3>
+            <small class="text-muted">Currently checked-in</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase fw-semibold">Total Spent</span>
+            <h4 class="fw-bold my-1 text-success">&#8377; <%= Number(data.summary.totalBookingValue || 0).toLocaleString("en-IN") %></h4>
+            <small class="text-muted"><%= data.summary.cancelledCount %> Cancelled</small>
           </div>
         </div>
       </div>
 
-      <!-- User's Bookings -->
-      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="fw-bold mb-0">Your Stays & Trips</h5>
-          <a href="/bookings" class="text-danger small fw-semibold text-decoration-none">View All</a>
-        </div>
-
-        <% if (bookings && bookings.length > 0) { %>
+      <!-- Active In-House Stays (If Any) -->
+      <% if (data.activeStays && data.activeStays.length > 0) { %>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 border-start border-4 border-info">
+          <h5 class="fw-bold mb-3 text-info"><i class="fa-solid fa-bed me-2"></i>Active Stay in Progress</h5>
           <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table align-middle mb-0">
               <thead class="table-light">
                 <tr>
                   <th>Property</th>
                   <th>Dates</th>
+                  <th>Room</th>
+                  <th>Total</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let b of data.activeStays) { %>
+                  <tr>
+                    <td>
+                      <b><%= b.property ? b.property.title : 'Property' %></b>
+                      <small class="text-muted d-block"><%= b.property ? b.property.location : '' %></small>
+                    </td>
+                    <td>
+                      <small class="fw-semibold">
+                        <%= new Date(b.checkIn).toLocaleDateString() %> &rarr; <%= new Date(b.checkOut).toLocaleDateString() %>
+                      </small>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">Room <%= b.room ? b.room.roomNumber : 'N/A' %></span></td>
+                    <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
+                    <td>
+                      <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-info rounded-pill">View Details</a>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Upcoming Trips -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-plane-departure me-2"></i>Upcoming Trips</h5>
+          <span class="badge bg-primary rounded-pill"><%= data.upcomingTrips.length %> reservations</span>
+        </div>
+        <% if (data.upcomingTrips && data.upcomingTrips.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Property</th>
+                  <th>Dates</th>
+                  <th>Room</th>
                   <th>Total</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <% for (let b of bookings.slice(0, 5)) { %>
+                <% for (let b of data.upcomingTrips) { %>
                   <tr>
                     <td>
                       <b><%= b.property ? b.property.title : 'Property' %></b>
@@ -74,17 +124,18 @@
                     </td>
                     <td>
                       <small>
-                        <%= new Date(b.checkIn).toLocaleDateString() %> &mdash; <%= new Date(b.checkOut).toLocaleDateString() %>
+                        <%= new Date(b.checkIn).toLocaleDateString() %> &rarr; <%= new Date(b.checkOut).toLocaleDateString() %>
                       </small>
                     </td>
+                    <td><span class="badge bg-light text-dark border">Room <%= b.room ? b.room.roomNumber : 'N/A' %></span></td>
                     <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
                     <td>
-                      <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : (b.status === 'CANCELLED' ? 'bg-danger' : 'bg-secondary') %>">
+                      <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : 'bg-warning text-dark' %>">
                         <%= b.status %>
                       </span>
                     </td>
                     <td>
-                      <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill">View Receipt</a>
+                      <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill">View Booking</a>
                     </td>
                   </tr>
                 <% } %>
@@ -92,9 +143,84 @@
             </table>
           </div>
         <% } else { %>
-          <p class="text-muted mb-0 py-3 text-center">You have no active bookings. Start exploring destinations!</p>
+          <p class="text-muted mb-0 py-3 text-center">No upcoming trips planned. <a href="/listings" class="text-danger fw-semibold">Browse listings</a> to book your next getaway!</p>
         <% } %>
       </div>
+
+      <!-- Past Completed Stays -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-clock-rotate-left me-2 text-secondary"></i>Past Completed Stays</h5>
+        <% if (data.pastStays && data.pastStays.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Property</th>
+                  <th>Dates</th>
+                  <th>Total Spent</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let b of data.pastStays) { %>
+                  <tr>
+                    <td>
+                      <b><%= b.property ? b.property.title : 'Property' %></b>
+                      <small class="text-muted d-block"><%= b.property ? b.property.location : '' %></small>
+                    </td>
+                    <td>
+                      <small>
+                        <%= new Date(b.checkIn).toLocaleDateString() %> &rarr; <%= new Date(b.checkOut).toLocaleDateString() %>
+                      </small>
+                    </td>
+                    <td><b>&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></b></td>
+                    <td><span class="badge bg-secondary">COMPLETED</span></td>
+                    <td>
+                      <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-secondary rounded-pill">Receipt</a>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-muted mb-0 py-2 text-center">No completed past stays found.</p>
+        <% } %>
+      </div>
+
+      <!-- Cancelled Trips (If Any) -->
+      <% if (data.cancelledTrips && data.cancelledTrips.length > 0) { %>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+          <h5 class="fw-bold mb-3 text-muted"><i class="fa-solid fa-ban me-2 text-danger"></i>Cancelled Bookings</h5>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Property</th>
+                  <th>Dates</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let b of data.cancelledTrips) { %>
+                  <tr>
+                    <td><%= b.property ? b.property.title : 'Property' %></td>
+                    <td>
+                      <small class="text-muted">
+                        <%= new Date(b.checkIn).toLocaleDateString() %> &rarr; <%= new Date(b.checkOut).toLocaleDateString() %>
+                      </small>
+                    </td>
+                    <td><span class="text-muted text-decoration-line-through">&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></span></td>
+                    <td><span class="badge bg-danger">CANCELLED</span></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% } %>
 
     </div>
   </div>
