@@ -144,9 +144,13 @@
                         <button class="btn btn-sm btn-secondary rounded-pill px-3" disabled>Unavailable</button>
                       <% } %>
                       
-                      <% if (currentUser && listing.owner && (listing.owner._id.equals(currentUser._id) || currentUser.role === 'ADMIN')) { %>
+                      <% const canManageRooms = currentUser && (currentUser.role === 'ADMIN' || (listing.owner && listing.owner._id.equals(currentUser._id)) || (['OWNER', 'MANAGER'].includes(currentUser.role) && listing.organization && currentUser.organization && listing.organization.equals(currentUser.organization))); %>
+                      <% if (canManageRooms) { %>
+                        <a href="/listings/<%= listing._id %>/rooms/<%= room._id %>/edit" class="btn btn-sm btn-outline-secondary border-0" title="Edit Room">
+                          <i class="fa-solid fa-pen"></i>
+                        </a>
                         <form method="post" action="/listings/<%= listing._id %>/rooms/<%= room._id %>?_method=DELETE" class="d-inline ms-1" onsubmit="return confirm('Remove room <%= room.roomNumber %>?');">
-                          <button class="btn btn-sm btn-outline-danger border-0"><i class="fa-solid fa-trash"></i></button>
+                          <button class="btn btn-sm btn-outline-danger border-0" title="Remove Room"><i class="fa-solid fa-trash"></i></button>
                         </form>
                       <% } %>
                     </div>

@@ -1,0 +1,90 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+      <div class="mb-3">
+        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-muted small">
+          <i class="fa-solid fa-arrow-left me-1"></i> Back to <%= listing.title %>
+        </a>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h3 class="fw-bold mb-1"><i class="fa-solid fa-pen-to-square text-danger me-2"></i>Edit Room <%= room.roomNumber %></h3>
+        <p class="text-muted small mb-4">Update room details and configuration for <b><%= listing.title %></b>.</p>
+
+        <form action="/listings/<%= listing._id %>/rooms/<%= room._id %>?_method=PUT" method="POST" class="needs-validation" novalidate>
+          
+          <!-- Room Number & Type -->
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="roomNumber" class="form-label fw-semibold">Room / Unit Number</label>
+              <input type="text" class="form-control" id="roomNumber" name="room[roomNumber]" value="<%= room.roomNumber %>" required>
+              <div class="invalid-feedback">Please enter a room identifier.</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="roomType" class="form-label fw-semibold">Room Type</label>
+              <select class="form-select" id="roomType" name="room[roomType]" required>
+                <option value="Single" <%= room.roomType === 'Single' ? 'selected' : '' %>>Single Room</option>
+                <option value="Double" <%= room.roomType === 'Double' ? 'selected' : '' %>>Double Room</option>
+                <option value="Triple" <%= room.roomType === 'Triple' ? 'selected' : '' %>>Triple Room</option>
+                <option value="Dormitory" <%= room.roomType === 'Dormitory' ? 'selected' : '' %>>Dormitory Bed</option>
+                <option value="Deluxe" <%= room.roomType === 'Deluxe' ? 'selected' : '' %>>Deluxe Room</option>
+                <option value="Suite" <%= room.roomType === 'Suite' ? 'selected' : '' %>>Executive Suite</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Capacity & Rate -->
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="capacity" class="form-label fw-semibold">Guest Capacity</label>
+              <input type="number" class="form-control" id="capacity" name="room[capacity]" value="<%= room.capacity %>" min="1" max="100" required>
+              <div class="invalid-feedback">Capacity must be at least 1.</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="price" class="form-label fw-semibold">Price per Night (&#8377;)</label>
+              <input type="number" class="form-control" id="price" name="room[price]" value="<%= room.price %>" min="0" required>
+              <div class="invalid-feedback">Enter a valid rate.</div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="mb-3">
+            <label for="status" class="form-label fw-semibold">Operational Status</label>
+            <select class="form-select" id="status" name="room[status]">
+              <option value="AVAILABLE" <%= room.status === 'AVAILABLE' ? 'selected' : '' %>>Available for Booking</option>
+              <option value="OCCUPIED" <%= room.status === 'OCCUPIED' ? 'selected' : '' %>>Occupied / Blocked</option>
+              <option value="MAINTENANCE" <%= room.status === 'MAINTENANCE' ? 'selected' : '' %>>Under Maintenance</option>
+            </select>
+          </div>
+
+          <!-- Amenities -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold d-block">Room Amenities</label>
+            <div class="row g-2">
+              <% const roomAmenities = ["Attached Bathroom", "Air Conditioning", "King Bed", "Balcony View", "Television", "Mini Fridge", "Work Desk", "Locker", "WiFi"]; %>
+              <% const existingAmenities = room.amenities || []; %>
+              <% for (let am of roomAmenities) { %>
+                <div class="col-6 col-sm-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="room[amenities]" value="<%= am %>" id="am_<%= am.replace(/\s+/g, '') %>" <%= existingAmenities.includes(am) ? 'checked' : '' %>>
+                    <label class="form-check-label small" for="am_<%= am.replace(/\s+/g, '') %>">
+                      <%= am %>
+                    </label>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+            <button type="submit" class="btn btn-danger px-5 rounded-pill shadow-sm">Save Changes</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

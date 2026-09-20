@@ -52,5 +52,8 @@ const roomSchema = new Schema({
   }
 }, { timestamps: true });
 
+// Scoped uniqueness: Room numbers must be unique within a property, but allowed across different properties
+roomSchema.index({ property: 1, roomNumber: 1 }, { unique: true });
+
 const Room = mongoose.model("Room", roomSchema);
 module.exports = Room;

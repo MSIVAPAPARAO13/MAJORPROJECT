@@ -114,6 +114,7 @@ const createApp = () => {
   });
 
   // 6. REST API Endpoints (for React frontend)
+  app.use("/api/listings/:id/rooms", roomRouter);
   app.use("/api/listings", apiListingsRouter);
   app.use("/api/auth", apiAuthRouter);
   app.use("/api/bookings", apiBookingsRouter);

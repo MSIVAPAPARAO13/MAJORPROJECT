@@ -1,22 +1,76 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const wrapAsync = require("../utils/wrapAsync");
-const { isLoggedIn, isOwner, validateRoom } = require("../middleware");
+const {
+  isLoggedIn,
+  isOwner,
+  validateRoom,
+  requirePermission,
+  requireTenantAccess,
+  validateRoomBelongsToListing
+} = require("../middleware");
+const { PERMISSIONS } = require("../config/permissions");
 const roomController = require("../controllers/roomController");
 
-// Render form to add room to property
-router.get("/new", isLoggedIn, isOwner, wrapAsync(roomController.renderNewRoomForm));
+// 1. Browse All Rooms for Property (PUBLIC)
+router.get("/", wrapAsync(roomController.listRooms));
 
-// Create new room under property
-router.post("/", isLoggedIn, isOwner, validateRoom, wrapAsync(roomController.createRoom));
+// 2. Render Form to Add Room (Protected by Tenant Isolation, ROOM_CREATE, and Ownership)
+router.get(
+  "/new",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.ROOM_CREATE),
+  isOwner,
+  wrapAsync(roomController.renderNewRoomForm)
+);
 
-// Render form to edit room
-router.get("/:roomId/edit", isLoggedIn, isOwner, wrapAsync(roomController.renderEditRoomForm));
+// 3. Create New Room under Property (Protected by Tenant Isolation, ROOM_CREATE, and Ownership)
+router.post(
+  "/",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.ROOM_CREATE),
+  isOwner,
+  validateRoom,
+  wrapAsync(roomController.createRoom)
+);
 
-// Update room
-router.put("/:roomId", isLoggedIn, isOwner, validateRoom, wrapAsync(roomController.updateRoom));
+// 4. Show Specific Room (PUBLIC with parent relationship verification)
+router.get("/:roomId", validateRoomBelongsToListing, wrapAsync(roomController.showRoom));
 
-// Delete room
-router.delete("/:roomId", isLoggedIn, isOwner, wrapAsync(roomController.destroyRoom));
+// 5. Render Form to Edit Room (Protected by Tenant Isolation, ROOM_UPDATE, Ownership, and Parent Resource Check)
+router.get(
+  "/:roomId/edit",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.ROOM_UPDATE),
+  isOwner,
+  validateRoomBelongsToListing,
+  wrapAsync(roomController.renderEditRoomForm)
+);
+
+// 6. Update Room (Protected by Tenant Isolation, ROOM_UPDATE, Ownership, Parent Resource Check, and Validation)
+router.put(
+  "/:roomId",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.ROOM_UPDATE),
+  isOwner,
+  validateRoomBelongsToListing,
+  validateRoom,
+  wrapAsync(roomController.updateRoom)
+);
+
+// 7. Delete Room (Protected by Tenant Isolation, ROOM_DELETE, Ownership, and Parent Resource Check)
+router.delete(
+  "/:roomId",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.ROOM_DELETE),
+  isOwner,
+  validateRoomBelongsToListing,
+  wrapAsync(roomController.destroyRoom)
+);
 
 module.exports = router;
