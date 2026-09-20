@@ -10,6 +10,7 @@ const {
 const { requireRole, requirePermission } = require("./authorization");
 const { requireTenantAccess } = require("./tenant");
 const { validateRoomBelongsToListing } = require("./roomAuth");
+const { canAccessBooking, canCancelBooking } = require("./bookingAuth");
 
 module.exports = {
   isLoggedIn,
@@ -24,5 +25,7 @@ module.exports = {
   requireRole,
   requirePermission,
   requireTenantAccess,
-  validateRoomBelongsToListing
+  validateRoomBelongsToListing,
+  canAccessBooking,
+  canCancelBooking
 };

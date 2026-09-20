@@ -2,7 +2,8 @@ const {
   listingSchema,
   reviewSchema,
   organizationSchema,
-  roomSchema
+  roomSchema,
+  bookingSchema
 } = require("../validators/schema");
 const ExpressError = require("../utils/ExpressError");
 
@@ -49,8 +50,17 @@ const validateRoom = (req, res, next) => {
   next();
 };
 
-// Passthrough compatibility middleware for pre-existing booking routes
-const validateBooking = (req, res, next) => next();
+// Booking Validation Middleware
+const validateBooking = (req, res, next) => {
+  const payload = req.body.booking ? { booking: req.body.booking } : req.body;
+  const { error, value } = bookingSchema.validate(payload, { abortEarly: false });
+  if (error) {
+    const errorMessage = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(errorMessage, 400);
+  }
+  req.validatedBooking = value.booking || value;
+  next();
+};
 
 module.exports = {
   validateListing,

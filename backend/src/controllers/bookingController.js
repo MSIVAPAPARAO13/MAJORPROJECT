@@ -1,18 +1,28 @@
 const bookingService = require("../services/bookingService");
 const listingService = require("../services/listingService");
 const roomService = require("../services/roomService");
-const Booking = require("../models/booking");
+
+// Helper to determine if incoming request is an API / JSON request
+const isApiRequest = (req) => {
+  return (
+    (req.originalUrl && req.originalUrl.startsWith("/api/")) ||
+    (req.baseUrl && req.baseUrl.startsWith("/api/")) ||
+    (req.accepts("json") && !req.accepts("html")) ||
+    Boolean(req.xhr)
+  );
+};
 
 // Render new booking checkout form
 module.exports.renderNewBookingForm = async (req, res) => {
-  const { id } = req.params;
-  const { roomId, checkIn, checkOut, guests } = req.query;
-  const listing = await listingService.getListingById(id);
+  const { id, roomId } = req.params;
+  const { checkIn, checkOut, guests } = req.query;
+  const listing = req.tenantResource || (await listingService.getListingById(id));
   const rooms = await roomService.getRoomsByProperty(id);
 
   let selectedRoom = null;
-  if (roomId) {
-    selectedRoom = await roomService.getRoomById(roomId);
+  const targetRoomId = roomId || req.query.roomId;
+  if (targetRoomId) {
+    selectedRoom = await roomService.getRoomById(targetRoomId);
   } else if (rooms.length > 0) {
     selectedRoom = rooms[0];
   }
@@ -29,64 +39,98 @@ module.exports.renderNewBookingForm = async (req, res) => {
 
 // Create a new booking
 module.exports.createBooking = async (req, res) => {
-  const { id } = req.params;
-  const { roomId, checkIn, checkOut, guestsCount, guestName, guestEmail, guestPhone, specialRequests } = req.body.booking;
+  const payload = req.validatedBooking || (req.body.booking || req.body);
+  
+  // URL params take precedence for parent resources
+  const propertyId = req.params.id || payload.propertyId;
+  const roomId = req.params.roomId || payload.roomId;
 
   const booking = await bookingService.createBooking({
-    propertyId: id,
-    roomId,
-    guestId: req.user._id,
-    checkIn,
-    checkOut,
-    guestsCount: Number(guestsCount),
-    guestDetails: {
-      name: guestName,
-      email: guestEmail,
-      phone: guestPhone
-    },
-    specialRequests
-  });
+    ...payload,
+    propertyId,
+    roomId
+  }, req.user);
 
-  req.flash("success", "Reservation Confirmed! Your booking is successfully placed.");
+  if (isApiRequest(req)) {
+    return res.status(201).json({
+      success: true,
+      message: "Reservation successfully placed!",
+      data: booking
+    });
+  }
+
+  req.flash("success", "Reservation Placed! Your booking is currently pending confirmation.");
   res.redirect(`/bookings/${booking._id}`);
 };
 
-// View single booking confirmation
+// View single booking confirmation / receipt
 module.exports.showBooking = async (req, res) => {
-  const { bookingId } = req.params;
-  const booking = await Booking.findById(bookingId)
-    .populate("property")
-    .populate("room")
-    .populate("guest");
+  const bookingId = req.params.bookingId || req.params.id;
+  const booking = req.booking || (await bookingService.getBookingById(bookingId));
 
-  if (!booking) {
-    req.flash("error", "Booking not found");
-    return res.redirect("/dashboard");
-  }
-
-  // Ensure authorized (guest, property owner, or admin)
-  const isGuest = booking.guest.equals(req.user._id);
-  const isOwner = booking.property && booking.property.owner && booking.property.owner.equals(req.user._id);
-  const isAdmin = req.user.role === "ADMIN";
-
-  if (!isGuest && !isOwner && !isAdmin) {
-    req.flash("error", "You are not authorized to view this booking");
-    return res.redirect("/listings");
+  if (isApiRequest(req)) {
+    return res.json({
+      success: true,
+      data: booking
+    });
   }
 
   res.render("bookings/show.ejs", { booking });
 };
 
-// List user's bookings (Customer bookings)
+// List user's bookings (Customer reservations)
 module.exports.indexGuestBookings = async (req, res) => {
   const bookings = await bookingService.getGuestBookings(req.user._id);
+
+  if (isApiRequest(req)) {
+    return res.json({
+      success: true,
+      count: bookings.length,
+      data: bookings
+    });
+  }
+
   res.render("bookings/index.ejs", { bookings });
 };
 
 // Cancel booking
 module.exports.cancelBooking = async (req, res) => {
-  const { bookingId } = req.params;
-  await bookingService.cancelBooking(bookingId, req.user._id, req.user.role);
+  const bookingId = req.params.bookingId || req.params.id;
+  const booking = await bookingService.cancelBooking(bookingId, req.user._id, req.user.role);
+
+  if (isApiRequest(req)) {
+    return res.json({
+      success: true,
+      message: "Booking has been cancelled.",
+      data: booking
+    });
+  }
+
   req.flash("success", "Booking has been cancelled.");
-  res.redirect("/dashboard");
+  res.redirect("/bookings");
+};
+
+// Public Room Availability Check
+module.exports.checkAvailability = async (req, res) => {
+  const { roomId } = req.params;
+  const { checkIn, checkOut } = req.query;
+
+  const result = await bookingService.checkRoomAvailability(roomId, checkIn, checkOut);
+  res.json({
+    success: true,
+    ...result
+  });
+};
+
+// Update booking status (restricted to manager / owner / admin)
+module.exports.updateStatus = async (req, res) => {
+  const bookingId = req.params.bookingId || req.params.id;
+  const { status } = req.body;
+  const booking = await bookingService.updateBookingStatus(bookingId, status);
+
+  res.json({
+    success: true,
+    message: `Booking status updated to ${status}`,
+    data: booking
+  });
 };

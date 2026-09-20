@@ -1,38 +1,35 @@
 const express = require("express");
 const router = express.Router();
-const bookingService = require("../../services/bookingService");
+const bookingController = require("../../controllers/bookingController");
 const wrapAsync = require("../../utils/wrapAsync");
+const {
+  isLoggedIn,
+  validateBooking,
+  canAccessBooking,
+  canCancelBooking,
+  requirePermission
+} = require("../../middleware");
+const { PERMISSIONS } = require("../../config/permissions");
 
-// POST /api/bookings - Atomic reservation creation
-router.post(
-  "/",
-  wrapAsync(async (req, res) => {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-      return res.status(401).json({ success: false, message: "Please log in to make a booking" });
-    }
-    const booking = await bookingService.createBooking(req.body.booking, req.user);
-    res.status(201).json({
-      success: true,
-      message: "Booking confirmed successfully!",
-      data: booking,
-    });
-  })
-);
+// POST /api/bookings - Atomic reservation creation with validation & serialization
+router.post("/", isLoggedIn, validateBooking, wrapAsync(bookingController.createBooking));
 
-// GET /api/bookings/my - Fetch current user's reservations
-router.get(
-  "/my",
-  wrapAsync(async (req, res) => {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-      return res.status(401).json({ success: false, message: "Please log in to view bookings" });
-    }
-    const bookings = await bookingService.getUserBookings(req.user._id);
-    res.json({
-      success: true,
-      count: bookings.length,
-      data: bookings,
-    });
-  })
+// GET /api/bookings/my - Current guest reservations
+router.get("/my", isLoggedIn, wrapAsync(bookingController.indexGuestBookings));
+
+// GET /api/bookings/:bookingId - Reservation details
+router.get("/:bookingId", isLoggedIn, canAccessBooking, wrapAsync(bookingController.showBooking));
+
+// POST /api/bookings/:bookingId/cancel - Cancel reservation
+router.post("/:bookingId/cancel", isLoggedIn, canCancelBooking, wrapAsync(bookingController.cancelBooking));
+
+// PATCH /api/bookings/:bookingId/status - Update reservation status (restricted to staff/manager/admin)
+router.patch(
+  "/:bookingId/status",
+  isLoggedIn,
+  canAccessBooking,
+  requirePermission(PERMISSIONS.BOOKING_UPDATE),
+  wrapAsync(bookingController.updateStatus)
 );
 
 module.exports = router;

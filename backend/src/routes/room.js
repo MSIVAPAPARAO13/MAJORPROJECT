@@ -11,9 +11,13 @@ const {
 } = require("../middleware");
 const { PERMISSIONS } = require("../config/permissions");
 const roomController = require("../controllers/roomController");
+const bookingController = require("../controllers/bookingController");
 
 // 1. Browse All Rooms for Property (PUBLIC)
 router.get("/", wrapAsync(roomController.listRooms));
+
+// 1b. Check Room Availability for Booking (PUBLIC)
+router.get("/:roomId/availability", validateRoomBelongsToListing, wrapAsync(bookingController.checkAvailability));
 
 // 2. Render Form to Add Room (Protected by Tenant Isolation, ROOM_CREATE, and Ownership)
 router.get(

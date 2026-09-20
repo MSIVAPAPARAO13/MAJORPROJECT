@@ -128,6 +128,7 @@ const createApp = () => {
   app.use("/listings", listingRouter);
   app.use("/listings/:id/reviews", reviewRouter);
   app.use("/listings/:id/rooms", roomRouter);
+  app.use("/listings/:id/rooms/:roomId/bookings", bookingRouter);
   app.use("/listings/:id/bookings", bookingRouter);
   app.use("/bookings", guestBookingRouter);
   app.use("/dashboard", dashboardRouter);

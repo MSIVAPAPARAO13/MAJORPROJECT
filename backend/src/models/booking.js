@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const bookingSchema = new Schema({
+  bookingNumber: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true,
+    index: true
+  },
   organization: {
     type: Schema.Types.ObjectId,
     ref: "Organization",
@@ -56,7 +63,7 @@ const bookingSchema = new Schema({
   status: {
     type: String,
     enum: ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"],
-    default: "CONFIRMED",
+    default: "PENDING",
     index: true
   },
   guestDetails: {
@@ -69,8 +76,10 @@ const bookingSchema = new Schema({
   }
 }, { timestamps: true });
 
-// Compound index for fast availability overlap checks
+// Compound indexes for fast availability overlap checks and queries
 bookingSchema.index({ room: 1, status: 1, checkIn: 1, checkOut: 1 });
+bookingSchema.index({ organization: 1, status: 1 });
+bookingSchema.index({ guest: 1, createdAt: -1 });
 
 const Booking = mongoose.model("Booking", bookingSchema);
 module.exports = Booking;
