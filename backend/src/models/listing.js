@@ -51,8 +51,11 @@ const listingSchema = new Schema({
   },
   images: [
     {
-      url: String,
-      filename: String,
+      url: { type: String, required: true },
+      filename: { type: String, default: "" },
+      publicId: { type: String, default: "" },
+      alt: { type: String, default: "" },
+      position: { type: Number, default: 0 },
       isPrimary: { type: Boolean, default: false }
     }
   ],
@@ -112,6 +115,7 @@ const listingSchema = new Schema({
 listingSchema.index({ status: 1, propertyType: 1, price: 1 });
 listingSchema.index({ status: 1, location: 1 });
 listingSchema.index({ status: 1, createdAt: -1 });
+listingSchema.index({ geometry: "2dsphere" });
 
 // Middleware to cascade delete associated reviews & rooms after a listing is deleted
 listingSchema.post("findOneAndDelete", async function (listing) {

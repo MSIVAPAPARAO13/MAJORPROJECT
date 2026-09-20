@@ -70,4 +70,50 @@ router.get(
   wrapAsync(listingController.renderEditForm)
 );
 
+// ==========================================
+// PHASE 7: IMAGE MANAGEMENT ROUTES
+// NOTE: /:id/images/reorder MUST be registered BEFORE /:id/images/:imageId to prevent 'reorder' being parsed as :imageId
+// ==========================================
+
+// 7. Upload Additional Images (Protected by Tenant Isolation, RBAC IMAGE_UPLOAD, and Ownership)
+router.post(
+  "/:id/images",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_UPLOAD),
+  isOwner,
+  upload.array("images", 10),
+  wrapAsync(listingController.uploadImages)
+);
+
+// 8. Reorder Images (CRITICAL: registered before /:imageId routes)
+router.patch(
+  "/:id/images/reorder",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_REORDER),
+  isOwner,
+  wrapAsync(listingController.reorderImages)
+);
+
+// 9. Set Primary Image (Protected by Tenant Isolation, RBAC IMAGE_SET_PRIMARY, and Ownership)
+router.patch(
+  "/:id/images/:imageId/primary",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_SET_PRIMARY),
+  isOwner,
+  wrapAsync(listingController.setPrimaryImage)
+);
+
+// 10. Delete Image (Protected by Tenant Isolation, RBAC IMAGE_DELETE, and Ownership)
+router.delete(
+  "/:id/images/:imageId",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_DELETE),
+  isOwner,
+  wrapAsync(listingController.deleteImage)
+);
+
 module.exports = router;

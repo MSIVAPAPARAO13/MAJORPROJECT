@@ -99,5 +99,81 @@
 
       </form>
     </div>
+
+    <!-- Phase 7: Property Image Gallery Management -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mt-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 pb-2 border-bottom">
+        <div>
+          <h4 class="fw-bold mb-1"><i class="fa-solid fa-images text-danger me-2"></i>Photo Gallery Management</h4>
+          <p class="text-muted small mb-0">Manage gallery photos, set primary hero image, or upload new property photos.</p>
+        </div>
+        <span class="badge bg-danger rounded-pill px-3 py-2">
+          <%= (listing.images && listing.images.length) || 0 %> Photos
+        </span>
+      </div>
+
+      <!-- Upload New Images Form -->
+      <form method="post" action="/listings/<%= listing._id %>/images" enctype="multipart/form-data" class="mb-4 p-3 bg-light rounded-3 border">
+        <label for="galleryImages" class="form-label fw-semibold small">Upload Additional Photos (Max 10 at once)</label>
+        <div class="input-group">
+          <input type="file" id="galleryImages" name="images" class="form-control" accept="image/*" multiple required />
+          <button class="btn btn-danger px-4" type="submit">
+            <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload
+          </button>
+        </div>
+        <small class="text-muted mt-1 d-block">Supported formats: JPG, PNG, WEBP.</small>
+      </form>
+
+      <!-- Existing Images Grid -->
+      <% if (listing.images && listing.images.length > 0) { %>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <% for (let img of listing.images) { %>
+            <div class="col">
+              <div class="card h-100 border rounded-3 overflow-hidden position-relative shadow-sm">
+                <img 
+                  src="<%= img.url %>" 
+                  class="card-img-top" 
+                  alt="<%= img.alt || 'Property Image' %>" 
+                  style="height: 160px; object-fit: cover;"
+                  onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';"
+                />
+                
+                <% if (img.isPrimary) { %>
+                  <div class="position-absolute top-0 start-0 m-2">
+                    <span class="badge bg-success shadow-sm">
+                      <i class="fa-solid fa-star me-1"></i>Primary Cover
+                    </span>
+                  </div>
+                <% } %>
+
+                <div class="card-body p-2 bg-white d-flex justify-content-between align-items-center">
+                  <div>
+                    <% if (!img.isPrimary) { %>
+                      <form method="post" action="/listings/<%= listing._id %>/images/<%= img._id %>/primary?_method=PATCH" class="d-inline">
+                        <button type="submit" class="btn btn-outline-primary btn-sm py-1 px-2 small rounded-pill">
+                          <i class="fa-regular fa-star me-1"></i>Make Primary
+                        </button>
+                      </form>
+                    <% } else { %>
+                      <small class="text-success fw-bold ps-1"><i class="fa-solid fa-check me-1"></i>Active Cover</small>
+                    <% } %>
+                  </div>
+                  <div>
+                    <form method="post" action="/listings/<%= listing._id %>/images/<%= img._id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete this image?');">
+                      <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2 small rounded-pill">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      <% } else { %>
+        <p class="text-muted small mb-0">No photos currently stored for this property.</p>
+      <% } %>
+
+    </div>
   </div>
 </div>

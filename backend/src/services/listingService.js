@@ -231,14 +231,23 @@ async function getListingsByOrganization(orgId) {
 }
 
 // Create new listing
-async function createListing(listingData, user, file) {
+async function createListing(listingData, user, filesOrFile) {
   const { location, country, title, price, description, propertyType, category, amenities } = listingData;
 
-  // Geocode address to get GeoJSON [lng, lat]
+  // Geocode address to get GeoJSON [lng, lat] (Rule 8: only geocodes when creating or changing location)
   const geoResult = await mapService.geocodeLocation(location, country);
 
-  // Process uploaded image
-  const processedImage = imageService.processUploadedImage(file);
+  // Process uploaded image(s)
+  let rawImages = [];
+  if (Array.isArray(filesOrFile) && filesOrFile.length > 0) {
+    rawImages = imageService.processMultipleUploadedImages(filesOrFile);
+  } else if (filesOrFile && filesOrFile.path) {
+    rawImages = [imageService.processUploadedImage(filesOrFile)];
+  } else {
+    rawImages = [imageService.processUploadedImage(null)];
+  }
+
+  const { images: normalizedImages, primaryImage } = imageService.normalizeListingImages(rawImages);
 
   const newListing = new Listing({
     title,
@@ -249,8 +258,8 @@ async function createListing(listingData, user, file) {
     propertyType: propertyType || "Apartment",
     category: category || "Rooms",
     amenities: Array.isArray(amenities) ? amenities : (amenities ? [amenities] : ["WiFi", "Air Conditioning"]),
-    image: processedImage,
-    images: [{ ...processedImage, isPrimary: true }],
+    image: primaryImage || { url: imageService.DEFAULT_IMAGE_FALLBACK, filename: "default_fallback" },
+    images: normalizedImages,
     geometry: {
       type: "Point",
       coordinates: geoResult.coordinates
@@ -263,13 +272,13 @@ async function createListing(listingData, user, file) {
 }
 
 // Update listing
-async function updateListing(id, updateData, file) {
+async function updateListing(id, updateData, filesOrFile) {
   const listing = await Listing.findById(id);
   if (!listing) {
     throw new ExpressError("Listing not found", 404);
   }
 
-  // If location changed, re-geocode
+  // If location changed, re-geocode (Rule 8: geocode ONLY when location changes)
   if (updateData.location && updateData.location !== listing.location) {
     const country = updateData.country || listing.country;
     const geoResult = await mapService.geocodeLocation(updateData.location, country);
@@ -295,11 +304,172 @@ async function updateListing(id, updateData, file) {
     listing.amenities = Array.isArray(updateData.amenities) ? updateData.amenities : [updateData.amenities];
   }
 
-  // If new image provided, update image
-  if (file) {
-    const processedImage = imageService.processUploadedImage(file);
-    listing.image = processedImage;
-    listing.images.unshift({ ...processedImage, isPrimary: true });
+  // If new image(s) provided, append & normalize
+  if (filesOrFile) {
+    let newRawImages = [];
+    if (Array.isArray(filesOrFile) && filesOrFile.length > 0) {
+      newRawImages = imageService.processMultipleUploadedImages(filesOrFile, listing.images.length);
+    } else if (filesOrFile.path) {
+      newRawImages = [imageService.processUploadedImage(filesOrFile, listing.images.length)];
+    }
+
+    if (newRawImages.length > 0) {
+      const combined = [...listing.images, ...newRawImages];
+      const { images: normalized, primaryImage } = imageService.normalizeListingImages(combined);
+      listing.images = normalized;
+      if (primaryImage) listing.image = primaryImage;
+    }
+  }
+
+  await listing.save();
+  return listing;
+}
+
+/**
+ * CONSISTENCY BOUNDARY (Cloudinary & MongoDB):
+ * Cloudinary is an external media store, MongoDB is our primary document store.
+ * Multi-system distributed transactions are not available on standalone MongoDB.
+ * 
+ * Safe partial failure handling:
+ * 1. Upload: Files uploaded by Multer first. If MongoDB save fails, we attempt
+ *    cleanup of newly uploaded Cloudinary assets to avoid orphaned media.
+ * 2. Delete: We attempt Cloudinary deletion first. If Cloudinary returns 404 or fails,
+ *    we log a warning and still proceed with removing the subdocument from MongoDB,
+ *    ensuring the application is never blocked by external service downtime.
+ */
+
+// Add multiple images to an existing listing
+async function addListingImages(listingId, files) {
+  const listing = await Listing.findById(listingId);
+  if (!listing) {
+    throw new ExpressError("Listing not found", 404);
+  }
+
+  if (!files || !Array.isArray(files) || files.length === 0) {
+    throw new ExpressError("No image files provided for upload", 400);
+  }
+
+  const newImages = imageService.processMultipleUploadedImages(files, listing.images.length);
+  const combined = [...listing.images, ...newImages];
+  const { images: normalized, primaryImage } = imageService.normalizeListingImages(combined);
+
+  listing.images = normalized;
+  if (primaryImage) {
+    listing.image = primaryImage;
+  }
+
+  try {
+    await listing.save();
+    return listing;
+  } catch (err) {
+    // Partial failure cleanup: attempt best-effort removal of newly uploaded Cloudinary assets
+    for (const img of newImages) {
+      if (img.publicId) {
+        imageService.deleteCloudinaryAsset(img.publicId).catch(() => {});
+      }
+    }
+    throw err;
+  }
+}
+
+// Delete an image from a listing
+async function deleteListingImage(listingId, imageId) {
+  const listing = await Listing.findById(listingId);
+  if (!listing) {
+    throw new ExpressError("Listing not found", 404);
+  }
+
+  const imageIndex = listing.images.findIndex(
+    (img) => img._id && img._id.toString() === imageId.toString()
+  );
+
+  if (imageIndex === -1) {
+    throw new ExpressError("Image not found on this property", 404);
+  }
+
+  const targetImage = listing.images[imageIndex];
+
+  // Cloudinary safe deletion: only genuine Cloudinary assets destroyed
+  // Never delete legacy seed filenames ("listingimage") or external Unsplash URLs
+  if (imageService.isCloudinaryAsset(targetImage)) {
+    await imageService.deleteCloudinaryAsset(targetImage);
+  }
+
+  // Remove the image from the array
+  listing.images.splice(imageIndex, 1);
+
+  // Normalize remaining images (auto-promotes first image if deleted image was primary)
+  const { images: normalized, primaryImage } = imageService.normalizeListingImages(listing.images);
+  listing.images = normalized;
+  listing.image = primaryImage;
+
+  await listing.save();
+  return { listing, deletedImageId: imageId };
+}
+
+// Set a specific image as the primary hero image
+async function setPrimaryImage(listingId, imageId) {
+  const listing = await Listing.findById(listingId);
+  if (!listing) {
+    throw new ExpressError("Listing not found", 404);
+  }
+
+  const target = listing.images.find(
+    (img) => img._id && img._id.toString() === imageId.toString()
+  );
+
+  if (!target) {
+    throw new ExpressError("Image not found on this property", 404);
+  }
+
+  // Mark only target image as primary, all others as false
+  listing.images.forEach((img) => {
+    img.isPrimary = img._id && img._id.toString() === imageId.toString();
+  });
+
+  listing.image = {
+    url: target.url,
+    filename: target.filename || ""
+  };
+
+  await listing.save();
+  return listing;
+}
+
+// Reorder images for a listing
+async function reorderListingImages(listingId, orderedImageIds) {
+  const listing = await Listing.findById(listingId);
+  if (!listing) {
+    throw new ExpressError("Listing not found", 404);
+  }
+
+  if (!Array.isArray(orderedImageIds) || orderedImageIds.length === 0) {
+    throw new ExpressError("Invalid image ordering list", 400);
+  }
+
+  const idToStr = (id) => (id ? id.toString() : "");
+  const orderMap = new Map();
+  orderedImageIds.forEach((id, idx) => {
+    orderMap.set(idToStr(id), idx);
+  });
+
+  // Sort images according to provided order; unmentioned images placed at the end
+  listing.images.sort((a, b) => {
+    const orderA = orderMap.has(idToStr(a._id)) ? orderMap.get(idToStr(a._id)) : 9999;
+    const orderB = orderMap.has(idToStr(b._id)) ? orderMap.get(idToStr(b._id)) : 9999;
+    return orderA - orderB;
+  });
+
+  // Assign sequential positions reflecting the newly sorted order
+  listing.images.forEach((img, idx) => {
+    img.position = idx;
+  });
+
+  // Re-normalize positions sequentially (0, 1, 2, ...) preserving new array order
+  const { images: normalized, primaryImage } = imageService.normalizeListingImages(listing.images, { preserveOrder: true });
+  listing.images = normalized;
+  if (primaryImage) {
+    listing.image = primaryImage;
   }
 
   await listing.save();
@@ -321,6 +491,11 @@ module.exports = {
   getListingsByOrganization,
   createListing,
   updateListing,
+  addListingImages,
+  deleteListingImage,
+  setPrimaryImage,
+  reorderListingImages,
   destroyListing,
   buildListingQuery
 };
+

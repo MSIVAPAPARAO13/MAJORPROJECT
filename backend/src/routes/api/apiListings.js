@@ -3,7 +3,18 @@ const router = express.Router();
 const listingService = require("../../services/listingService");
 const reviewService = require("../../services/reviewService");
 const Review = require("../../models/review");
-const { validateSearchQuery } = require("../../middleware");
+const {
+  validateSearchQuery,
+  isLoggedIn,
+  isOwner,
+  requirePermission,
+  requireTenantAccess
+} = require("../../middleware");
+const { PERMISSIONS } = require("../../config/permissions");
+const listingController = require("../../controllers/listings");
+const multer = require("multer");
+const { storage } = require("../../cloudConfig");
+const upload = multer({ storage });
 const wrapAsync = require("../../utils/wrapAsync");
 
 // GET /api/listings - Retrieve all properties with search, filter, and pagination (PUBLIC)
@@ -86,6 +97,52 @@ router.delete(
       message: "Review deleted successfully!",
     });
   })
+);
+
+// ==========================================
+// PHASE 7: IMAGE MANAGEMENT REST ENDPOINTS
+// NOTE: /:id/images/reorder MUST be registered BEFORE /:id/images/:imageId
+// ==========================================
+
+// POST /api/listings/:id/images - Upload images
+router.post(
+  "/:id/images",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_UPLOAD),
+  isOwner,
+  upload.array("images", 10),
+  wrapAsync(listingController.uploadImages)
+);
+
+// PATCH /api/listings/:id/images/reorder - Reorder images
+router.patch(
+  "/:id/images/reorder",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_REORDER),
+  isOwner,
+  wrapAsync(listingController.reorderImages)
+);
+
+// PATCH /api/listings/:id/images/:imageId/primary - Set primary
+router.patch(
+  "/:id/images/:imageId/primary",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_SET_PRIMARY),
+  isOwner,
+  wrapAsync(listingController.setPrimaryImage)
+);
+
+// DELETE /api/listings/:id/images/:imageId - Delete image
+router.delete(
+  "/:id/images/:imageId",
+  isLoggedIn,
+  requireTenantAccess("Listing"),
+  requirePermission(PERMISSIONS.IMAGE_DELETE),
+  isOwner,
+  wrapAsync(listingController.deleteImage)
 );
 
 module.exports = router;

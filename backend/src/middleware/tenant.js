@@ -8,6 +8,16 @@ const MODELS = {
   Organization
 };
 
+function isJsonRequest(req) {
+  return Boolean(
+    Boolean(req.xhr) ||
+    Boolean(req.originalUrl && req.originalUrl.startsWith("/api/")) ||
+    Boolean(req.headers && req.headers.accept && req.headers.accept.includes("application/json")) ||
+    Boolean(req.headers && req.headers["content-type"] && req.headers["content-type"].includes("application/json")) ||
+    Boolean(req.accepts && req.accepts("json") && req.xhr)
+  );
+}
+
 /**
  * Tenant Isolation Middleware
  * Enforces that non-ADMIN users can only access or modify resources belonging to their own organization.
@@ -17,7 +27,7 @@ function requireTenantAccess(modelName, paramName = "id") {
   return async (req, res, next) => {
     if (!req.isAuthenticated || !req.isAuthenticated()) {
       req.session.redirectUrl = req.originalUrl;
-      if (req.accepts("json") && req.xhr) {
+      if (isJsonRequest(req)) {
         return res.status(401).json({ success: false, message: "Authentication required" });
       }
       req.flash("error", "You must be logged in to access that page");
@@ -31,7 +41,7 @@ function requireTenantAccess(modelName, paramName = "id") {
 
     const resourceId = req.params[paramName];
     if (!resourceId || !mongoose.Types.ObjectId.isValid(resourceId)) {
-      if (req.accepts("json") && req.xhr) {
+      if (isJsonRequest(req)) {
         return res.status(404).json({ success: false, message: "Resource not found" });
       }
       req.flash("error", "Resource not found");
@@ -46,7 +56,7 @@ function requireTenantAccess(modelName, paramName = "id") {
 
     const resource = await Model.findById(resourceId);
     if (!resource) {
-      if (req.accepts("json") && req.xhr) {
+      if (isJsonRequest(req)) {
         return res.status(404).json({ success: false, message: `${modelName} not found` });
       }
       req.flash("error", `${modelName} not found`);
@@ -65,7 +75,7 @@ function requireTenantAccess(modelName, paramName = "id") {
     const userOrgId = req.user.organization;
 
     if (!userOrgId || !resourceOrgId || !userOrgId.equals(resourceOrgId)) {
-      if (req.accepts("json") && req.xhr) {
+      if (isJsonRequest(req)) {
         return res.status(403).json({
           success: false,
           message: "Forbidden: Cross-tenant access is strictly prohibited."
