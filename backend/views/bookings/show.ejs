@@ -11,12 +11,16 @@
             <i class="fa-solid fa-circle-check fa-3x"></i>
           </span>
         </div>
-        <h2 class="fw-bold mb-1">Reservation Confirmed!</h2>
-        <p class="text-muted">Booking Reference: <span class="badge bg-light text-dark border font-monospace fs-6">#<%= booking._id %></span></p>
+        <h2 class="fw-bold mb-1">
+          <%= booking.status === 'CONFIRMED' ? 'Reservation Confirmed!' : (booking.status === 'CANCELLED' ? 'Reservation Cancelled' : 'Reservation Placed') %>
+        </h2>
+        <p class="text-muted mb-2">Booking Number: <span class="badge bg-light text-dark border font-monospace fs-6"><%= booking.bookingNumber || ('#' + booking._id) %></span></p>
         
         <div class="d-inline-flex justify-content-center gap-2 mt-2">
-          <span class="badge bg-success rounded-pill px-3 py-2"><i class="fa-solid fa-check me-1"></i> <%= booking.status %></span>
-          <span class="badge bg-light text-secondary border rounded-pill px-3 py-2">Instant Booking</span>
+          <span class="badge <%= booking.status === 'CONFIRMED' ? 'bg-success' : (booking.status === 'CANCELLED' ? 'bg-danger' : 'bg-warning text-dark') %> rounded-pill px-3 py-2">
+            <i class="fa-solid fa-circle-info me-1"></i> <%= booking.status %>
+          </span>
+          <span class="badge bg-light text-secondary border rounded-pill px-3 py-2">Hospitality Stay</span>
         </div>
       </div>
 
@@ -26,14 +30,18 @@
         
         <div class="row g-3 mb-4">
           <div class="col-sm-6">
-            <label class="text-muted small d-block">Property</label>
-            <h6 class="fw-bold mb-0"><%= booking.property ? booking.property.title : 'WanderLust Property' %></h6>
-            <p class="text-secondary small mb-0"><%= booking.property ? booking.property.location + ', ' + booking.property.country : '' %></p>
+            <label class="text-muted small d-block">Property & Location</label>
+            <h6 class="fw-bold mb-0">
+              <a href="/listings/<%= booking.property ? booking.property._id : '#' %>" class="text-decoration-none text-dark">
+                <%= booking.property ? booking.property.title : 'WanderLust Property' %>
+              </a>
+            </h6>
+            <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i><%= booking.property ? booking.property.location + ', ' + booking.property.country : '' %></p>
           </div>
           <div class="col-sm-6">
             <label class="text-muted small d-block">Room Reserved</label>
-            <h6 class="fw-bold mb-0">Room <%= booking.room ? booking.room.roomNumber : '' %> &mdash; <%= booking.room ? booking.room.roomType : '' %></h6>
-            <p class="text-secondary small mb-0"><i class="fa-solid fa-users me-1"></i> <%= booking.guestsCount %> Guest(s)</p>
+            <h6 class="fw-bold mb-0">Room <%= booking.room ? booking.room.roomNumber : 'N/A' %> &mdash; <%= booking.room ? booking.room.roomType : 'Standard' %></h6>
+            <p class="text-secondary small mb-0"><i class="fa-solid fa-users me-1"></i> <%= booking.guestsCount %> Guest<%= booking.guestsCount === 1 ? '' : 's' %></p>
           </div>
         </div>
 
@@ -72,29 +80,31 @@
 
         <hr>
 
-        <!-- Payment Breakdown -->
-        <h6 class="fw-bold mb-2">Payment Summary</h6>
+        <!-- Booking Value Breakdown -->
+        <h6 class="fw-bold mb-2">Booking Value Summary</h6>
         <div class="d-flex justify-content-between text-secondary small mb-1">
           <span><%= booking.totalNights %> night(s) &times; &#8377; <%= Number(booking.pricePerNight).toLocaleString("en-IN") %></span>
           <span>&#8377; <%= Number(booking.totalPrice).toLocaleString("en-IN") %></span>
         </div>
         <div class="d-flex justify-content-between fw-bold fs-5 text-dark mt-2 pt-2 border-top">
-          <span>Total Paid</span>
+          <span>Total Booking Value</span>
           <span class="text-danger">&#8377; <%= Number(booking.totalPrice).toLocaleString("en-IN") %></span>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <a href="/listings" class="btn btn-outline-secondary rounded-pill px-4">
-          <i class="fa-solid fa-compass me-1"></i> Browse More
-        </a>
         <div class="d-flex gap-2">
-          <a href="/dashboard" class="btn btn-dark rounded-pill px-4">
-            <i class="fa-solid fa-suitcase me-1"></i> View in Dashboard
+          <a href="/bookings" class="btn btn-outline-dark rounded-pill px-4">
+            <i class="fa-solid fa-suitcase me-1"></i> View My Trips
           </a>
-          <% if (booking.status !== 'CANCELLED') { %>
-            <form method="POST" action="/bookings/<%= booking._id %>/cancel" onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+          <a href="/listings" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fa-solid fa-compass me-1"></i> Browse More Stays
+          </a>
+        </div>
+        <div>
+          <% if (booking.status === 'PENDING' || booking.status === 'CONFIRMED') { %>
+            <form method="POST" action="/bookings/<%= booking._id %>/cancel" onsubmit="return confirm('Are you sure you want to cancel this reservation?');" class="d-inline">
               <button class="btn btn-outline-danger rounded-pill px-3">
                 <i class="fa-solid fa-xmark me-1"></i> Cancel Reservation
               </button>

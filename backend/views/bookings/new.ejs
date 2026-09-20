@@ -164,25 +164,21 @@
             <!-- Price Breakdown -->
             <div class="mb-3">
               <div class="d-flex justify-content-between mb-2">
-                <span class="text-secondary small">Rate per night</span>
+                <span class="text-secondary small">Room</span>
+                <span class="fw-semibold text-truncate" id="roomTypeDisplay" style="max-width: 180px;"><%= selectedRoom ? selectedRoom.roomType : 'Standard' %></span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary small">Price per night</span>
                 <span class="fw-semibold" id="rateDisplay">&#8377; <%= selectedRoom ? Number(selectedRoom.price).toLocaleString("en-IN") : Number(listing.price).toLocaleString("en-IN") %></span>
               </div>
               <div class="d-flex justify-content-between mb-2">
-                <span class="text-secondary small">Duration</span>
+                <span class="text-secondary small">Number of nights</span>
                 <span class="fw-semibold" id="nightsDisplay">1 night</span>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-secondary small">Subtotal</span>
-                <span class="fw-semibold" id="subtotalDisplay">&#8377; <%= selectedRoom ? Number(selectedRoom.price).toLocaleString("en-IN") : Number(listing.price).toLocaleString("en-IN") %></span>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-secondary small">Taxes & Fees (18% GST)</span>
-                <span class="fw-semibold text-muted" id="taxDisplay">&#8377; 0</span>
               </div>
             </div>
 
             <div class="pt-3 border-top d-flex justify-content-between align-items-center mb-3">
-              <span class="fw-bold fs-5">Total (INR)</span>
+              <span class="fw-bold fs-6 text-secondary">Total Booking Value</span>
               <span class="fw-bold fs-4 text-danger" id="totalDisplay">&#8377; 0</span>
             </div>
 
@@ -199,13 +195,14 @@
 
 <script>
   // Dynamic Pricing & Date Validation
+  const bookingForm = document.getElementById("bookingForm");
+  const confirmBtn = document.getElementById("confirmBtn");
   const checkInInput = document.getElementById("checkIn");
   const checkOutInput = document.getElementById("checkOut");
   const roomSelect = document.getElementById("roomId");
+  const roomTypeDisplay = document.getElementById("roomTypeDisplay");
   const rateDisplay = document.getElementById("rateDisplay");
   const nightsDisplay = document.getElementById("nightsDisplay");
-  const subtotalDisplay = document.getElementById("subtotalDisplay");
-  const taxDisplay = document.getElementById("taxDisplay");
   const totalDisplay = document.getElementById("totalDisplay");
 
   // Set minimum date to today
@@ -216,6 +213,12 @@
     const selectedOption = roomSelect.options[roomSelect.selectedIndex];
     const pricePerNight = selectedOption ? Number(selectedOption.getAttribute("data-price")) : Number("<%= listing.price %>");
     
+    if (selectedOption && roomTypeDisplay) {
+      const text = selectedOption.text || "";
+      const match = text.match(/—\s*([^(]+)/);
+      roomTypeDisplay.innerText = match ? match[1].trim() : "Selected Room";
+    }
+
     if (checkInInput.value) {
       const nextDay = new Date(checkInInput.value);
       nextDay.setDate(nextDay.getDate() + 1);
@@ -232,14 +235,10 @@
       }
     }
 
-    const subtotal = nights * pricePerNight;
-    const taxes = Math.round(subtotal * 0.18);
-    const total = subtotal + taxes;
+    const total = nights * pricePerNight;
 
     rateDisplay.innerText = "₹" + pricePerNight.toLocaleString("en-IN");
     nightsDisplay.innerText = nights + (nights === 1 ? " night" : " nights");
-    subtotalDisplay.innerText = "₹" + subtotal.toLocaleString("en-IN");
-    taxDisplay.innerText = "₹" + taxes.toLocaleString("en-IN");
     totalDisplay.innerText = "₹" + total.toLocaleString("en-IN");
   }
 
@@ -257,4 +256,14 @@
   checkOutInput.addEventListener("change", recalculate);
   roomSelect.addEventListener("change", recalculate);
   recalculate();
+
+  // Double-submission protection UX (Step 12)
+  if (bookingForm && confirmBtn) {
+    bookingForm.addEventListener("submit", function (e) {
+      if (bookingForm.checkValidity()) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Confirming Reservation...';
+      }
+    });
+  }
 </script>

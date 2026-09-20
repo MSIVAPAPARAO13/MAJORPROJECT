@@ -1,75 +1,287 @@
 <% layout('layouts/boilerplate') %>
 
+<%
+  const now = new Date();
+  const currentStays = [];
+  const upcomingTrips = [];
+  const pastStays = [];
+  const cancelledBookings = [];
+
+  if (bookings && bookings.length > 0) {
+    for (let b of bookings) {
+      const cIn = new Date(b.checkIn);
+      const cOut = new Date(b.checkOut);
+      // Evaluate CANCELLED first to ensure mutual exclusivity
+      if (b.status === 'CANCELLED') {
+        cancelledBookings.push(b);
+      } else if (cIn <= now && cOut > now && (b.status === 'PENDING' || b.status === 'CONFIRMED')) {
+        currentStays.push(b);
+      } else if (cIn > now && (b.status === 'PENDING' || b.status === 'CONFIRMED')) {
+        upcomingTrips.push(b);
+      } else if (cOut <= now || b.status === 'COMPLETED') {
+        pastStays.push(b);
+      } else {
+        pastStays.push(b);
+      }
+    }
+  }
+%>
+
 <div class="container my-4">
   <div class="row justify-content-center">
     <div class="col-lg-10">
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
           <h2 class="fw-bold mb-1"><i class="fa-solid fa-suitcase text-danger me-2"></i>My Trips & Reservations</h2>
-          <p class="text-muted small mb-0">View your upcoming and past bookings on WanderLust.</p>
+          <p class="text-muted small mb-0">Track and manage your current, upcoming, and past hospitality stays.</p>
         </div>
-        <a href="/listings" class="btn btn-danger rounded-pill px-4">
+        <a href="/listings" class="btn btn-danger rounded-pill px-4 shadow-sm">
           <i class="fa-solid fa-compass me-1"></i> Plan a New Trip
         </a>
       </div>
 
-      <% if (bookings && bookings.length > 0) { %>
-        <div class="row g-3">
-          <% for (let b of bookings) { %>
-            <div class="col-12">
-              <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="row align-items-center g-3">
-                  <div class="col-md-3">
-                    <% const bImg = (b.property && b.property.image && b.property.image.url) ? b.property.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80'; %>
-                    <img src="<%= bImg %>" class="rounded-3 w-100" style="height: 120px; object-fit: cover;" alt="<%= b.property ? b.property.title : 'Stay' %>">
-                  </div>
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                      <h5 class="fw-bold mb-0">
-                        <a href="/listings/<%= b.property ? b.property._id : '#' %>" class="text-decoration-none text-dark">
-                          <%= b.property ? b.property.title : 'Property' %>
-                        </a>
-                      </h5>
-                      <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : (b.status === 'CANCELLED' ? 'bg-danger' : 'bg-secondary') %> rounded-pill">
-                        <%= b.status %>
-                      </span>
-                    </div>
-                    <p class="text-muted small mb-2">
-                      <i class="fa-solid fa-location-dot text-danger me-1"></i><%= b.property ? b.property.location : '' %> &bull; Room <%= b.room ? b.room.roomNumber + ' (' + b.room.roomType + ')' : 'Standard' %>
-                    </p>
-                    <p class="mb-0 small text-secondary">
-                      <i class="fa-regular fa-calendar me-1"></i>
-                      <b><%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %></b> &mdash; 
-                      <b><%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %></b> 
-                      (<%= b.totalNights %> night<%= b.totalNights === 1 ? '' : 's' %>)
-                    </p>
-                  </div>
-                  <div class="col-md-3 text-md-end">
-                    <h5 class="fw-bold text-danger mb-2">&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></h5>
-                    <div class="d-flex flex-md-column gap-2 justify-content-md-end">
-                      <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill px-3">
-                        View Receipt
-                      </a>
-                      <% if (b.status !== 'CANCELLED') { %>
-                        <form method="POST" action="/bookings/<%= b._id %>/cancel" onsubmit="return confirm('Cancel this booking?');">
-                          <button class="btn btn-sm btn-outline-danger rounded-pill px-3 w-100">Cancel</button>
-                        </form>
-                      <% } %>
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-pills mb-4 gap-2" id="tripsTab" role="tablist">
+        <% if (currentStays.length > 0) { %>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill px-3 fw-semibold" id="current-tab" data-bs-toggle="pill" data-bs-target="#current" type="button" role="tab" aria-selected="true">
+              <i class="fa-solid fa-bed me-1"></i> Current Stays (<%= currentStays.length %>)
+            </button>
+          </li>
+        <% } %>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link <%= currentStays.length === 0 ? 'active' : '' %> rounded-pill px-3 fw-semibold" id="upcoming-tab" data-bs-toggle="pill" data-bs-target="#upcoming" type="button" role="tab" aria-selected="<%= currentStays.length === 0 ? 'true' : 'false' %>">
+            <i class="fa-solid fa-plane-departure me-1"></i> Upcoming Trips (<%= upcomingTrips.length %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link rounded-pill px-3 fw-semibold" id="past-tab" data-bs-toggle="pill" data-bs-target="#past" type="button" role="tab" aria-selected="false">
+            <i class="fa-solid fa-clock-rotate-left me-1"></i> Past Stays (<%= pastStays.length %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link rounded-pill px-3 fw-semibold text-secondary" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled" type="button" role="tab" aria-selected="false">
+            <i class="fa-solid fa-ban me-1"></i> Cancelled (<%= cancelledBookings.length %>)
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="tripsTabContent">
+        
+        <!-- 1. Current Stays -->
+        <% if (currentStays.length > 0) { %>
+          <div class="tab-pane fade show active" id="current" role="tabpanel" aria-labelledby="current-tab">
+            <div class="row g-3">
+              <% for (let b of currentStays) { %>
+                <div class="col-12">
+                  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-info">
+                    <div class="row align-items-center g-3">
+                      <div class="col-md-3">
+                        <% const cImg = (b.property && b.property.image && b.property.image.url) ? b.property.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80'; %>
+                        <img src="<%= cImg %>" class="rounded-3 w-100" style="height: 130px; object-fit: cover;" alt="<%= b.property ? b.property.title : 'Stay' %>">
+                      </div>
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                          <h5 class="fw-bold mb-0">
+                            <a href="/listings/<%= b.property ? b.property._id : '#' %>" class="text-decoration-none text-dark">
+                              <%= b.property ? b.property.title : 'Property' %>
+                            </a>
+                          </h5>
+                          <span class="badge bg-info text-dark rounded-pill">Current Stay</span>
+                          <span class="badge bg-success rounded-pill"><%= b.status %></span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          <i class="fa-solid fa-location-dot text-danger me-1"></i><%= b.property ? b.property.location : '' %> &bull; Room <%= b.room ? b.room.roomNumber + ' (' + b.room.roomType + ')' : 'Standard' %> &bull; <i class="fa-solid fa-users ms-1 me-1"></i><%= b.guestsCount %> guest<%= b.guestsCount === 1 ? '' : 's' %>
+                        </p>
+                        <p class="mb-1 small text-secondary">
+                          <i class="fa-regular fa-calendar me-1"></i>
+                          <b><%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %></b> &mdash; 
+                          <b><%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %></b> 
+                          (<%= b.totalNights %> night<%= b.totalNights === 1 ? '' : 's' %>)
+                        </p>
+                        <small class="text-muted font-monospace">Ref: <%= b.bookingNumber || ('#' + b._id) %></small>
+                      </div>
+                      <div class="col-md-3 text-md-end">
+                        <span class="text-muted small d-block">Total Booking Value</span>
+                        <h5 class="fw-bold text-danger mb-2">&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></h5>
+                        <div class="d-flex flex-md-column gap-2 justify-content-md-end">
+                          <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                            View Details
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- 2. Upcoming Trips -->
+        <div class="tab-pane fade <%= currentStays.length === 0 ? 'show active' : '' %>" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+          <% if (upcomingTrips && upcomingTrips.length > 0) { %>
+            <div class="row g-3">
+              <% for (let b of upcomingTrips) { %>
+                <div class="col-12">
+                  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <div class="row align-items-center g-3">
+                      <div class="col-md-3">
+                        <% const uImg = (b.property && b.property.image && b.property.image.url) ? b.property.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80'; %>
+                        <img src="<%= uImg %>" class="rounded-3 w-100" style="height: 130px; object-fit: cover;" alt="<%= b.property ? b.property.title : 'Stay' %>">
+                      </div>
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                          <h5 class="fw-bold mb-0">
+                            <a href="/listings/<%= b.property ? b.property._id : '#' %>" class="text-decoration-none text-dark">
+                              <%= b.property ? b.property.title : 'Property' %>
+                            </a>
+                          </h5>
+                          <span class="badge <%= b.status === 'CONFIRMED' ? 'bg-success' : 'bg-warning text-dark' %> rounded-pill">
+                            <%= b.status %>
+                          </span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          <i class="fa-solid fa-location-dot text-danger me-1"></i><%= b.property ? b.property.location : '' %> &bull; Room <%= b.room ? b.room.roomNumber + ' (' + b.room.roomType + ')' : 'Standard' %> &bull; <i class="fa-solid fa-users ms-1 me-1"></i><%= b.guestsCount %> guest<%= b.guestsCount === 1 ? '' : 's' %>
+                        </p>
+                        <p class="mb-1 small text-secondary">
+                          <i class="fa-regular fa-calendar me-1"></i>
+                          <b><%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %></b> &mdash; 
+                          <b><%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %></b> 
+                          (<%= b.totalNights %> night<%= b.totalNights === 1 ? '' : 's' %>)
+                        </p>
+                        <small class="text-muted font-monospace">Ref: <%= b.bookingNumber || ('#' + b._id) %></small>
+                      </div>
+                      <div class="col-md-3 text-md-end">
+                        <span class="text-muted small d-block">Total Booking Value</span>
+                        <h5 class="fw-bold text-danger mb-2">&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></h5>
+                        <div class="d-flex flex-md-column gap-2 justify-content-md-end">
+                          <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                            View Details
+                          </a>
+                          <form method="POST" action="/bookings/<%= b._id %>/cancel" onsubmit="return confirm('Cancel this upcoming reservation?');">
+                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3 w-100">Cancel</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="text-center py-5 my-3 bg-white rounded-4 shadow-sm p-4">
+              <i class="fa-solid fa-plane-slash fa-3x text-muted opacity-50 mb-3"></i>
+              <h5 class="fw-bold">No Upcoming Trips</h5>
+              <p class="text-muted">You don't have any upcoming trips.</p>
+              <a href="/listings" class="btn btn-danger rounded-pill px-4 mt-2 shadow-sm">Explore Destinations</a>
             </div>
           <% } %>
         </div>
-      <% } else { %>
-        <div class="text-center py-5 my-4 bg-white rounded-4 shadow-sm p-4">
-          <i class="fa-solid fa-plane-slash fa-3x text-muted opacity-50 mb-3"></i>
-          <h4 class="fw-bold">No Bookings Yet</h4>
-          <p class="text-muted">You haven't booked any stays yet. Explore our vacation homes, hostels, and resorts!</p>
-          <a href="/listings" class="btn btn-danger rounded-pill px-4 mt-2">Explore Destinations</a>
+
+        <!-- 3. Past Stays -->
+        <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab">
+          <% if (pastStays && pastStays.length > 0) { %>
+            <div class="row g-3">
+              <% for (let b of pastStays) { %>
+                <div class="col-12">
+                  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <div class="row align-items-center g-3">
+                      <div class="col-md-3">
+                        <% const pImg = (b.property && b.property.image && b.property.image.url) ? b.property.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80'; %>
+                        <img src="<%= pImg %>" class="rounded-3 w-100" style="height: 120px; object-fit: cover;" alt="<%= b.property ? b.property.title : 'Stay' %>">
+                      </div>
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                          <h5 class="fw-bold mb-0">
+                            <a href="/listings/<%= b.property ? b.property._id : '#' %>" class="text-decoration-none text-dark">
+                              <%= b.property ? b.property.title : 'Property' %>
+                            </a>
+                          </h5>
+                          <span class="badge bg-secondary rounded-pill">COMPLETED</span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          <i class="fa-solid fa-location-dot text-danger me-1"></i><%= b.property ? b.property.location : '' %> &bull; Room <%= b.room ? b.room.roomNumber : '' %>
+                        </p>
+                        <p class="mb-1 small text-secondary">
+                          <i class="fa-regular fa-calendar me-1"></i>
+                          <%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %> &mdash; 
+                          <%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                        </p>
+                        <small class="text-muted font-monospace">Ref: <%= b.bookingNumber || ('#' + b._id) %></small>
+                      </div>
+                      <div class="col-md-3 text-md-end">
+                        <span class="text-muted small d-block">Total Booking Value</span>
+                        <h5 class="fw-bold text-dark mb-2">&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></h5>
+                        <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                          View Receipt
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="text-center py-5 my-3 bg-white rounded-4 shadow-sm p-4">
+              <i class="fa-solid fa-clock-rotate-left fa-3x text-muted opacity-50 mb-3"></i>
+              <h5 class="fw-bold">No Completed Trips</h5>
+              <p class="text-muted">No completed trips yet.</p>
+            </div>
+          <% } %>
         </div>
-      <% } %>
+
+        <!-- 4. Cancelled Bookings -->
+        <div class="tab-pane fade" id="cancelled" role="tabpanel" aria-labelledby="cancelled-tab">
+          <% if (cancelledBookings && cancelledBookings.length > 0) { %>
+            <div class="row g-3">
+              <% for (let b of cancelledBookings) { %>
+                <div class="col-12">
+                  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-danger">
+                    <div class="row align-items-center g-3">
+                      <div class="col-md-3">
+                        <% const canImg = (b.property && b.property.image && b.property.image.url) ? b.property.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80'; %>
+                        <img src="<%= canImg %>" class="rounded-3 w-100" style="height: 120px; object-fit: cover; opacity: 0.7;" alt="<%= b.property ? b.property.title : 'Stay' %>">
+                      </div>
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                          <h5 class="fw-bold mb-0 text-muted">
+                            <%= b.property ? b.property.title : 'Property' %>
+                          </h5>
+                          <span class="badge bg-danger rounded-pill">CANCELLED</span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          <i class="fa-solid fa-location-dot me-1"></i><%= b.property ? b.property.location : '' %> &bull; Room <%= b.room ? b.room.roomNumber : '' %>
+                        </p>
+                        <p class="mb-1 small text-muted">
+                          <i class="fa-regular fa-calendar me-1"></i>
+                          <%= new Date(b.checkIn).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %> &mdash; 
+                          <%= new Date(b.checkOut).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                        </p>
+                        <small class="text-muted font-monospace">Ref: <%= b.bookingNumber || ('#' + b._id) %></small>
+                      </div>
+                      <div class="col-md-3 text-md-end">
+                        <span class="text-muted small d-block">Booking Value</span>
+                        <h5 class="fw-bold text-muted text-decoration-line-through mb-2">&#8377; <%= Number(b.totalPrice).toLocaleString("en-IN") %></h5>
+                        <a href="/bookings/<%= b._id %>" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                          View Details
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="text-center py-5 my-3 bg-white rounded-4 shadow-sm p-4">
+              <i class="fa-solid fa-ban fa-3x text-muted opacity-50 mb-3"></i>
+              <h5 class="fw-bold">No Cancelled Bookings</h5>
+              <p class="text-muted">You have no cancelled bookings.</p>
+            </div>
+          <% } %>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
