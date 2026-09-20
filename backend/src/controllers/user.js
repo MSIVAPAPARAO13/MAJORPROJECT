@@ -1,4 +1,5 @@
 const userService = require("../services/userService");
+const { sanitizeRedirectUrl } = require("../middleware/auth");
 
 module.exports.renderSignupForm = (req, res) => {
   res.render("users/signup.ejs");
@@ -21,7 +22,7 @@ module.exports.signup = async (req, res, next) => {
     req.login(registeredUser, (err) => {
       if (err) return next(err);
       req.flash("success", `Welcome to WanderLust, ${registeredUser.username}!`);
-      const redirectUrl = res.locals.redirectUrl || "/listings";
+      const redirectUrl = sanitizeRedirectUrl(res.locals.redirectUrl, "/listings");
       res.redirect(redirectUrl);
     });
   } catch (e) {
@@ -34,16 +35,35 @@ module.exports.renderLoginForm = (req, res) => {
   res.render("users/login.ejs");
 };
 
-module.exports.login = async (req, res) => {
+module.exports.login = async (req, res, next) => {
   req.flash("success", `Welcome back, ${req.user.username}!`);
-  const redirectUrl = res.locals.redirectUrl || "/listings";
-  res.redirect(redirectUrl);
+  const redirectUrl = sanitizeRedirectUrl(res.locals.redirectUrl, "/listings");
+
+  // Session Fixation Protection: Regenerate session ID upon login
+  if (req.session && typeof req.session.regenerate === "function") {
+    const originalUser = req.user;
+    req.session.regenerate((err) => {
+      if (err) return next(err);
+      req.login(originalUser, (loginErr) => {
+        if (loginErr) return next(loginErr);
+        res.redirect(redirectUrl);
+      });
+    });
+  } else {
+    res.redirect(redirectUrl);
+  }
 };
 
 module.exports.logout = (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    req.flash("success", "You have been logged out.");
-    res.redirect("/listings");
+    if (req.session) {
+      req.session.destroy(() => {
+        res.clearCookie("connect.sid");
+        res.redirect("/listings");
+      });
+    } else {
+      res.redirect("/listings");
+    }
   });
 };

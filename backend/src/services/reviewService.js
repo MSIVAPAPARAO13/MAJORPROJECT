@@ -10,8 +10,12 @@ async function addReview(listingId, reviewData, authorId) {
     throw new ExpressError("Listing not found", 404);
   }
 
-  const newReview = new Review(reviewData);
-  newReview.author = authorId;
+  const { comment, rating } = reviewData;
+  const newReview = new Review({
+    comment: (comment || "").trim(),
+    rating: Number(rating),
+    author: authorId
+  });
 
   listing.reviews.push(newReview);
 

@@ -14,6 +14,7 @@
         <p class="text-muted small mb-4">Add a new room or dorm bed configuration to <b><%= listing.title %></b>.</p>
 
         <form action="/listings/<%= listing._id %>/rooms" method="POST" class="needs-validation" novalidate>
+          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
           
           <!-- Room Number & Type -->
           <div class="row g-3 mb-3">

@@ -7,6 +7,7 @@
       <p class="text-muted mb-4 small">Update property details, amenities, rates, and imagery.</p>
 
       <form method="post" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
         
         <!-- Property Title -->
         <div class="mb-3">
@@ -114,6 +115,7 @@
 
       <!-- Upload New Images Form -->
       <form method="post" action="/listings/<%= listing._id %>/images" enctype="multipart/form-data" class="mb-4 p-3 bg-light rounded-3 border">
+        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
         <label for="galleryImages" class="form-label fw-semibold small">Upload Additional Photos (Max 10 at once)</label>
         <div class="input-group">
           <input type="file" id="galleryImages" name="images" class="form-control" accept="image/*" multiple required />
@@ -150,6 +152,7 @@
                   <div>
                     <% if (!img.isPrimary) { %>
                       <form method="post" action="/listings/<%= listing._id %>/images/<%= img._id %>/primary?_method=PATCH" class="d-inline">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                         <button type="submit" class="btn btn-outline-primary btn-sm py-1 px-2 small rounded-pill">
                           <i class="fa-regular fa-star me-1"></i>Make Primary
                         </button>
@@ -160,6 +163,7 @@
                   </div>
                   <div>
                     <form method="post" action="/listings/<%= listing._id %>/images/<%= img._id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete this image?');">
+                      <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                       <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2 small rounded-pill">
                         <i class="fa-solid fa-trash"></i>
                       </button>

@@ -13,7 +13,22 @@ const { PERMISSIONS } = require("../config/permissions");
 const listingController = require("../controllers/listings.js");
 const multer = require("multer");
 const { storage } = require("../cloudConfig.js");
-const upload = multer({ storage });
+const ExpressError = require("../utils/ExpressError");
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5 MB per file
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new ExpressError("Invalid file type. Only JPEG, PNG, and WebP images are allowed.", 400), false);
+    }
+  }
+});
 
 // 1. Browse All Properties (PUBLIC) & Create New Property (Protected by PROPERTY_CREATE)
 router

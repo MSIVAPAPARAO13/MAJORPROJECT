@@ -160,6 +160,7 @@
                             View Details
                           </a>
                           <form method="POST" action="/bookings/<%= b._id %>/cancel" onsubmit="return confirm('Cancel this upcoming reservation?');">
+                            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                             <button class="btn btn-sm btn-outline-danger rounded-pill px-3 w-100">Cancel</button>
                           </form>
                         </div>

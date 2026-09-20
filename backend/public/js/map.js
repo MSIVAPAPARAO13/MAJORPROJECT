@@ -53,12 +53,22 @@
     // Add navigation controls (zoom in/out, compass)
     map.addControl(new mapboxgl.NavigationControl());
 
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     // Popup with property details
     const priceDisplay = listing.price ? `₹${Number(listing.price).toLocaleString("en-IN")} / night` : "";
     const popupContent = `
       <div class="p-1">
-        <h6 class="fw-bold mb-1 text-dark">${listing.title}</h6>
-        <p class="text-muted small mb-1"><i class="fa-solid fa-location-dot text-danger"></i> ${listing.location}, ${listing.country}</p>
+        <h6 class="fw-bold mb-1 text-dark">${escapeHtml(listing.title)}</h6>
+        <p class="text-muted small mb-1"><i class="fa-solid fa-location-dot text-danger"></i> ${escapeHtml(listing.location)}, ${escapeHtml(listing.country)}</p>
         <span class="badge bg-danger text-white">${priceDisplay}</span>
       </div>
     `;

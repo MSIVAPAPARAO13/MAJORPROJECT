@@ -8,6 +8,7 @@
         <p class="text-muted small mb-4">Set up a tenant organization to manage multiple properties, teams, and rooms in one unified dashboard.</p>
 
         <form action="/organizations" method="POST" class="needs-validation" novalidate>
+          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
           
           <div class="mb-3">
             <label for="name" class="form-label fw-semibold">Organization / Business Name</label>

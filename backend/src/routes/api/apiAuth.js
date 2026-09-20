@@ -25,14 +25,13 @@ router.get("/me", (req, res) => {
 router.post(
   "/signup",
   wrapAsync(async (req, res, next) => {
-    const { username, email, password, role, phone } = req.body;
-    const allowedRoles = ["CUSTOMER", "OWNER"];
-    const userRole = allowedRoles.includes(role) ? role : "CUSTOMER";
-
+    // Security Requirement: Public signup MUST NOT accept client-supplied role, organization, or permissions.
+    // Every public signup is unconditionally assigned role: 'CUSTOMER' and organization: null.
     const newUser = new User({
       username: (username || "").trim(),
       email: (email || "").trim(),
-      role: userRole,
+      role: "CUSTOMER",
+      organization: null,
       phone: phone ? phone.trim() : undefined,
     });
 

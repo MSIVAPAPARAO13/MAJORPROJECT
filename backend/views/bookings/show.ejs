@@ -105,6 +105,7 @@
         <div>
           <% if (booking.status === 'PENDING' || booking.status === 'CONFIRMED') { %>
             <form method="POST" action="/bookings/<%= booking._id %>/cancel" onsubmit="return confirm('Are you sure you want to cancel this reservation?');" class="d-inline">
+              <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
               <button class="btn btn-outline-danger rounded-pill px-3">
                 <i class="fa-solid fa-xmark me-1"></i> Cancel Reservation
               </button>

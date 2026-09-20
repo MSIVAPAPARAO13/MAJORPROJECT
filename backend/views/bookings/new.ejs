@@ -17,6 +17,7 @@
             <p class="text-muted small mb-4">Enter your stay details and guest information.</p>
 
             <form action="/listings/<%= listing._id %>/bookings" method="POST" class="needs-validation" novalidate id="bookingForm">
+              <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
               
               <!-- Room Selection -->
               <div class="mb-3">

@@ -4,10 +4,14 @@ if (process.env.NODE_ENV !== "production") {
 
 const connectDB = require("./config/db");
 const createApp = require("./app");
+const { validateEnv } = require("./config/envValidator");
 
 const PORT = process.env.PORT || 8080;
 
 const startServer = async () => {
+  // 0. Validate required production environment variables
+  validateEnv();
+
   // 1. Establish database connection
   await connectDB();
 

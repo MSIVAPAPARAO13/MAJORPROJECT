@@ -7,6 +7,7 @@
       <p class="text-muted mb-4 small">List your hostel, hotel, apartment, or resort on WanderLust.</p>
 
       <form method="post" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
         
         <!-- Property Title -->
         <div class="mb-3">

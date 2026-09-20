@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const Listing = require("../models/listing");
 const Organization = require("../models/organization");
+const Room = require("../models/room");
 
 // Models registry for tenant verification
 const MODELS = {
   Listing,
-  Organization
+  Organization,
+  Room
 };
 
 function isJsonRequest(req) {
@@ -26,7 +28,7 @@ function isJsonRequest(req) {
 function requireTenantAccess(modelName, paramName = "id") {
   return async (req, res, next) => {
     if (!req.isAuthenticated || !req.isAuthenticated()) {
-      req.session.redirectUrl = req.originalUrl;
+      if (req.session) req.session.redirectUrl = req.originalUrl;
       if (isJsonRequest(req)) {
         return res.status(401).json({ success: false, message: "Authentication required" });
       }
@@ -39,7 +41,7 @@ function requireTenantAccess(modelName, paramName = "id") {
       return next();
     }
 
-    const resourceId = req.params[paramName];
+    const resourceId = req.params[paramName] || (modelName === "Room" ? req.params.roomId : undefined);
     if (!resourceId || !mongoose.Types.ObjectId.isValid(resourceId)) {
       if (isJsonRequest(req)) {
         return res.status(404).json({ success: false, message: "Resource not found" });

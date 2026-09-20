@@ -24,5 +24,21 @@ const UserSchema = new Schema({
     type: String
   }
 }, { timestamps: true });
+UserSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.hash;
+    delete ret.salt;
+    return ret;
+  }
+});
+
+UserSchema.set('toObject', {
+  transform: (doc, ret) => {
+    delete ret.hash;
+    delete ret.salt;
+    return ret;
+  }
+});
+
 UserSchema.plugin(passportLocalMongoose);
 module.exports = mongoose.model('User', UserSchema);

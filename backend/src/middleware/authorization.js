@@ -5,7 +5,7 @@ const ExpressError = require("../utils/ExpressError");
 function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.isAuthenticated || !req.isAuthenticated()) {
-      req.session.redirectUrl = req.originalUrl;
+      if (req.session) req.session.redirectUrl = req.originalUrl;
       if (req.accepts("json") && req.xhr) {
         return res.status(401).json({ success: false, message: "Authentication required" });
       }
@@ -32,7 +32,7 @@ function requireRole(...roles) {
 function requirePermission(...permissions) {
   return (req, res, next) => {
     if (!req.isAuthenticated || !req.isAuthenticated()) {
-      req.session.redirectUrl = req.originalUrl;
+      if (req.session) req.session.redirectUrl = req.originalUrl;
       if (req.accepts("json") && req.xhr) {
         return res.status(401).json({ success: false, message: "Authentication required" });
       }
