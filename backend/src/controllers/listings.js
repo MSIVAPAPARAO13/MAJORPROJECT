@@ -2,10 +2,24 @@ const listingService = require("../services/listingService");
 const imageService = require("../services/imageService");
 
 module.exports.index = async (req, res) => {
-  const allListings = await listingService.getAllListings(req.query);
-  const currentCategory = req.query.category || "All";
-  const searchQuery = req.query.q || "";
-  res.render("listings/index.ejs", { allListings, currentCategory, searchQuery });
+  const query = req.validatedQuery || req.query;
+  const allListings = await listingService.getAllListings(query);
+  const currentCategory = query.category || "All";
+  const searchQuery = query.q || "";
+  const pagination = allListings.pagination || {
+    page: 1,
+    limit: 12,
+    total: allListings.length,
+    pages: Math.ceil(allListings.length / 12)
+  };
+
+  res.render("listings/index.ejs", {
+    allListings,
+    currentCategory,
+    searchQuery,
+    pagination,
+    query
+  });
 };
 
 module.exports.renderNewForm = (req, res) => {

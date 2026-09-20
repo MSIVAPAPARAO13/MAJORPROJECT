@@ -3,17 +3,27 @@ const router = express.Router();
 const listingService = require("../../services/listingService");
 const reviewService = require("../../services/reviewService");
 const Review = require("../../models/review");
+const { validateSearchQuery } = require("../../middleware");
 const wrapAsync = require("../../utils/wrapAsync");
 
-// GET /api/listings - Retrieve all properties (PUBLIC)
+// GET /api/listings - Retrieve all properties with search, filter, and pagination (PUBLIC)
 router.get(
   "/",
+  validateSearchQuery,
   wrapAsync(async (req, res) => {
-    const listings = await listingService.getAllListings(req.query);
+    const query = req.validatedQuery || req.query;
+    const listings = await listingService.getAllListings(query);
+    const pagination = listings.pagination || {
+      page: 1,
+      limit: 12,
+      total: listings.length,
+      pages: Math.ceil(listings.length / 12)
+    };
     res.json({
       success: true,
       count: listings.length,
       data: listings,
+      pagination
     });
   })
 );

@@ -4,6 +4,7 @@ const { userSchema } = require("./userValidator");
 const { organizationSchema } = require("./organizationValidator");
 const { roomSchema } = require("./roomValidator");
 const { bookingSchema } = require("./bookingValidator");
+const { searchQuerySchema } = require("./searchValidator");
 
 module.exports = {
   listingSchema,
@@ -11,5 +12,6 @@ module.exports = {
   userSchema,
   organizationSchema,
   roomSchema,
-  bookingSchema
+  bookingSchema,
+  searchQuerySchema
 };

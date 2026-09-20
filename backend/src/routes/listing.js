@@ -5,6 +5,7 @@ const {
   isLoggedIn,
   isOwner,
   validateListing,
+  validateSearchQuery,
   requirePermission,
   requireTenantAccess
 } = require("../middleware");
@@ -17,7 +18,7 @@ const upload = multer({ storage });
 // 1. Browse All Properties (PUBLIC) & Create New Property (Protected by PROPERTY_CREATE)
 router
   .route("/")
-  .get(wrapAsync(listingController.index))
+  .get(validateSearchQuery, wrapAsync(listingController.index))
   .post(
     isLoggedIn,
     requirePermission(PERMISSIONS.PROPERTY_CREATE),

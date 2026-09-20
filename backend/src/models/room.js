@@ -55,5 +55,9 @@ const roomSchema = new Schema({
 // Scoped uniqueness: Room numbers must be unique within a property, but allowed across different properties
 roomSchema.index({ property: 1, roomNumber: 1 }, { unique: true });
 
+// Compound indexes for room-level criteria and availability discovery
+roomSchema.index({ property: 1, status: 1, capacity: 1, price: 1 });
+roomSchema.index({ status: 1, capacity: 1, price: 1 });
+
 const Room = mongoose.model("Room", roomSchema);
 module.exports = Room;

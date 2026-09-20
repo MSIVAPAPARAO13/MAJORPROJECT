@@ -108,6 +108,11 @@ const listingSchema = new Schema({
   }
 }, { timestamps: true });
 
+// Compound indexes for high-performance discovery and sorting
+listingSchema.index({ status: 1, propertyType: 1, price: 1 });
+listingSchema.index({ status: 1, location: 1 });
+listingSchema.index({ status: 1, createdAt: -1 });
+
 // Middleware to cascade delete associated reviews & rooms after a listing is deleted
 listingSchema.post("findOneAndDelete", async function (listing) {
   if (listing) {

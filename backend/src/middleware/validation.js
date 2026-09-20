@@ -3,7 +3,8 @@ const {
   reviewSchema,
   organizationSchema,
   roomSchema,
-  bookingSchema
+  bookingSchema,
+  searchQuerySchema
 } = require("../validators/schema");
 const ExpressError = require("../utils/ExpressError");
 
@@ -62,10 +63,31 @@ const validateBooking = (req, res, next) => {
   next();
 };
 
+// Search Query Validation Middleware
+const validateSearchQuery = (req, res, next) => {
+  const { error, value } = searchQuerySchema.validate(req.query, { abortEarly: false, stripUnknown: true });
+  if (error) {
+    const errorMessage = error.details.map((el) => el.message).join(", ");
+    const isApi = Boolean(
+      (req.originalUrl && req.originalUrl.startsWith("/api/")) ||
+      (req.baseUrl && req.baseUrl.startsWith("/api/")) ||
+      (typeof req.accepts === "function" && req.accepts("json") && !req.accepts("html")) ||
+      req.xhr
+    );
+    if (isApi) {
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+    throw new ExpressError(errorMessage, 400);
+  }
+  req.validatedQuery = value;
+  next();
+};
+
 module.exports = {
   validateListing,
   validateReview,
   validateOrganization,
   validateRoom,
-  validateBooking
+  validateBooking,
+  validateSearchQuery
 };

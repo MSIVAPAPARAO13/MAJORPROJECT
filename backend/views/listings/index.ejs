@@ -47,11 +47,163 @@
   </div>
 </section>
 
+<!-- Advanced Search & Filter Bar -->
+<div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
+  <div class="card-body p-3 p-md-4">
+    <form action="/listings" method="GET" class="row g-2 g-md-3 align-items-end">
+      <!-- Hidden preservation of category if present -->
+      <% if (typeof currentCategory !== 'undefined' && currentCategory && currentCategory !== 'All') { %>
+        <input type="hidden" name="category" value="<%= currentCategory %>">
+      <% } %>
+
+      <!-- Destination / City -->
+      <div class="col-12 col-md-4 col-lg-3">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-location-dot me-1 text-danger"></i> Destination / City</label>
+        <input 
+          type="text" 
+          name="location" 
+          class="form-control form-control-sm rounded-pill px-3" 
+          placeholder="e.g. Goa, Malibu, Mumbai" 
+          value="<%= (typeof query !== 'undefined' && query.location) ? query.location : ((typeof searchQuery !== 'undefined') ? searchQuery : '') %>"
+        >
+      </div>
+
+      <!-- Dates: Check-in -->
+      <div class="col-6 col-md-2 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-calendar me-1"></i> Check-in</label>
+        <input 
+          type="date" 
+          name="checkIn" 
+          class="form-control form-control-sm rounded-pill px-3" 
+          value="<%= (typeof query !== 'undefined' && query.checkIn) ? (new Date(query.checkIn)).toISOString().split('T')[0] : '' %>"
+        >
+      </div>
+
+      <!-- Dates: Check-out -->
+      <div class="col-6 col-md-2 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-calendar me-1"></i> Check-out</label>
+        <input 
+          type="date" 
+          name="checkOut" 
+          class="form-control form-control-sm rounded-pill px-3" 
+          value="<%= (typeof query !== 'undefined' && query.checkOut) ? (new Date(query.checkOut)).toISOString().split('T')[0] : '' %>"
+        >
+      </div>
+
+      <!-- Guests -->
+      <div class="col-6 col-md-2 col-lg-1">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-user me-1"></i> Guests</label>
+        <input 
+          type="number" 
+          name="guests" 
+          min="1" 
+          max="20" 
+          class="form-control form-control-sm rounded-pill px-3 text-center" 
+          placeholder="1"
+          value="<%= (typeof query !== 'undefined' && query.guests) ? query.guests : '' %>"
+        >
+      </div>
+
+      <!-- Property Type -->
+      <div class="col-6 col-md-2 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-building me-1"></i> Type</label>
+        <select name="propertyType" class="form-select form-select-sm rounded-pill px-3">
+          <option value="">All Types</option>
+          <% const propTypes = ["Hotel", "Hostel", "Apartment", "Resort", "Villa", "Guest House", "Homestay"]; %>
+          <% for (let pt of propTypes) { %>
+            <option value="<%= pt %>" <%= (typeof query !== 'undefined' && query.propertyType && query.propertyType.toLowerCase() === pt.toLowerCase()) ? 'selected' : '' %>><%= pt %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- Room Type -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-bed me-1"></i> Room Tier</label>
+        <select name="roomType" class="form-select form-select-sm rounded-pill px-3">
+          <option value="">All Room Tiers</option>
+          <% const roomTypes = ["Deluxe", "Suite", "Dormitory", "Single", "Double", "Triple"]; %>
+          <% for (let rt of roomTypes) { %>
+            <option value="<%= rt %>" <%= (typeof query !== 'undefined' && query.roomType && query.roomType.toLowerCase() === rt.toLowerCase()) ? 'selected' : '' %>><%= rt %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- Price Range (Min - Max) -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-indian-rupee-sign me-1"></i> Min Price</label>
+        <input 
+          type="number" 
+          name="minPrice" 
+          min="0" 
+          step="100" 
+          class="form-control form-control-sm rounded-pill px-3" 
+          placeholder="Min &#8377;"
+          value="<%= (typeof query !== 'undefined' && query.minPrice !== undefined) ? query.minPrice : '' %>"
+        >
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-indian-rupee-sign me-1"></i> Max Price</label>
+        <input 
+          type="number" 
+          name="maxPrice" 
+          min="0" 
+          step="100" 
+          class="form-control form-control-sm rounded-pill px-3" 
+          placeholder="Max &#8377;"
+          value="<%= (typeof query !== 'undefined' && query.maxPrice !== undefined) ? query.maxPrice : '' %>"
+        >
+      </div>
+
+      <!-- Sort -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-arrow-down-short-wide me-1"></i> Sort By</label>
+        <select name="sort" class="form-select form-select-sm rounded-pill px-3">
+          <option value="newest" <%= (typeof query !== 'undefined' && query.sort === 'newest') ? 'selected' : '' %>>Newest First</option>
+          <option value="price_asc" <%= (typeof query !== 'undefined' && query.sort === 'price_asc') ? 'selected' : '' %>>Price: Low to High</option>
+          <option value="price_desc" <%= (typeof query !== 'undefined' && query.sort === 'price_desc') ? 'selected' : '' %>>Price: High to Low</option>
+          <option value="oldest" <%= (typeof query !== 'undefined' && query.sort === 'oldest') ? 'selected' : '' %>>Oldest</option>
+          <option value="title_asc" <%= (typeof query !== 'undefined' && query.sort === 'title_asc') ? 'selected' : '' %>>Name: A to Z</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-12 col-md-3 col-lg-3 d-flex gap-2">
+        <button type="submit" class="btn btn-danger btn-sm rounded-pill px-4 flex-grow-1 shadow-sm fw-bold">
+          <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+        </button>
+        <a href="/listings" class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm">
+          Reset
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Active Search Indicator -->
-<% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
-  <div class="alert alert-light border d-flex justify-content-between align-items-center py-2 px-3 mb-4 rounded-3 shadow-sm">
-    <span class="small"><i class="fa-solid fa-magnifying-glass me-2 text-danger"></i>Search results for: <b>"<%= searchQuery %>"</b> (<%= allListings.length %> found)</span>
-    <a href="/listings" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1">Clear Filter</a>
+<% 
+  const activeFilters = [];
+  if (typeof query !== 'undefined') {
+    if (query.q) activeFilters.push(`Keyword: "${query.q}"`);
+    if (query.location) activeFilters.push(`Location: "${query.location}"`);
+    if (query.propertyType) activeFilters.push(`Type: ${query.propertyType}`);
+    if (query.roomType) activeFilters.push(`Room: ${query.roomType}`);
+    if (query.guests) activeFilters.push(`Guests: ${query.guests}+`);
+    if (query.checkIn && query.checkOut) activeFilters.push(`Dates: ${new Date(query.checkIn).toLocaleDateString()} to ${new Date(query.checkOut).toLocaleDateString()}`);
+    if (query.minPrice || query.maxPrice) activeFilters.push(`Price: ₹${query.minPrice || 0} - ₹${query.maxPrice || 'Any'}`);
+  }
+%>
+<% if (activeFilters.length > 0 || (typeof searchQuery !== 'undefined' && searchQuery)) { %>
+  <div class="alert alert-light border d-flex flex-wrap justify-content-between align-items-center py-2 px-3 mb-4 rounded-3 shadow-sm gap-2">
+    <div class="small">
+      <i class="fa-solid fa-filter me-2 text-danger"></i>
+      <b>Active Filters:</b>
+      <% for (let filterText of activeFilters) { %>
+        <span class="badge bg-white text-dark border me-1"><%= filterText %></span>
+      <% } %>
+      <span class="text-muted ms-1">(<%= (typeof pagination !== 'undefined' && pagination.total !== undefined) ? pagination.total : allListings.length %> properties found)</span>
+    </div>
+    <a href="/listings" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1">Clear All</a>
   </div>
 <% } %>
 
@@ -104,6 +256,55 @@
       </div>
     <% } %>
   </section>
+
+  <!-- Server-Side Pagination Controls -->
+  <% if (typeof pagination !== 'undefined' && pagination.pages > 1) { %>
+    <%
+      function buildPaginationUrl(targetPage) {
+        const queryObj = Object.assign({}, typeof query !== 'undefined' ? query : {});
+        queryObj.page = targetPage;
+        const params = [];
+        for (let key in queryObj) {
+          if (queryObj[key] !== undefined && queryObj[key] !== "") {
+            params.push(encodeURIComponent(key) + "=" + encodeURIComponent(queryObj[key]));
+          }
+        }
+        return "/listings?" + params.join("&");
+      }
+    %>
+    <nav aria-label="Properties pagination" class="mt-5 mb-4">
+      <ul class="pagination justify-content-center">
+        <!-- Previous Page -->
+        <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+          <a class="page-link rounded-pill me-2 px-3" href="<%= pagination.page <= 1 ? '#' : buildPaginationUrl(pagination.page - 1) %>" aria-label="Previous">
+            <span aria-hidden="true">&laquo; Previous</span>
+          </a>
+        </li>
+
+        <!-- Page Numbers -->
+        <% for (let p = 1; p <= pagination.pages; p++) { %>
+          <% if (p === 1 || p === pagination.pages || (p >= pagination.page - 2 && p <= pagination.page + 2)) { %>
+            <li class="page-item <%= p === pagination.page ? 'active' : '' %>">
+              <a class="page-link rounded-circle mx-1 text-center" style="width: 38px; height: 38px; line-height: 22px;" href="<%= buildPaginationUrl(p) %>"><%= p %></a>
+            </li>
+          <% } else if (p === pagination.page - 3 || p === pagination.page + 3) { %>
+            <li class="page-item disabled"><span class="page-link border-0">...</span></li>
+          <% } %>
+        <% } %>
+
+        <!-- Next Page -->
+        <li class="page-item <%= pagination.page >= pagination.pages ? 'disabled' : '' %>">
+          <a class="page-link rounded-pill ms-2 px-3" href="<%= pagination.page >= pagination.pages ? '#' : buildPaginationUrl(pagination.page + 1) %>" aria-label="Next">
+            <span aria-hidden="true">Next &raquo;</span>
+          </a>
+        </li>
+      </ul>
+      <div class="text-center text-muted small mt-2">
+        Showing <%= ((pagination.page - 1) * pagination.limit) + 1 %> to <%= Math.min(pagination.total, pagination.page * pagination.limit) %> of <%= pagination.total %> properties
+      </div>
+    </nav>
+  <% } %>
+
 <% } else { %>
   <!-- Empty Search/Filter State -->
   <div class="text-center py-5 my-5 bg-light rounded-4 p-5 shadow-sm">
@@ -111,7 +312,7 @@
       <i class="fa-solid fa-hotel fa-4x text-secondary opacity-50"></i>
     </div>
     <h4 class="fw-bold">No Properties Found</h4>
-    <p class="text-muted">We couldn't find any properties matching your criteria. Try adjusting your search or category filter.</p>
+    <p class="text-muted">We couldn't find any properties matching your criteria. Try adjusting your search, dates, or price filter.</p>
     <a href="/listings" class="btn btn-danger rounded-pill px-4 mt-2 shadow-sm">Browse All Properties</a>
   </div>
 <% } %>

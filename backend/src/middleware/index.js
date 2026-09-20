@@ -5,7 +5,8 @@ const {
   validateReview,
   validateOrganization,
   validateRoom,
-  validateBooking
+  validateBooking,
+  validateSearchQuery
 } = require("./validation");
 const { requireRole, requirePermission } = require("./authorization");
 const { requireTenantAccess } = require("./tenant");
@@ -22,6 +23,7 @@ module.exports = {
   validateOrganization,
   validateRoom,
   validateBooking,
+  validateSearchQuery,
   requireRole,
   requirePermission,
   requireTenantAccess,
