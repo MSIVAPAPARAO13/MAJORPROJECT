@@ -5,9 +5,36 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js"
+    "dev": "node src/server.js",
+
+    "test:phase3": "node tests/phase3_authorization.test.js",
+    "test:phase4": "node tests/phase4_room_management.test.js",
+    "test:phase5": "node tests/phase5_booking_engine.test.js",
+    "test:phase6": "node tests/phase6_search_discovery.test.js",
+    "test:phase7": "node tests/phase7_images_maps.test.js",
+    "test:phase8": "node tests/phase8_dashboard_analytics.test.js",
+    "test:phase9": "node tests/phase9_customer_experience.test.js",
+    "test:phase10": "node tests/phase10_security_hardening.test.js",
+
+    "test:unit": "node tests/unit/unit.test.js",
+    "test:integration:bookings": "node tests/integration/bookingEdgeCases.test.js",
+    "test:integration:services": "node tests/integration/serviceInteractions.test.js",
+    "test:e2e": "node tests/e2e/userJourneys.test.js",
+
+    "test:phase11": "npm run test:unit && npm run test:integration:bookings && npm run test:integration:services && npm run test:e2e",
+
+    "test:regression": "npm run test:phase3 && npm run test:phase4 && npm run test:phase5 && npm run test:phase6 && npm run test:phase7 && npm run test:phase8 && npm run test:phase9 && npm run test:phase10",
+
+    "test:all": "npm run test:regression && npm run test:phase11"
   },
-  "keywords": ["express", "mongodb", "mongoose", "hospitality", "saas", "api"],
+  "keywords": [
+    "express",
+    "mongodb",
+    "mongoose",
+    "hospitality",
+    "saas",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -29,5 +56,8 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2"
   }
 }

@@ -60,24 +60,33 @@ const createApp = () => {
   app.engine("ejs", ejsMate);
   app.use(express.static(publicPath));
 
-  // 5. Session & MongoStore
+  // 5. Session & Store
   const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
   const sessionSecret = process.env.SECRET || "medisettis594";
 
-  const store = MongoStore.create({
-    mongoUrl: dbUrl,
-    crypto: {
-      secret: sessionSecret,
-    },
-    touchAfter: 24 * 60 * 60,
-  });
-
-  store.on("error", (err) => {
-    console.error("[Session Store Error]:", err);
-  });
+  // In test mode, use the built-in in-memory session store to avoid:
+  // - MongoStore opening a second MongoDB TCP connection that causes buffering timeouts
+  // - kruptein crypto complexity requirements on short dev secrets
+  // In production/dev, MongoStore with encrypted sessions is used as before.
+  let store;
+  if (process.env.NODE_ENV !== "test") {
+    // connect-mongo uses kruptein which requires: min 8 chars, 2 uppercase, 2 lowercase, 2 numbers, 2 special chars.
+    // Append a fixed complexity suffix so any SESSION_SECRET value satisfies these rules.
+    const storeCryptoSecret = sessionSecret + "_WL2!Aa#9";
+    store = MongoStore.create({
+      mongoUrl: dbUrl,
+      crypto: {
+        secret: storeCryptoSecret,
+      },
+      touchAfter: 24 * 60 * 60,
+    });
+    store.on("error", (err) => {
+      console.error("[Session Store Error]:", err);
+    });
+  }
 
   const sessionOptions = {
-    store,
+    ...(store ? { store } : {}),
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,

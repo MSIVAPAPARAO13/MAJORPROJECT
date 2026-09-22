@@ -82,4 +82,5 @@ function csrfMiddleware(req, res, next) {
   next();
 }
 
+csrfMiddleware.safeCompare = safeCompare;
 module.exports = csrfMiddleware;

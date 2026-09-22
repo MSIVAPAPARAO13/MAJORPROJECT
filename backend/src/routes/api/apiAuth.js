@@ -27,6 +27,7 @@ router.post(
   wrapAsync(async (req, res, next) => {
     // Security Requirement: Public signup MUST NOT accept client-supplied role, organization, or permissions.
     // Every public signup is unconditionally assigned role: 'CUSTOMER' and organization: null.
+    const { username, email, password, phone } = req.body;
     const newUser = new User({
       username: (username || "").trim(),
       email: (email || "").trim(),
@@ -34,6 +35,7 @@ router.post(
       organization: null,
       phone: phone ? phone.trim() : undefined,
     });
+
 
     try {
       const registeredUser = await User.register(newUser, password);

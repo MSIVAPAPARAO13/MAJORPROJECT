@@ -3,7 +3,9 @@
 const isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.session.redirectUrl = req.originalUrl;
-    if (req.accepts("json") && req.xhr) {
+    // Return JSON 401 for API routes (React/REST clients) or explicit JSON Accept header
+    const isApiRoute = req.originalUrl && req.originalUrl.startsWith("/api/");
+    if (isApiRoute || (req.accepts("json") && req.xhr)) {
       return res.status(401).json({ success: false, message: "Authentication required" });
     }
     req.flash("error", "You must be logged in to access that page");
