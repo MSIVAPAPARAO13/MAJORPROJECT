@@ -52,22 +52,22 @@
       <div class="navbar-nav me-auto align-items-lg-center">
         <a class="nav-link fw-semibold" href="/listings"><i class="fa-solid fa-compass me-1"></i> Explore</a>
 
-        <% if (currentUser && (currentUser.role === 'OWNER' || currentUser.role === 'MANAGER')) { %>
+        <% if (locals.currentUser && (locals.currentUser.role === 'OWNER' || locals.currentUser.role === 'MANAGER')) { %>
           <a class="nav-link fw-semibold" href="/dashboard"><i class="fa-solid fa-chart-line me-1 text-primary"></i> Dashboard</a>
           <a class="nav-link fw-semibold" href="/listings/new"><i class="fa-solid fa-plus-circle me-1 text-danger"></i> Add Property</a>
         <% } %>
 
-        <% if (currentUser && currentUser.role === 'STAFF') { %>
+        <% if (locals.currentUser && locals.currentUser.role === 'STAFF') { %>
           <a class="nav-link fw-semibold" href="/dashboard"><i class="fa-solid fa-clipboard-user me-1 text-primary"></i> Operations</a>
         <% } %>
 
-        <% if (currentUser && currentUser.role === 'ADMIN') { %>
+        <% if (locals.currentUser && locals.currentUser.role === 'ADMIN') { %>
           <a class="nav-link fw-semibold text-danger" href="/dashboard"><i class="fa-solid fa-shield-halved me-1"></i> Admin Console</a>
           <a class="nav-link fw-semibold" href="/listings/new"><i class="fa-solid fa-plus-circle me-1 text-danger"></i> Add Property</a>
           <a class="nav-link fw-semibold" href="/organizations/new"><i class="fa-solid fa-building me-1 text-secondary"></i> Register Org</a>
         <% } %>
 
-        <% if (currentUser && currentUser.role === 'CUSTOMER') { %>
+        <% if (locals.currentUser && locals.currentUser.role === 'CUSTOMER') { %>
           <a class="nav-link fw-semibold" href="/bookings"><i class="fa-solid fa-suitcase me-1 text-danger"></i> My Trips</a>
           <a class="nav-link fw-semibold" href="/dashboard"><i class="fa-solid fa-user me-1"></i> Dashboard</a>
         <% } %>
@@ -92,37 +92,37 @@
 
       <!-- Right Navigation & Role Account Menu -->
       <div class="navbar-nav ms-auto align-items-lg-center gap-1">
-        <% if (!currentUser) { %>
+        <% if (!locals.currentUser) { %>
           <a class="nav-link fw-semibold" href="/signup">Sign Up</a>
           <a class="nav-link fw-semibold" href="/login">Log In</a>
         <% } else { %>
           <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-1 fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-circle-user fa-lg text-secondary"></i>
-              <span>@<%= currentUser.username %></span>
+              <span>@<%= locals.currentUser.username %></span>
               <% 
                 let badgeClass = 'bg-secondary';
-                if (currentUser.role === 'ADMIN') badgeClass = 'bg-danger';
-                else if (currentUser.role === 'OWNER') badgeClass = 'bg-primary';
-                else if (currentUser.role === 'MANAGER') badgeClass = 'bg-info text-dark';
-                else if (currentUser.role === 'STAFF') badgeClass = 'bg-warning text-dark';
+                if (locals.currentUser.role === 'ADMIN') badgeClass = 'bg-danger';
+                else if (locals.currentUser.role === 'OWNER') badgeClass = 'bg-primary';
+                else if (locals.currentUser.role === 'MANAGER') badgeClass = 'bg-info text-dark';
+                else if (locals.currentUser.role === 'STAFF') badgeClass = 'bg-warning text-dark';
               %>
-              <span class="badge <%= badgeClass %> role-badge"><%= currentUser.role %></span>
+              <span class="badge <%= badgeClass %> role-badge"><%= locals.currentUser.role %></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
-              <li><h6 class="dropdown-header">Signed in as <b><%= currentUser.username %></b></h6></li>
+              <li><h6 class="dropdown-header">Signed in as <b><%= locals.currentUser.username %></b></h6></li>
               
-              <% if (currentUser.role === 'CUSTOMER') { %>
+              <% if (locals.currentUser.role === 'CUSTOMER') { %>
                 <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-user me-2 text-secondary"></i>Customer Dashboard</a></li>
                 <li><a class="dropdown-item" href="/bookings"><i class="fa-solid fa-suitcase me-2 text-danger"></i>My Trips</a></li>
-              <% } else if (currentUser.role === 'STAFF') { %>
+              <% } else if (locals.currentUser.role === 'STAFF') { %>
                 <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-clipboard-user me-2 text-primary"></i>Operations Desk</a></li>
                 <li><a class="dropdown-item" href="/listings"><i class="fa-solid fa-hotel me-2 text-secondary"></i>Properties & Rooms</a></li>
-              <% } else if (currentUser.role === 'OWNER' || currentUser.role === 'MANAGER') { %>
+              <% } else if (locals.currentUser.role === 'OWNER' || locals.currentUser.role === 'MANAGER') { %>
                 <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-chart-line me-2 text-primary"></i>Management Dashboard</a></li>
                 <li><a class="dropdown-item" href="/listings"><i class="fa-solid fa-hotel me-2 text-secondary"></i>Properties</a></li>
                 <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-plus-circle me-2 text-danger"></i>New Property</a></li>
-              <% } else if (currentUser.role === 'ADMIN') { %>
+              <% } else if (locals.currentUser.role === 'ADMIN') { %>
                 <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-shield-halved me-2 text-danger"></i>Platform Console</a></li>
                 <li><a class="dropdown-item" href="/listings"><i class="fa-solid fa-hotel me-2 text-secondary"></i>Properties</a></li>
                 <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-plus-circle me-2 text-danger"></i>New Property</a></li>

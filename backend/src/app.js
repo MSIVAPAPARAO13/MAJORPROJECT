@@ -67,6 +67,14 @@ const createApp = () => {
   app.engine("ejs", ejsMate);
   app.use(express.static(publicPath));
 
+  // Early View Locals (guarantees currentUser, success, and error are always defined even during early session errors)
+  app.use((req, res, next) => {
+    res.locals.currentUser = null;
+    res.locals.success = [];
+    res.locals.error = [];
+    next();
+  });
+
   // 5. Session & Store
   const dbUrl = process.env.MONGODB_URI || process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
   const sessionSecret = process.env.SESSION_SECRET || process.env.SECRET || "medisettis594";
@@ -191,6 +199,12 @@ const createApp = () => {
 
   // 14. Centralized Production-Hardened Error Handler
   app.use((err, req, res, next) => {
+    // Gracefully handle stale or corrupt session cookie decryption error
+    if (err instanceof SyntaxError && err.message && err.message.includes("is not valid JSON")) {
+      res.clearCookie("connect.sid");
+      return res.redirect("/listings");
+    }
+
     let { statusCode = 500, message = "Something went wrong" } = err;
 
     // Production Hardening: Never leak stack traces, MongoDB internals, or filesystem paths to users
