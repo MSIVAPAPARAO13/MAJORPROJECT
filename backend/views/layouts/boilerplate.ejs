@@ -48,11 +48,12 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
+  <a href="#main-content" class="visually-hidden-focusable btn btn-danger m-2 position-absolute" style="z-index: 1060;">Skip to main content</a>
   <header>
     <%- include("../includes/navbar.ejs") %>
   </header>
 
-  <main class="container my-4 flex-grow-1">
+  <main id="main-content" class="container my-4 flex-grow-1">
     <%- include("../includes/flash.ejs") %>
     <%- body %>
   </main>

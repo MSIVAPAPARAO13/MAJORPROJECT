@@ -178,7 +178,7 @@ const createApp = () => {
     if (req.path.startsWith("/api/")) {
       return res.status(statusCode).json({ success: false, message });
     }
-    res.status(statusCode).render("error.ejs", { message });
+    res.status(statusCode).render("error.ejs", { message, statusCode });
   });
 
   return app;

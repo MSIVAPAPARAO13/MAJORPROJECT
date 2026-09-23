@@ -95,7 +95,7 @@
         <!-- Submit Controls -->
         <div class="d-flex justify-content-end gap-2">
           <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
-          <button class="btn btn-danger px-5 rounded-pill shadow-sm" type="submit">Update Property</button>
+          <button class="btn btn-danger px-5 rounded-pill shadow-sm" type="submit" data-submitting-text="Updating Property...">Update Property</button>
         </div>
 
       </form>
@@ -119,11 +119,11 @@
         <label for="galleryImages" class="form-label fw-semibold small">Upload Additional Photos (Max 10 at once)</label>
         <div class="input-group">
           <input type="file" id="galleryImages" name="images" class="form-control" accept="image/*" multiple required />
-          <button class="btn btn-danger px-4" type="submit">
+          <button class="btn btn-danger px-4" type="submit" data-submitting-text="Uploading...">
             <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload
           </button>
         </div>
-        <small class="text-muted mt-1 d-block">Supported formats: JPG, PNG, WEBP.</small>
+        <small class="text-muted mt-1 d-block">Supported formats: JPG, PNG, WEBP (Max 5MB per file).</small>
       </form>
 
       <!-- Existing Images Grid -->
@@ -142,8 +142,8 @@
                 
                 <% if (img.isPrimary) { %>
                   <div class="position-absolute top-0 start-0 m-2">
-                    <span class="badge bg-success shadow-sm">
-                      <i class="fa-solid fa-star me-1"></i>Primary Cover
+                    <span class="badge bg-danger shadow-sm fw-bold">
+                      <i class="fa-solid fa-star me-1"></i>PRIMARY
                     </span>
                   </div>
                 <% } %>

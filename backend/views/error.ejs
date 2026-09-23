@@ -1,7 +1,91 @@
 <% layout("/layouts/boilerplate.ejs") %>
-<div class="row margin-top-3">
-  <div class="alert alert-danger col-6 offset-3" role="alert">
-    <p class="alert-heading"><%= message %></p>
+
+<% 
+  const code = typeof statusCode !== 'undefined' ? statusCode : 500;
+  let errorTitle = "Something Went Wrong";
+  let errorSubtitle = "An unexpected error occurred while processing your request.";
+  let iconClass = "fa-solid fa-triangle-exclamation text-danger";
+  let primaryActionUrl = "/listings";
+  let primaryActionLabel = "Browse All Stays";
+
+  if (code === 400) {
+    errorTitle = "Invalid Request";
+    errorSubtitle = "The information provided was invalid or incomplete. Please verify your input and try again.";
+    iconClass = "fa-solid fa-circle-xmark text-warning";
+  } else if (code === 401) {
+    errorTitle = "Sign In Required";
+    errorSubtitle = "Please sign in to continue accessing this page or reservation.";
+    iconClass = "fa-solid fa-lock text-primary";
+    primaryActionUrl = "/login";
+    primaryActionLabel = "Log In";
+  } else if (code === 403) {
+    errorTitle = "Access Restricted";
+    errorSubtitle = "You don't have permission to perform this action or view this resource.";
+    iconClass = "fa-solid fa-shield-halved text-danger";
+    primaryActionUrl = "/listings";
+    primaryActionLabel = "Return to Explore";
+  } else if (code === 404) {
+    errorTitle = "Page or Resource Not Found";
+    errorSubtitle = "The requested page, property, or booking could not be found or may have moved.";
+    iconClass = "fa-solid fa-compass-slash text-secondary";
+    primaryActionUrl = "/listings";
+    primaryActionLabel = "Explore Stays";
+  } else if (code === 409) {
+    errorTitle = "Availability Conflict";
+    errorSubtitle = "The room is no longer available for these dates, or a conflicting booking was placed.";
+    iconClass = "fa-solid fa-calendar-xmark text-danger";
+    primaryActionUrl = "/listings";
+    primaryActionLabel = "Check Other Stays";
+  } else if (code === 429) {
+    errorTitle = "Too Many Requests";
+    errorSubtitle = "Rate limit reached. Please wait a brief moment before submitting your request again.";
+    iconClass = "fa-solid fa-gauge-high text-warning";
+  } else if (code >= 500) {
+    errorTitle = "Server Error";
+    errorSubtitle = "Something went wrong on our end. Please try again shortly.";
+    iconClass = "fa-solid fa-server text-danger";
+  }
+%>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9 col-sm-11">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white text-center">
+        <!-- Error Status Icon -->
+        <div class="mb-3">
+          <span class="badge bg-light p-3 rounded-circle" style="width: 5rem; height: 5rem; display: inline-flex; align-items: center; justify-content: center;">
+            <i class="<%= iconClass %> fa-3x"></i>
+          </span>
+        </div>
+
+        <span class="badge bg-light text-secondary border font-monospace px-3 py-1 rounded-pill mx-auto mb-2">
+          ERROR <%= code %>
+        </span>
+
+        <h2 class="fw-bold mb-2 text-dark"><%= errorTitle %></h2>
+        <p class="text-secondary mb-4" style="line-height: 1.6;"><%= errorSubtitle %></p>
+
+        <!-- Specific Message Banner -->
+        <% if (typeof message !== 'undefined' && message && message !== 'Something went wrong') { %>
+          <div class="alert alert-light border text-start rounded-3 p-3 mb-4 mx-auto w-100" role="alert">
+            <p class="alert-heading mb-0 small text-secondary">
+              <i class="fa-solid fa-circle-info me-2 text-primary"></i>
+              <b>Details:</b> <%= message %>
+            </p>
+          </div>
+        <% } %>
+
+        <!-- Helpful Navigation Actions -->
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+          <a href="<%= primaryActionUrl %>" class="btn btn-danger rounded-pill px-4 shadow-sm fw-semibold">
+            <i class="fa-solid fa-compass me-1"></i> <%= primaryActionLabel %>
+          </a>
+          <a href="javascript:history.back()" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Go Back
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

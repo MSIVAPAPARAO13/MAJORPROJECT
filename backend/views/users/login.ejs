@@ -13,18 +13,18 @@
         <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
         
         <div class="mb-3">
-          <label for="username" class="form-label fw-semibold">Username</label>
-          <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required />
+          <label for="username" class="form-label fw-semibold required-field">Username</label>
+          <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" autocomplete="username" required />
           <div class="invalid-feedback">Please enter your username.</div>
         </div>
 
         <div class="mb-4">
-          <label for="password" class="form-label fw-semibold">Password</label>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required />
+          <label for="password" class="form-label fw-semibold required-field">Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" autocomplete="current-password" required />
           <div class="invalid-feedback">Please enter your password.</div>
         </div>
 
-        <button class="btn btn-danger w-100 py-2 rounded-pill shadow-sm fw-semibold" type="submit">Log In</button>
+        <button class="btn btn-danger w-100 py-2 rounded-pill shadow-sm fw-semibold" type="submit" data-submitting-text="Signing in...">Log In</button>
 
         <div class="text-center mt-3">
           <span class="text-muted small">Don't have an account? </span>

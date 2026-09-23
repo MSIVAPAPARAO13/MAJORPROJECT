@@ -1,24 +1,23 @@
 <% if(success && success.length){ %>
-    <div class="alert alert-success alert-dismissible fade show col-6 offset-3" role="alert">
-        <%= success %>
-        <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-
+  <div class="row justify-content-center mb-3">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-check fs-5 me-2 flex-shrink-0 text-success"></i>
+        <div class="flex-grow-1"><%= success %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
     </div>
-    <% } %>
-    <% if(error && error.length){ %>
-        <div class="alert alert-danger alert-dismissible fade show col-6 offset-3" role="alert">
-            <%= error %>
-            <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+  </div>
+<% } %>
 
-        </div>
-        <% } %>
+<% if(error && error.length){ %>
+  <div class="row justify-content-center mb-3">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+        <i class="fa-solid fa-triangle-exclamation fs-5 me-2 flex-shrink-0 text-danger"></i>
+        <div class="flex-grow-1"><%= error %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+<% } %>

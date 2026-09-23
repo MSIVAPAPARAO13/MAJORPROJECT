@@ -3,7 +3,7 @@
   background-color: #fe424d;
   color: #fff;
   border-radius: 25px;
-  padding: 0.5rem 1.2rem;
+  padding: 0.45rem 1.2rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -20,47 +20,61 @@
 }
 .search-inp {
   border-radius: 25px;
-  padding: 0.5rem 1.5rem;
-  font-size: 0.95rem;
-  min-width: 260px;
+  padding: 0.45rem 1.4rem;
+  font-size: 0.92rem;
+  min-width: 250px;
 }
 .navbar-brand {
   color: #fe424d !important;
-  font-size: 1.6rem;
+  font-size: 1.55rem;
 }
 .role-badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   vertical-align: middle;
-  margin-left: 0.25rem;
+  margin-left: 0.35rem;
+  letter-spacing: 0.5px;
 }
 </style>
 
-<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top shadow-sm py-2">
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top shadow-sm py-2" aria-label="Main Navigation">
   <div class="container-fluid px-md-4">
     <a class="navbar-brand d-flex align-items-center gap-2" href="/listings">
       <i class="fa-regular fa-compass text-danger"></i>
       <span class="fw-bold fs-4 text-danger d-none d-sm-inline">WanderLust</span>
     </a>
     
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <!-- Left Navigation -->
-      <div class="navbar-nav me-auto">
+      <!-- Role-Aware Left Navigation -->
+      <div class="navbar-nav me-auto align-items-lg-center">
         <a class="nav-link fw-semibold" href="/listings"><i class="fa-solid fa-compass me-1"></i> Explore</a>
-        <% if (currentUser && (currentUser.role === 'OWNER' || currentUser.role === 'ADMIN' || currentUser.role === 'MANAGER')) { %>
-          <a class="nav-link fw-semibold text-primary" href="/dashboard"><i class="fa-solid fa-chart-line me-1"></i> Property Dashboard</a>
+
+        <% if (currentUser && (currentUser.role === 'OWNER' || currentUser.role === 'MANAGER')) { %>
+          <a class="nav-link fw-semibold" href="/dashboard"><i class="fa-solid fa-chart-line me-1 text-primary"></i> Dashboard</a>
+          <a class="nav-link fw-semibold" href="/listings/new"><i class="fa-solid fa-plus-circle me-1 text-danger"></i> Add Property</a>
         <% } %>
+
+        <% if (currentUser && currentUser.role === 'STAFF') { %>
+          <a class="nav-link fw-semibold" href="/dashboard"><i class="fa-solid fa-clipboard-user me-1 text-primary"></i> Operations</a>
+        <% } %>
+
+        <% if (currentUser && currentUser.role === 'ADMIN') { %>
+          <a class="nav-link fw-semibold text-danger" href="/dashboard"><i class="fa-solid fa-shield-halved me-1"></i> Admin Console</a>
+          <a class="nav-link fw-semibold" href="/listings/new"><i class="fa-solid fa-plus-circle me-1 text-danger"></i> Add Property</a>
+          <a class="nav-link fw-semibold" href="/organizations/new"><i class="fa-solid fa-building me-1 text-secondary"></i> Register Org</a>
+        <% } %>
+
         <% if (currentUser && currentUser.role === 'CUSTOMER') { %>
-          <a class="nav-link fw-semibold" href="/bookings"><i class="fa-solid fa-suitcase me-1"></i> My Trips</a>
+          <a class="nav-link fw-semibold" href="/bookings"><i class="fa-solid fa-suitcase me-1 text-danger"></i> My Trips</a>
           <a class="nav-link fw-semibold" href="/dashboard"><i class="fa-solid fa-user me-1"></i> Dashboard</a>
         <% } %>
       </div>
 
       <!-- Functional Centered Search Form -->
-      <div class="mx-auto my-2 my-md-0">
+      <div class="mx-auto my-2 my-lg-0">
         <form class="d-flex" role="search" action="/listings" method="GET">
           <input 
             class="form-control me-2 search-inp" 
@@ -68,41 +82,55 @@
             name="q" 
             placeholder="Search city, hostel, hotel, or country..." 
             value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
-            aria-label="Search" 
+            aria-label="Search properties" 
           />
-          <button class="btn search-btn" type="submit">
+          <button class="btn search-btn" type="submit" aria-label="Submit search">
             <i class="fa-solid fa-magnifying-glass"></i> Search
           </button>
         </form>
       </div>
 
-      <!-- Right Navigation -->
-      <div class="navbar-nav ms-auto align-items-md-center gap-1">
-        <% if (currentUser && (currentUser.role === 'OWNER' || currentUser.role === 'ADMIN' || currentUser.role === 'MANAGER')) { %>
-          <a class="nav-link fw-semibold" href="/listings/new">
-            <i class="fa-solid fa-plus-circle text-danger me-1"></i> Add Property
-          </a>
-        <% } %>
-
+      <!-- Right Navigation & Role Account Menu -->
+      <div class="navbar-nav ms-auto align-items-lg-center gap-1">
         <% if (!currentUser) { %>
-          <a class="nav-link" href="/signup"><b>Sign Up</b></a>
-          <a class="nav-link" href="/login"><b>Log in</b></a>
+          <a class="nav-link fw-semibold" href="/signup">Sign Up</a>
+          <a class="nav-link fw-semibold" href="/login">Log In</a>
         <% } else { %>
           <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-1 fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-circle-user fa-lg text-secondary"></i>
               <span>@<%= currentUser.username %></span>
-              <span class="badge bg-danger role-badge"><%= currentUser.role %></span>
+              <% 
+                let badgeClass = 'bg-secondary';
+                if (currentUser.role === 'ADMIN') badgeClass = 'bg-danger';
+                else if (currentUser.role === 'OWNER') badgeClass = 'bg-primary';
+                else if (currentUser.role === 'MANAGER') badgeClass = 'bg-info text-dark';
+                else if (currentUser.role === 'STAFF') badgeClass = 'bg-warning text-dark';
+              %>
+              <span class="badge <%= badgeClass %> role-badge"><%= currentUser.role %></span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-              <li><h6 class="dropdown-header">Logged in as <%= currentUser.username %></h6></li>
-              <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-user me-2"></i>Dashboard</a></li>
-              <li><a class="dropdown-item" href="/bookings"><i class="fa-solid fa-suitcase me-2"></i>My Trips</a></li>
-              <% if (currentUser.role === 'OWNER' || currentUser.role === 'ADMIN' || currentUser.role === 'MANAGER') { %>
-                <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-hotel me-2"></i>New Listing</a></li>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
+              <li><h6 class="dropdown-header">Signed in as <b><%= currentUser.username %></b></h6></li>
+              
+              <% if (currentUser.role === 'CUSTOMER') { %>
+                <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-user me-2 text-secondary"></i>Customer Dashboard</a></li>
+                <li><a class="dropdown-item" href="/bookings"><i class="fa-solid fa-suitcase me-2 text-danger"></i>My Trips</a></li>
+              <% } else if (currentUser.role === 'STAFF') { %>
+                <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-clipboard-user me-2 text-primary"></i>Operations Desk</a></li>
+                <li><a class="dropdown-item" href="/listings"><i class="fa-solid fa-hotel me-2 text-secondary"></i>Properties & Rooms</a></li>
+              <% } else if (currentUser.role === 'OWNER' || currentUser.role === 'MANAGER') { %>
+                <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-chart-line me-2 text-primary"></i>Management Dashboard</a></li>
+                <li><a class="dropdown-item" href="/listings"><i class="fa-solid fa-hotel me-2 text-secondary"></i>Properties</a></li>
+                <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-plus-circle me-2 text-danger"></i>New Property</a></li>
+              <% } else if (currentUser.role === 'ADMIN') { %>
+                <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-shield-halved me-2 text-danger"></i>Platform Console</a></li>
+                <li><a class="dropdown-item" href="/listings"><i class="fa-solid fa-hotel me-2 text-secondary"></i>Properties</a></li>
+                <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-plus-circle me-2 text-danger"></i>New Property</a></li>
+                <li><a class="dropdown-item" href="/organizations/new"><i class="fa-solid fa-building me-2 text-primary"></i>Register Org</a></li>
               <% } %>
+              
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Log out</a></li>
+              <li><a class="dropdown-item text-danger fw-semibold" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Log out</a></li>
             </ul>
           </div>
         <% } %>
