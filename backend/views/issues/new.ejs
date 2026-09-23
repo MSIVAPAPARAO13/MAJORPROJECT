@@ -1,0 +1,61 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4" style="max-width: 700px;">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/listings">Properties</a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>"><%= listing ? listing.title : 'Property' %></a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>/rooms/<%= roomId %>">Room <%= room ? room.roomNumber : '' %></a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues">Service Issues</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Report Issue</li>
+    </ol>
+  </nav>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <h3 class="fw-bold mb-1">
+      <i class="fa-solid fa-wrench text-primary me-2"></i>Report Service Issue
+    </h3>
+    <p class="text-muted small mb-4">
+      Log an operational or maintenance problem for <strong>Room <%= room ? room.roomNumber : '' %></strong> (<%= listing ? listing.title : '' %>).
+    </p>
+
+    <form action="/listings/<%= listingId %>/rooms/<%= roomId %>/issues" method="POST" class="needs-validation" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <!-- Issue Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label fw-semibold">Issue Title <span class="text-danger">*</span></label>
+        <input type="text" name="issue[title]" id="title" class="form-control rounded-3" placeholder="e.g. Bathroom shower leakage, AC not cooling" required>
+        <div class="invalid-feedback">Please provide a descriptive title.</div>
+      </div>
+
+      <!-- Priority -->
+      <div class="mb-3">
+        <label for="priority" class="form-label fw-semibold">Operational Priority <span class="text-danger">*</span></label>
+        <select name="issue[priority]" id="priority" class="form-select rounded-3" required>
+          <option value="MEDIUM" selected>MEDIUM — Operational attention required</option>
+          <option value="HIGH">HIGH — Blocks guest check-in (Guest Impact Alert)</option>
+          <option value="LOW">LOW — Minor cosmetic or preventative task</option>
+        </select>
+        <div class="form-text">HIGH priority issues immediately trigger Guest Impact Alerts for upcoming check-ins.</div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <label for="description" class="form-label fw-semibold">Detailed Description <span class="text-danger">*</span></label>
+        <textarea name="issue[description]" id="description" rows="4" class="form-control rounded-3" placeholder="Describe the problem, location inside the room, and necessary corrective action..." required></textarea>
+        <div class="invalid-feedback">Please enter the issue details.</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex justify-content-between align-items-center">
+        <a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues" class="btn btn-outline-secondary rounded-pill px-4">
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-primary rounded-pill px-4" data-submitting-text="Reporting issue...">
+          <i class="fa-solid fa-check me-1"></i> Submit Issue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -5,6 +5,7 @@ const Listing = require("../models/listing");
 const User = require("../models/user");
 const Organization = require("../models/organization");
 const ExpressError = require("../utils/ExpressError");
+const serviceIssueService = require("./serviceIssueService");
 
 /**
  * Phase 8 Canonical Dashboard Service
@@ -92,7 +93,8 @@ async function getOrganizationDashboard(organizationId, filterOptions = {}) {
     upcomingCheckIns,
     upcomingCheckOuts,
     recentBookings,
-    propertyBreakdown
+    propertyBreakdown,
+    guestImpactAlerts
   ] = await Promise.all([
     // A. Property count in organization
     Listing.countDocuments({ organization: orgObjectId }),
@@ -278,7 +280,10 @@ async function getOrganizationDashboard(organizationId, filterOptions = {}) {
       },
       { $sort: { bookingCount: -1, title: 1 } },
       { $limit: 25 }
-    ])
+    ]),
+
+    // I. Dynamic Guest Impact Alerts (Phase 13 Zero N+1)
+    serviceIssueService.getGuestImpactAlerts(orgObjectId)
   ]);
 
   // Format Room Physical Statuses
@@ -361,7 +366,8 @@ async function getOrganizationDashboard(organizationId, filterOptions = {}) {
     upcomingCheckIns,
     upcomingCheckOuts,
     recentBookings,
-    propertyBreakdown
+    propertyBreakdown,
+    guestImpactAlerts
   };
 }
 
@@ -381,7 +387,9 @@ async function getStaffDashboard(organizationId) {
     todayDepartures,
     inHouseBookings,
     roomInventory,
-    maintenanceRooms
+    maintenanceRooms,
+    guestImpactAlerts,
+    activeServiceIssues
   ] = await Promise.all([
     // 1. Today's Arrivals
     Booking.find({
@@ -441,7 +449,13 @@ async function getStaffDashboard(organizationId) {
     })
       .populate("property", "title location")
       .limit(20)
-      .lean()
+      .lean(),
+
+    // 6. Guest Impact Alerts (Phase 13 Zero N+1)
+    serviceIssueService.getGuestImpactAlerts(orgObjectId),
+
+    // 7. Active Service Issues (Phase 13)
+    serviceIssueService.getIssuesForOrganization(orgObjectId, { unresolvedOnly: true, limit: 20 })
   ]);
 
   const roomStatus = {
@@ -466,12 +480,16 @@ async function getStaffDashboard(organizationId) {
       availableRoomsCount: roomStatus.AVAILABLE,
       occupiedRoomsCount: roomStatus.OCCUPIED,
       maintenanceRoomsCount: roomStatus.MAINTENANCE,
-      totalRoomsCount: roomStatus.total
+      totalRoomsCount: roomStatus.total,
+      activeIssuesCount: activeServiceIssues.length,
+      guestImpactAlertsCount: guestImpactAlerts.length
     },
     todayArrivals,
     todayDepartures,
     inHouseBookings,
-    maintenanceRooms
+    maintenanceRooms,
+    guestImpactAlerts,
+    activeServiceIssues
   };
 }
 

@@ -1,0 +1,111 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4" style="max-width: 800px;">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/listings">Properties</a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>"><%= property ? property.title : 'Property' %></a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>/rooms/<%= roomId %>">Room <%= room ? room.roomNumber : '' %></a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues">Service Issues</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><%= issue.title %></li>
+    </ol>
+  </nav>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <% if (issue.priority === 'HIGH') { %>
+            <span class="badge bg-danger fs-6 px-3 py-1 rounded-pill">HIGH PRIORITY</span>
+          <% } else if (issue.priority === 'MEDIUM') { %>
+            <span class="badge bg-warning text-dark fs-6 px-3 py-1 rounded-pill">MEDIUM PRIORITY</span>
+          <% } else { %>
+            <span class="badge bg-info text-dark fs-6 px-3 py-1 rounded-pill">LOW PRIORITY</span>
+          <% } %>
+
+          <% if (issue.status === 'RESOLVED') { %>
+            <span class="badge bg-success fs-6 px-3 py-1 rounded-pill"><i class="fa-solid fa-check me-1"></i>RESOLVED</span>
+          <% } else if (issue.status === 'IN_PROGRESS') { %>
+            <span class="badge bg-primary fs-6 px-3 py-1 rounded-pill">IN_PROGRESS</span>
+          <% } else if (issue.status === 'ASSIGNED') { %>
+            <span class="badge bg-info text-dark fs-6 px-3 py-1 rounded-pill">ASSIGNED</span>
+          <% } else { %>
+            <span class="badge bg-secondary fs-6 px-3 py-1 rounded-pill">REPORTED</span>
+          <% } %>
+        </div>
+        <h3 class="fw-bold mb-0"><%= issue.title %></h3>
+      </div>
+      <div>
+        <% if (issue.status !== 'RESOLVED') { %>
+          <form action="/listings/<%= listingId %>/rooms/<%= roomId %>/issues/<%= issue._id %>/resolve" method="POST" class="d-inline">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-success rounded-pill px-4" data-submitting-text="Resolving...">
+              <i class="fa-solid fa-circle-check me-1"></i> Mark Resolved
+            </button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="p-3 bg-light rounded-3 mb-4">
+      <h6 class="fw-bold text-muted small text-uppercase mb-2">Description</h6>
+      <p class="mb-0 text-dark" style="white-space: pre-wrap;"><%= issue.description %></p>
+    </div>
+
+    <!-- Metadata -->
+    <div class="row g-3 text-muted small border-top pt-3 mb-4">
+      <div class="col-sm-4">
+        <span class="d-block fw-semibold text-dark">Room & Property</span>
+        Room <%= room ? room.roomNumber : '' %> — <%= property ? property.title : '' %>
+      </div>
+      <div class="col-sm-4">
+        <span class="d-block fw-semibold text-dark">Reported By</span>
+        <%= issue.createdBy ? issue.createdBy.username : 'Staff' %> on <%= new Date(issue.createdAt).toLocaleDateString() %>
+      </div>
+      <div class="col-sm-4">
+        <span class="d-block fw-semibold text-dark">Resolution</span>
+        <%= issue.resolvedAt ? ('Resolved on ' + new Date(issue.resolvedAt).toLocaleDateString()) : 'Unresolved' %>
+      </div>
+    </div>
+
+    <!-- State Progression (if not yet resolved) -->
+    <% if (issue.status !== 'RESOLVED') { %>
+      <div class="border-top pt-3">
+        <h6 class="fw-bold mb-3">Update Issue Status</h6>
+        <form action="/listings/<%= listingId %>/rooms/<%= roomId %>/issues/<%= issue._id %>?_method=PUT" method="POST" class="row g-2 align-items-center">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="col-auto">
+            <label for="updateStatus" class="col-form-label fw-semibold">Advance to:</label>
+          </div>
+          <div class="col-auto">
+            <select name="issue[status]" id="updateStatus" class="form-select rounded-3">
+              <% if (issue.status === 'REPORTED') { %>
+                <option value="ASSIGNED">ASSIGNED</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="RESOLVED">RESOLVED</option>
+              <% } else if (issue.status === 'ASSIGNED') { %>
+                <option value="IN_PROGRESS" selected>IN_PROGRESS</option>
+                <option value="RESOLVED">RESOLVED</option>
+              <% } else if (issue.status === 'IN_PROGRESS') { %>
+                <option value="RESOLVED" selected>RESOLVED</option>
+              <% } %>
+            </select>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary rounded-pill px-3" data-submitting-text="Updating...">
+              Update Status
+            </button>
+          </div>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="text-start">
+    <a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues" class="btn btn-outline-secondary rounded-pill px-4">
+      <i class="fa-solid fa-arrow-left me-1"></i> Back to Room Issues
+    </a>
+  </div>
+</div>

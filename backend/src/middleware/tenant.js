@@ -2,12 +2,14 @@ const mongoose = require("mongoose");
 const Listing = require("../models/listing");
 const Organization = require("../models/organization");
 const Room = require("../models/room");
+const ServiceIssue = require("../models/serviceIssue");
 
 // Models registry for tenant verification
 const MODELS = {
   Listing,
   Organization,
-  Room
+  Room,
+  ServiceIssue
 };
 
 function isJsonRequest(req) {
@@ -41,7 +43,9 @@ function requireTenantAccess(modelName, paramName = "id") {
       return next();
     }
 
-    const resourceId = req.params[paramName] || (modelName === "Room" ? req.params.roomId : undefined);
+    const resourceId = req.params[paramName] || 
+      (modelName === "Room" ? req.params.roomId : undefined) ||
+      (modelName === "ServiceIssue" ? req.params.issueId : undefined);
     if (!resourceId || !mongoose.Types.ObjectId.isValid(resourceId)) {
       if (isJsonRequest(req)) {
         return res.status(404).json({ success: false, message: "Resource not found" });

@@ -188,6 +188,13 @@
                         <button class="btn btn-sm btn-secondary rounded-pill px-3" disabled>Unavailable</button>
                       <% } %>
                       
+                      <% const canAccessIssues = currentUser && (['ADMIN', 'OWNER', 'MANAGER', 'STAFF'].includes(currentUser.role)); %>
+                      <% if (canAccessIssues) { %>
+                        <a href="/listings/<%= listing._id %>/rooms/<%= room._id %>/issues" class="btn btn-sm btn-outline-warning border-0" title="Service Issues & Readiness">
+                          <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </a>
+                      <% } %>
+
                       <% const canManageRooms = currentUser && (currentUser.role === 'ADMIN' || (listing.owner && listing.owner._id.equals(currentUser._id)) || (['OWNER', 'MANAGER'].includes(currentUser.role) && listing.organization && currentUser.organization && listing.organization.equals(currentUser.organization))); %>
                       <% if (canManageRooms) { %>
                         <a href="/listings/<%= listing._id %>/rooms/<%= room._id %>/edit" class="btn btn-sm btn-outline-secondary border-0" title="Edit Room">

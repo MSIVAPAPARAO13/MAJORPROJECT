@@ -44,6 +44,66 @@
     </div>
   </div>
 
+  <!-- Guest Impact Alerts (Phase 13 Hospitality Operations) -->
+  <% if (data.guestImpactAlerts && data.guestImpactAlerts.length > 0) { %>
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-start border-4 border-danger">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <h5 class="fw-bold mb-0 text-danger">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>Guest Impact Alerts (<%= data.guestImpactAlerts.length %>)
+        </h5>
+        <span class="badge bg-danger rounded-pill px-3 py-2">Action Required Before Check-In</span>
+      </div>
+      <p class="text-muted small mb-3">The following upcoming check-ins are at risk due to unresolved service issues in their assigned rooms.</p>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Severity</th>
+              <th>Upcoming Guest</th>
+              <th>Property / Room</th>
+              <th>Check-In</th>
+              <th>Operational Issue</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let alert of data.guestImpactAlerts) { %>
+              <tr>
+                <td>
+                  <% if (alert.severity === 'HIGH') { %>
+                    <span class="badge bg-danger">HIGH IMPACT</span>
+                  <% } else if (alert.severity === 'MEDIUM') { %>
+                    <span class="badge bg-warning text-dark">MEDIUM ATTENTION</span>
+                  <% } else { %>
+                    <span class="badge bg-info text-dark">LOW ATTENTION</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="fw-semibold"><%= alert.guestName %></span>
+                  <small class="text-muted d-block"><%= alert.bookingNumber %></small>
+                </td>
+                <td>
+                  <span class="d-block"><%= alert.propertyTitle %></span>
+                  <span class="badge bg-light text-dark border">Room <%= alert.roomNumber %></span>
+                </td>
+                <td><small class="font-monospace fw-semibold"><%= alert.checkInFormatted %></small></td>
+                <td>
+                  <span class="fw-semibold"><%= alert.issueTitle %></span>
+                  <small class="d-block text-muted">Status: <%= alert.issueStatus %></small>
+                </td>
+                <td class="text-end">
+                  <a href="/listings/<%= alert.propertyId %>/rooms/<%= alert.roomId %>/issues/<%= alert.issueId %>" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                    View Issue
+                  </a>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
   <!-- Operational Task Tables -->
   <div class="row g-4 mb-4">
     <!-- Today's Arrivals -->
@@ -208,4 +268,77 @@
       </div>
     </div>
   </div>
+
+  <!-- Active Service Issues (Phase 13 Hospitality Operations) -->
+  <% if (data.activeServiceIssues && data.activeServiceIssues.length > 0) { %>
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">
+          <i class="fa-solid fa-screwdriver-wrench text-primary me-2"></i>Active Operational Issues (<%= data.activeServiceIssues.length %>)
+        </h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Priority</th>
+              <th>Property / Room</th>
+              <th>Issue</th>
+              <th>Status</th>
+              <th>Reported By</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let issue of data.activeServiceIssues) { %>
+              <tr>
+                <td>
+                  <% if (issue.priority === 'HIGH') { %>
+                    <span class="badge bg-danger">HIGH</span>
+                  <% } else if (issue.priority === 'MEDIUM') { %>
+                    <span class="badge bg-warning text-dark">MEDIUM</span>
+                  <% } else { %>
+                    <span class="badge bg-info text-dark">LOW</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="fw-semibold"><%= issue.property ? issue.property.title : 'Property' %></span>
+                  <small class="badge bg-light text-dark border d-block mt-1">
+                    Room <%= issue.room ? issue.room.roomNumber : 'N/A' %>
+                  </small>
+                </td>
+                <td>
+                  <span class="fw-semibold"><%= issue.title %></span>
+                  <small class="text-muted d-block text-truncate" style="max-width: 280px;"><%= issue.description %></small>
+                </td>
+                <td>
+                  <% if (issue.status === 'IN_PROGRESS') { %>
+                    <span class="badge bg-primary">IN_PROGRESS</span>
+                  <% } else if (issue.status === 'ASSIGNED') { %>
+                    <span class="badge bg-info text-dark">ASSIGNED</span>
+                  <% } else { %>
+                    <span class="badge bg-secondary">REPORTED</span>
+                  <% } %>
+                </td>
+                <td><small><%= issue.createdBy ? issue.createdBy.username : 'Staff' %></small></td>
+                <td class="text-end">
+                  <% if (issue.property && issue.room) { %>
+                    <a href="/listings/<%= issue.property._id %>/rooms/<%= issue.room._id %>/issues/<%= issue._id %>" class="btn btn-sm btn-outline-secondary rounded-pill me-1">
+                      Details
+                    </a>
+                    <form action="/listings/<%= issue.property._id %>/rooms/<%= issue.room._id %>/issues/<%= issue._id %>/resolve" method="POST" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button type="submit" class="btn btn-sm btn-outline-success rounded-pill" data-submitting-text="Resolving...">
+                        Resolve
+                      </button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
 </div>

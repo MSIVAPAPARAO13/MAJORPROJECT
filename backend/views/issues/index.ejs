@@ -1,0 +1,129 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/listings">Properties</a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>"><%= listing ? listing.title : 'Property' %></a></li>
+      <li class="breadcrumb-item"><a href="/listings/<%= listingId %>/rooms/<%= roomId %>">Room <%= room ? room.roomNumber : '' %></a></li>
+      <li class="breadcrumb-item active" aria-current="page">Service Issues</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-1">
+        <i class="fa-solid fa-screwdriver-wrench text-primary me-2"></i>Service Issues — Room <%= room ? room.roomNumber : '' %>
+      </h2>
+      <p class="text-muted small mb-0">Track and resolve operational problems affecting room readiness.</p>
+    </div>
+    <div>
+      <a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues/new" class="btn btn-primary rounded-pill px-4">
+        <i class="fa-solid fa-plus me-1"></i> Report Issue
+      </a>
+    </div>
+  </div>
+
+  <!-- Operational Readiness Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-start border-4 <%= readiness.isGuestReady ? 'border-success' : 'border-danger' %>">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <span class="text-muted small text-uppercase fw-semibold">Dynamic Guest Readiness</span>
+        <div class="d-flex align-items-center gap-2 mt-1">
+          <% if (readiness.isGuestReady) { %>
+            <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">
+              <i class="fa-solid fa-check-circle me-1"></i> GUEST READY: YES
+            </span>
+          <% } else { %>
+            <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill">
+              <i class="fa-solid fa-triangle-exclamation me-1"></i> GUEST READY: NO
+            </span>
+          <% } %>
+          <span class="text-muted"><%= readiness.reason %></span>
+        </div>
+      </div>
+      <div>
+        <span class="badge bg-light text-dark border px-3 py-2">
+          Room Status: <strong><%= room ? room.status : 'AVAILABLE' %></strong>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Issues List -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <h5 class="fw-bold mb-3">Room Issue Log (<%= issues.length %>)</h5>
+    <% if (issues && issues.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Priority</th>
+              <th>Issue Title</th>
+              <th>Status</th>
+              <th>Reported By</th>
+              <th>Date</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let issue of issues) { %>
+              <tr>
+                <td>
+                  <% if (issue.priority === 'HIGH') { %>
+                    <span class="badge bg-danger">HIGH</span>
+                  <% } else if (issue.priority === 'MEDIUM') { %>
+                    <span class="badge bg-warning text-dark">MEDIUM</span>
+                  <% } else { %>
+                    <span class="badge bg-info text-dark">LOW</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="fw-semibold"><%= issue.title %></span>
+                  <small class="text-muted d-block text-truncate" style="max-width: 300px;"><%= issue.description %></small>
+                </td>
+                <td>
+                  <% if (issue.status === 'RESOLVED') { %>
+                    <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>RESOLVED</span>
+                  <% } else if (issue.status === 'IN_PROGRESS') { %>
+                    <span class="badge bg-primary">IN_PROGRESS</span>
+                  <% } else if (issue.status === 'ASSIGNED') { %>
+                    <span class="badge bg-info text-dark">ASSIGNED</span>
+                  <% } else { %>
+                    <span class="badge bg-secondary">REPORTED</span>
+                  <% } %>
+                </td>
+                <td><small><%= issue.createdBy ? issue.createdBy.username : 'Staff' %></small></td>
+                <td><small class="text-muted"><%= new Date(issue.createdAt).toLocaleDateString() %></small></td>
+                <td class="text-end">
+                  <a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues/<%= issue._id %>" class="btn btn-sm btn-outline-secondary rounded-pill me-1">
+                    Details
+                  </a>
+                  <% if (issue.status !== 'RESOLVED') { %>
+                    <form action="/listings/<%= listingId %>/rooms/<%= roomId %>/issues/<%= issue._id %>/resolve" method="POST" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button type="submit" class="btn btn-sm btn-outline-success rounded-pill" data-submitting-text="Resolving...">
+                        Resolve
+                      </button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="text-center py-5">
+        <i class="fa-solid fa-circle-check text-success display-4 mb-3"></i>
+        <h5 class="fw-bold">No Service Issues Reported</h5>
+        <p class="text-muted">This room currently has no operational or maintenance issues logged.</p>
+        <a href="/listings/<%= listingId %>/rooms/<%= roomId %>/issues/new" class="btn btn-outline-primary rounded-pill px-4">
+          Report an Issue
+        </a>
+      </div>
+    <% } %>
+  </div>
+</div>

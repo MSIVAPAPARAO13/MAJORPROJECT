@@ -28,6 +28,7 @@ const guestBookingRouter = require("./routes/guestBookings");
 const dashboardRouter = require("./routes/dashboard");
 const organizationRouter = require("./routes/organization");
 const pagesRouter = require("./routes/pages");
+const serviceIssueRouter = require("./routes/serviceIssue");
 
 // API Route handlers
 const apiListingsRouter = require("./routes/api/apiListings");
@@ -136,6 +137,7 @@ const createApp = () => {
   app.use("/api/bookings", mutationLimiter);
 
   // 11. REST API Endpoints (for React frontend)
+  app.use("/api/listings/:id/rooms/:roomId/issues", serviceIssueRouter);
   app.use("/api/listings/:id/rooms", roomRouter);
   app.use("/api/listings", apiListingsRouter);
   app.use("/api/auth", apiAuthRouter);
@@ -149,6 +151,7 @@ const createApp = () => {
 
   app.use("/listings", listingRouter);
   app.use("/listings/:id/reviews", reviewRouter);
+  app.use("/listings/:id/rooms/:roomId/issues", serviceIssueRouter);
   app.use("/listings/:id/rooms", roomRouter);
   app.use("/listings/:id/rooms/:roomId/bookings", bookingRouter);
   app.use("/listings/:id/bookings", bookingRouter);

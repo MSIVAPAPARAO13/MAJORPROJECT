@@ -95,6 +95,66 @@
     </div>
   </div>
 
+  <!-- Guest Impact Alerts (Phase 13 Hospitality Operations) -->
+  <% if (data.guestImpactAlerts && data.guestImpactAlerts.length > 0) { %>
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-start border-4 border-danger">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <h5 class="fw-bold mb-0 text-danger">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>Guest Impact Alerts (<%= data.guestImpactAlerts.length %>)
+        </h5>
+        <span class="badge bg-danger rounded-pill px-3 py-2">Action Required Before Check-In</span>
+      </div>
+      <p class="text-muted small mb-3">Attention: Unresolved room maintenance issues are threatening scheduled guest check-ins.</p>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Severity</th>
+              <th>Upcoming Guest</th>
+              <th>Property / Room</th>
+              <th>Check-In</th>
+              <th>Operational Issue</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let alert of data.guestImpactAlerts) { %>
+              <tr>
+                <td>
+                  <% if (alert.severity === 'HIGH') { %>
+                    <span class="badge bg-danger">HIGH IMPACT</span>
+                  <% } else if (alert.severity === 'MEDIUM') { %>
+                    <span class="badge bg-warning text-dark">MEDIUM ATTENTION</span>
+                  <% } else { %>
+                    <span class="badge bg-info text-dark">LOW ATTENTION</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="fw-semibold"><%= alert.guestName %></span>
+                  <small class="text-muted d-block"><%= alert.bookingNumber %></small>
+                </td>
+                <td>
+                  <span class="d-block"><%= alert.propertyTitle %></span>
+                  <span class="badge bg-light text-dark border">Room <%= alert.roomNumber %></span>
+                </td>
+                <td><small class="font-monospace fw-semibold"><%= alert.checkInFormatted %></small></td>
+                <td>
+                  <span class="fw-semibold"><%= alert.issueTitle %></span>
+                  <small class="d-block text-muted">Status: <%= alert.issueStatus %></small>
+                </td>
+                <td class="text-end">
+                  <a href="/listings/<%= alert.propertyId %>/rooms/<%= alert.roomId %>/issues/<%= alert.issueId %>" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                    View Issue
+                  </a>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
   <!-- Operational Snapshot & Booking Status Grid -->
   <div class="row g-3 mb-4">
     <!-- Booking Status Distribution -->
