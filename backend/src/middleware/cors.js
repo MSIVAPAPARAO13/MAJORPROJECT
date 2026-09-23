@@ -2,8 +2,9 @@
 // Enforces explicit trusted origins and disables wildcard '*' with credentials
 
 function corsMiddleware(req, res, next) {
-  const envOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  const envOriginsStr = process.env.ALLOWED_ORIGINS || process.env.CORS_ORIGINS;
+  const envOrigins = envOriginsStr
+    ? envOriginsStr.split(",").map((o) => o.trim())
     : [];
   const allowedOrigins = [
     "http://localhost:5173",

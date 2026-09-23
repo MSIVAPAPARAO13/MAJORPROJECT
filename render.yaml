@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: wanderlust
+    runtime: node
+    plan: free
+    buildCommand: npm --prefix backend install
+    startCommand: npm --prefix backend start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: ATLASDB_URL
+        sync: false
+      - key: SECRET
+        sync: false
+      - key: CLOUD_NAME
+        sync: false
+      - key: CLOUD_API_KEY
+        sync: false
+      - key: CLOUD_API_SECRET
+        sync: false
+      - key: MAP_TOKEN
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

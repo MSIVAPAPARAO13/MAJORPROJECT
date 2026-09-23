@@ -4,18 +4,32 @@
 
 function validateEnv() {
   if (process.env.NODE_ENV === "production") {
-    const required = ["SECRET", "CLOUD_NAME", "CLOUD_API_KEY", "CLOUD_API_SECRET", "MAP_TOKEN"];
     const missing = [];
 
-    for (const key of required) {
-      if (!process.env[key] || process.env[key].trim() === "") {
-        missing.push(key);
-      }
+    // Database connection URL (Authoritative: ATLASDB_URL, compatible: MONGODB_URI)
+    if (!process.env.ATLASDB_URL && !process.env.MONGODB_URI) {
+      missing.push("ATLASDB_URL");
     }
 
-    // Check DB URL (either ATLASDB_URL or MONGO_URL)
-    if (!process.env.ATLASDB_URL && !process.env.MONGO_URL) {
-      missing.push("ATLASDB_URL or MONGO_URL");
+    // Session secret (Authoritative: SECRET, compatible: SESSION_SECRET)
+    if (!process.env.SECRET && !process.env.SESSION_SECRET) {
+      missing.push("SECRET");
+    }
+
+    // Cloudinary configuration (Authoritative: CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET)
+    if (!process.env.CLOUD_NAME && !process.env.CLOUDINARY_CLOUD_NAME) {
+      missing.push("CLOUD_NAME");
+    }
+    if (!process.env.CLOUD_API_KEY && !process.env.CLOUDINARY_API_KEY) {
+      missing.push("CLOUD_API_KEY");
+    }
+    if (!process.env.CLOUD_API_SECRET && !process.env.CLOUDINARY_API_SECRET) {
+      missing.push("CLOUD_API_SECRET");
+    }
+
+    // Mapbox public token (Authoritative: MAP_TOKEN, compatible: MAPBOX_TOKEN)
+    if (!process.env.MAP_TOKEN && !process.env.MAPBOX_TOKEN) {
+      missing.push("MAP_TOKEN");
     }
 
     if (missing.length > 0) {

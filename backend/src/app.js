@@ -8,6 +8,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
 
+const mongoose = require("mongoose");
 const User = require("./models/user");
 const ExpressError = require("./utils/ExpressError");
 
@@ -39,6 +40,11 @@ const apiDashboardRouter = require("./routes/api/apiDashboard");
 const createApp = () => {
   const app = express();
 
+  // Reverse proxy support for production TLS termination (Render, Heroku, etc.)
+  if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+  }
+
   // 1. Security Headers & CSP (Disables X-Powered-By, adds CSP, X-Content-Type-Options, etc.)
   app.use(securityHeaders);
 
@@ -62,8 +68,8 @@ const createApp = () => {
   app.use(express.static(publicPath));
 
   // 5. Session & Store
-  const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
-  const sessionSecret = process.env.SECRET || "medisettis594";
+  const dbUrl = process.env.MONGODB_URI || process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
+  const sessionSecret = process.env.SESSION_SECRET || process.env.SECRET || "medisettis594";
 
   // In test mode, use the built-in in-memory session store to avoid:
   // - MongoStore opening a second MongoDB TCP connection that causes buffering timeouts
@@ -127,6 +133,20 @@ const createApp = () => {
       success: true,
       csrfToken: (req.session && req.session.csrfToken) || null
     });
+  });
+
+  // Health check endpoint (Safe for Render, probes real Mongoose connection state)
+  app.get("/api/health", (req, res) => {
+    const isDbConnected = mongoose.connection.readyState === 1;
+    const responsePayload = {
+      status: isDbConnected ? "ok" : "degraded",
+      timestamp: new Date().toISOString(),
+      uptime: Math.floor(process.uptime()),
+      database: isDbConnected ? "connected" : "disconnected",
+    };
+
+    const statusCode = isDbConnected ? 200 : 503;
+    return res.status(statusCode).json(responsePayload);
   });
 
   // 10. Abuse Prevention: Mount Rate Limiters on Sensitive Mutation & Auth Routes
