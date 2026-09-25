@@ -27,7 +27,7 @@
   </div>
 
   <!-- Operational Readiness Card -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-start border-4 <%= readiness.isGuestReady ? 'border-success' : 'border-danger' %>">
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white <%= readiness.isGuestReady ? 'kpi-accent-success' : 'kpi-accent-danger' %> border-start border-4 <%= readiness.isGuestReady ? 'border-success' : 'border-danger' %>">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
       <div>
         <span class="text-muted small text-uppercase fw-semibold">Dynamic Guest Readiness</span>

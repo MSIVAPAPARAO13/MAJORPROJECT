@@ -8,6 +8,9 @@
       <p class="text-muted small mb-0">Daily guest turnover, real-time in-house occupancy, and property room readiness.</p>
     </div>
     <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-light text-dark border rounded-pill px-3 py-2 fs-6">
+        <span class="duty-pulse-indicator me-1"></span> Duty Active
+      </span>
       <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">Date: <%= data.operationalDate %></span>
     </div>
   </div>
@@ -15,28 +18,28 @@
   <!-- Operational Snapshot Cards (Strictly Operational - No Revenue/Financial Data) -->
   <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-success">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center kpi-accent-success">
         <span class="text-muted small text-uppercase fw-semibold">Today's Arrivals</span>
         <h3 class="fw-bold my-1 text-success"><%= data.summary.todayArrivalsCount %></h3>
         <small class="text-muted">Check-ins pending today</small>
       </div>
     </div>
     <div class="col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-danger">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center kpi-accent-danger">
         <span class="text-muted small text-uppercase fw-semibold">Today's Departures</span>
         <h3 class="fw-bold my-1 text-danger"><%= data.summary.todayDeparturesCount %></h3>
         <small class="text-muted">Check-outs due today</small>
       </div>
     </div>
     <div class="col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-info">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center kpi-accent-secondary">
         <span class="text-muted small text-uppercase fw-semibold">In-House Guests</span>
         <h3 class="fw-bold my-1 text-info"><%= data.summary.inHouseGuestsCount %></h3>
         <small class="text-muted">Currently active stays</small>
       </div>
     </div>
     <div class="col-sm-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-warning">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center kpi-accent-warning">
         <span class="text-muted small text-uppercase fw-semibold">Maintenance</span>
         <h3 class="fw-bold my-1 text-warning"><%= data.summary.maintenanceRoomsCount %></h3>
         <small class="text-muted"><%= data.summary.availableRoomsCount %> Available / <%= data.summary.totalRoomsCount %> Total</small>

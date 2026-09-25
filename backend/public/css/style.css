@@ -378,3 +378,123 @@ footer .d-flex.gap-3 a:hover i {
   color: var(--primary-color) !important;
   transform: translateY(-2px);
 }
+
+/* ==================================================
+   GOOGLE STITCH DESIGN SYSTEM EXTENSIONS
+   Project ID: 8480298509062935010
+   Enterprise Hospitality Design Tokens & Components
+================================================== */
+
+:root {
+  --stitch-surface: #f9f9ff;
+  --stitch-surface-low: #f0f3ff;
+  --stitch-surface-container: #e7eeff;
+  --stitch-surface-high: #dee8ff;
+  --stitch-primary: #ba0125;
+  --stitch-primary-container: #df2a3a;
+  --stitch-tertiary: #17684e;
+  --stitch-secondary: #0055c9;
+  --stitch-error: #ba1a1a;
+  --stitch-error-container: #ffdad6;
+}
+
+/* Duty Sync Pulse Animation */
+@keyframes dutyPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(23, 104, 78, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(23, 104, 78, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(23, 104, 78, 0);
+  }
+}
+
+.duty-pulse-indicator {
+  width: 9px;
+  height: 9px;
+  background-color: var(--stitch-tertiary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: dutyPulse 2s infinite;
+  vertical-align: middle;
+}
+
+/* Operational KPI Accent Borders */
+.kpi-accent-primary {
+  border-top: 4px solid var(--primary-color) !important;
+}
+
+.kpi-accent-secondary {
+  border-top: 4px solid var(--stitch-secondary) !important;
+}
+
+.kpi-accent-success {
+  border-top: 4px solid var(--stitch-tertiary) !important;
+}
+
+.kpi-accent-warning {
+  border-top: 4px solid #b45309 !important;
+}
+
+.kpi-accent-danger {
+  border-top: 4px solid var(--stitch-error) !important;
+}
+
+/* Stitch Pill Badges */
+.badge-stitch-critical {
+  background-color: var(--stitch-error-container) !important;
+  color: var(--stitch-error) !important;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+}
+
+.badge-stitch-success {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+}
+
+.badge-stitch-info {
+  background-color: #dae2ff !important;
+  color: #00419e !important;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+}
+
+/* Stitch Filter Command Card */
+.filter-command-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.2s ease;
+}
+
+.filter-command-card:hover {
+  box-shadow: var(--card-hover-shadow);
+}
+
+/* Gallery Thumbnail Focus */
+.thumbnail-item {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.thumbnail-item:hover {
+  transform: scale(1.05);
+}
+
+.thumbnail-item.active-thumb,
+.thumbnail-item.border-danger {
+  border: 2.5px solid var(--primary-color) !important;
+  box-shadow: 0 2px 8px rgba(254, 66, 77, 0.35);
+}
+
+/* Live Pricing Sticky Card */
+.sticky-summary-card {
+  position: sticky;
+  top: 90px;
+  z-index: 10;
+}
