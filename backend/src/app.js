@@ -85,14 +85,8 @@ const createApp = () => {
   // In production/dev, MongoStore with encrypted sessions is used as before.
   let store;
   if (process.env.NODE_ENV !== "test") {
-    // connect-mongo uses kruptein which requires: min 8 chars, 2 uppercase, 2 lowercase, 2 numbers, 2 special chars.
-    // Append a fixed complexity suffix so any SESSION_SECRET value satisfies these rules.
-    const storeCryptoSecret = sessionSecret + "_WL2!Aa#9";
     store = MongoStore.create({
       mongoUrl: dbUrl,
-      crypto: {
-        secret: storeCryptoSecret,
-      },
       touchAfter: 24 * 60 * 60,
     });
     store.on("error", (err) => {

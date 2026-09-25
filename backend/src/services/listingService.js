@@ -216,6 +216,7 @@ async function getListingById(id) {
       path: "reviews",
       populate: { path: "author" }
     })
+    .populate("rooms")
     .populate("owner")
     .populate("organization");
 

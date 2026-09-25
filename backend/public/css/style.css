@@ -258,6 +258,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   border: 1px solid #fecaca !important;
 }
 
+/* Tax display toggle initial state */
+.tax-info {
+  display: none;
+}
+
 /* Map Container */
 #map {
   width: 100% !important;

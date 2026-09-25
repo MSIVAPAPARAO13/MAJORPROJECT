@@ -19,11 +19,12 @@
         // Prevent duplicate submissions and provide responsive UX feedback
         const submitBtn = form.querySelector('button[type="submit"]')
         if (submitBtn && !submitBtn.disabled) {
-          const loadingText = submitBtn.getAttribute('data-submitting-text')
-          if (loadingText) {
+          const loadingText = submitBtn.getAttribute('data-submitting-text') || 'Processing...'
+          form.setAttribute('aria-busy', 'true')
+          setTimeout(() => {
             submitBtn.disabled = true
             submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`
-          }
+          }, 0)
         }
       }
 
