@@ -1,17 +1,14 @@
 {
-  "name": "wanderlust-mern-platform",
+  "name": "wanderlust-hospitality-platform",
   "version": "2.0.0",
-  "description": "Enterprise-Grade Multi-Tenant Hospitality Platform & SaaS (MERN Architecture)",
+  "description": "Enterprise-Grade Multi-Tenant Hospitality Platform & SaaS",
   "scripts": {
-    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "start": "npm run start --prefix backend",
-    "backend": "npm run dev --prefix backend",
-    "frontend": "npm run dev --prefix frontend"
+    "dev": "npm run dev --prefix backend",
+    "test": "npm run test:full --prefix backend"
   },
-  "keywords": ["mern", "react", "express", "mongodb", "hospitality", "saas"],
+  "keywords": ["express", "ejs", "mongodb", "bootstrap", "hospitality", "saas"],
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  }
+  "license": "ISC"
 }
+

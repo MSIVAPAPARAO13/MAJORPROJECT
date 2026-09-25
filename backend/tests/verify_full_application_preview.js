@@ -2,7 +2,7 @@
  * Complete Full-Application Preview & Button/Feature Audit Script
  * Tests every major feature, role, button endpoint, API flow, and page load across both:
  * - Express SSR & REST API (port 8080)
- * - React + Vite Frontend SPA (port 5173)
+ * - Integrated Google Stitch EJS Frontend (port 8080)
  */
 
 const BASE_API = "http://localhost:8080/api";

@@ -158,7 +158,7 @@ const createApp = () => {
   app.use("/api/auth/signup", authLimiter);
   app.use("/api/bookings", mutationLimiter);
 
-  // 11. REST API Endpoints (for React frontend)
+  // 11. REST API Endpoints (Client Services & Integrations)
   app.use("/api/listings/:id/rooms/:roomId/issues", serviceIssueRouter);
   app.use("/api/listings/:id/rooms", roomRouter);
   app.use("/api/listings", apiListingsRouter);
