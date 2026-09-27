@@ -85,10 +85,11 @@ const createApp = () => {
   // In production/dev, MongoStore with encrypted sessions is used as before.
   let store;
   if (process.env.NODE_ENV !== "test") {
-    store = MongoStore.create({
-      mongoUrl: dbUrl,
-      touchAfter: 24 * 60 * 60,
-    });
+    const storeOptions = (mongoose.connection && mongoose.connection.readyState === 1)
+      ? { client: mongoose.connection.getClient(), touchAfter: 24 * 60 * 60 }
+      : { mongoUrl: dbUrl, touchAfter: 24 * 60 * 60 };
+
+    store = MongoStore.create(storeOptions);
     store.on("error", (err) => {
       console.error("[Session Store Error]:", err);
     });
