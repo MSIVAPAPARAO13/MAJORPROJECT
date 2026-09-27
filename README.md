@@ -4,8 +4,46 @@
 [![Testing](https://img.shields.io/badge/Tests-713%2F713%20Passed-brightgreen.svg)](https://github.com/)
 [![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas%20%7C%20Mongoose%208-green.svg)](https://www.mongodb.com/)
 [![Security](https://img.shields.io/badge/Security-RBAC%20%7C%20CSRF%20%7C%20CSP%20%7C%20Rate%20Limit-red.svg)](https://expressjs.com/)
+[![Deployment](https://img.shields.io/badge/Deployed-Render%20%7C%20MongoDB%20Atlas-blueviolet.svg)](https://render.com/)
 
 WanderLust is an enterprise-grade, multi-tenant hospitality management platform and booking engine. Designed as an interview-ready production SaaS codebase, it empowers travel guests to discover verified properties (villas, backpacker hostels, mountain chalets, houseboats, eco-domes) while providing property owners, hotel managers, and operations staff with real-time room-level inventory management, atomic double-booking prevention, automated guest impact alerts, and role-based operational dashboards.
+
+---
+
+## 🖼️ Application Preview
+
+### Explore Page — Property Discovery
+> Browse 65+ verified properties across 12 stay categories with smart search, date pickers, price filters, and category tabs.
+
+![Explore Page — Property Discovery with Search & Filters](docs/images/01_explore_page.png)
+
+---
+
+### Property Details — Listing Page
+> Detailed property view with high-resolution images, amenities, hosted-by info, and a prominent “Book This Property” CTA.
+
+![Property Details — Sunset Cliffside Villa, Goa](docs/images/02_property_details.png)
+
+---
+
+### Room Inventory, Reviews & Map
+> Room-level inventory with real-time availability badges, per-room pricing, guest reviews section, and an interactive Mapbox location map.
+
+![Room Inventory, Guest Reviews & Mapbox Location Map](docs/images/03_room_inventory_and_map.png)
+
+---
+
+### Booking Checkout Flow
+> Secure booking checkout with server-authoritative pricing, GST calculation, and double-booking prevention built in.
+
+![Booking Checkout — Server-Authoritative Pricing & GST](docs/images/04_booking_checkout.png)
+
+---
+
+### Login & Authentication Portal
+> Clean, minimal login portal with “Welcome Back” design, linking to signup for new users.
+
+![Login Portal — Welcome Back Authentication Screen](docs/images/05_login_portal.png)
 
 ---
 
@@ -289,14 +327,17 @@ WanderLust is pre-configured for automated deployment to [Render](https://render
 ## 11. Database Baseline Hygiene
 
 The production database structure adheres to the following baseline counts:
-- `listings`: 65
-- `rooms`: 134
-- `users`: 6
-- `organizations`: 1
-- `reviews`: 4
-- `bookings`: 0
-- `migrations`: 1
-- `serviceissues`: 0
+
+| Collection | Count | Notes |
+| :--- | :--- | :--- |
+| `listings` | 65 | Verified properties across 12 categories |
+| `rooms` | 134 | Multi-room inventory per property |
+| `users` | 6 | Admin, Owner, Manager, Staff, Customer roles |
+| `organizations` | 1 | Multi-tenant host organization |
+| `reviews` | 4 | Verified guest reviews |
+| `bookings` | 0 | Production booking baseline |
+| `migrations` | 1 | Schema migration history |
+| `serviceissues` | 0 | Operational issue baseline |
 
 Automated test suites run exclusively against a dedicated test database, ensuring zero permanent test residue in production data.
 
