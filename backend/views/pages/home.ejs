@@ -1,0 +1,215 @@
+<% layout('layouts/boilerplate') %>
+<style>
+.wl-hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%);min-height:88vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.wl-hero::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=60') center/cover no-repeat;opacity:.12}
+.wl-hero-content{position:relative;z-index:2}
+.wl-hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;color:#fff;line-height:1.15}
+.wl-hero h1 span{color:#fe424d}
+.wl-hero .lead{color:rgba(255,255,255,.78);font-size:1.2rem;max-width:580px}
+.wl-badge-pill{background:rgba(254,66,77,.18);color:#fe424d;border:1px solid rgba(254,66,77,.35);border-radius:50px;padding:.35rem 1rem;font-size:.8rem;font-weight:600;letter-spacing:.5px;display:inline-block;margin-bottom:1rem}
+.wl-btn-primary{background:#fe424d;color:#fff;border:none;border-radius:50px;padding:.75rem 2rem;font-weight:700;font-size:1rem;transition:background .2s,transform .15s;text-decoration:none;display:inline-block}
+.wl-btn-primary:hover{background:#d73b45;color:#fff;transform:translateY(-2px)}
+.wl-btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:50px;padding:.75rem 2rem;font-weight:600;font-size:1rem;transition:border-color .2s,transform .15s;text-decoration:none;display:inline-block}
+.wl-btn-outline:hover{border-color:#fff;color:#fff;transform:translateY(-2px)}
+.wl-stat .num{font-size:2rem;font-weight:800;color:#fe424d}
+.wl-stat .lbl{font-size:.78rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px}
+.wl-platform-pill{display:inline-flex;align-items:center;gap:.5rem;background:#fff;border:1px solid #e8eaf0;border-radius:50px;padding:.55rem 1.2rem;font-weight:600;font-size:.92rem;color:#1a1a2e;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.wl-plus{color:#adb5bd;font-weight:300;font-size:1.1rem}
+.wl-feature-card{border:1px solid #e8eaf0;border-radius:1.2rem;padding:2rem;background:#fff;transition:transform .2s,box-shadow .2s;height:100%}
+.wl-feature-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.1)}
+.wl-feature-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.wl-flow-section{background:linear-gradient(135deg,#0f3460,#16213e);color:#fff}
+.wl-flow-circle{width:64px;height:64px;border-radius:50%;background:rgba(254,66,77,.15);border:2px solid rgba(254,66,77,.5);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto .75rem;color:#fe424d}
+.wl-flow-arrow{color:rgba(255,255,255,.25);font-size:1.5rem;padding-top:1.4rem}
+.wl-role-card{border:2px solid #e8eaf0;border-radius:1.2rem;padding:1.75rem;background:#fff;transition:border-color .2s,transform .2s,box-shadow .2s;height:100%}
+.wl-role-card:hover{border-color:#fe424d;transform:translateY(-3px);box-shadow:0 8px 24px rgba(254,66,77,.12)}
+.wl-role-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.9rem}
+.wl-role-tag{font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:50px;padding:.2rem .7rem;display:inline-block;margin-bottom:.6rem}
+.wl-step-num{width:40px;height:40px;border-radius:50%;background:#fe424d;color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wl-cta{background:linear-gradient(135deg,#fe424d,#c0392b);color:#fff}
+</style>
+
+<div class="wl-hero" id="home" aria-labelledby="hero-heading">
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-7 wl-hero-content">
+        <div class="wl-badge-pill"><i class="fa-solid fa-layer-group me-1"></i> Enterprise Hospitality SaaS</div>
+        <h1 id="hero-heading">Run Every Stay.<br><span>Ready Every Room.</span></h1>
+        <p class="lead mt-3 mb-4">One hospitality platform for properties, rooms, bookings, guests, and daily operations — built for every role from front desk to platform admin.</p>
+        <div class="d-flex flex-wrap gap-3 mb-5">
+          <a href="/listings" class="wl-btn-primary" id="hero-explore-btn"><i class="fa-solid fa-compass me-2"></i>Explore Stays</a>
+          <a href="#how-it-works" class="wl-btn-outline" id="hero-how-btn"><i class="fa-solid fa-play-circle me-2"></i>See How It Works</a>
+        </div>
+        <div class="d-flex flex-wrap gap-4">
+          <div class="wl-stat"><div class="num">65+</div><div class="lbl">Verified Properties</div></div>
+          <div class="wl-stat" style="border-left:1px solid rgba(255,255,255,.15);padding-left:1.5rem"><div class="num">134</div><div class="lbl">Room Inventory</div></div>
+          <div class="wl-stat" style="border-left:1px solid rgba(255,255,255,.15);padding-left:1.5rem"><div class="num">5</div><div class="lbl">Role Tiers</div></div>
+          <div class="wl-stat" style="border-left:1px solid rgba(255,255,255,.15);padding-left:1.5rem"><div class="num">713</div><div class="lbl">Tests Passed</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="py-5 bg-light" id="why" aria-labelledby="why-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 id="why-heading" class="fw-bold fs-2 mb-2">Why WanderLust?</h2>
+      <p class="text-muted fs-5 mx-auto" style="max-width:600px">Most hospitality tools solve one problem. WanderLust solves the whole stack — in one platform, for every role.</p>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+      <div class="wl-platform-pill"><i class="fa-solid fa-hotel text-danger me-2"></i>Property</div>
+      <span class="wl-plus">+</span>
+      <div class="wl-platform-pill"><i class="fa-solid fa-bed text-primary me-2"></i>Room</div>
+      <span class="wl-plus">+</span>
+      <div class="wl-platform-pill"><i class="fa-solid fa-calendar-check text-success me-2"></i>Booking</div>
+      <span class="wl-plus">+</span>
+      <div class="wl-platform-pill"><i class="fa-solid fa-user text-info me-2"></i>Guest</div>
+      <span class="wl-plus">+</span>
+      <div class="wl-platform-pill"><i class="fa-solid fa-screwdriver-wrench text-warning me-2"></i>Operations</div>
+      <span class="wl-plus">+</span>
+      <div class="wl-platform-pill"><i class="fa-solid fa-chart-bar text-secondary me-2"></i>Analytics</div>
+    </div>
+    <p class="text-center text-muted mt-4 fs-5 fw-semibold">= One multi-tenant platform</p>
+  </div>
+</section>
+
+<section class="py-5 bg-white" id="features" aria-labelledby="features-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 id="features-heading" class="fw-bold fs-2 mb-2">Platform Features</h2>
+      <p class="text-muted">Every feature below is live, tested, and production-verified.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4" id="property-management">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-hotel"></i></div>
+          <h5 class="fw-bold mb-2">Property &amp; Room Management</h5>
+          <p class="text-muted small mb-0">Multi-property portfolios with room-level inventory: types, individual pricing, capacity, and amenity tagging per room.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="booking-engine">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-success bg-opacity-10 text-success"><i class="fa-solid fa-calendar-check"></i></div>
+          <h5 class="fw-bold mb-2">Atomic Booking Engine</h5>
+          <p class="text-muted small mb-0">Date-overlap detection, server-authoritative pricing with 18% GST, capacity enforcement, and concurrency protection.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="operations">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-clipboard-user"></i></div>
+          <h5 class="fw-bold mb-2">Hospitality Operations</h5>
+          <p class="text-muted small mb-0">Real-time arrivals, departures, in-house occupancy, and issue ticketing from REPORTED to RESOLVED.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="guest-ready">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-info bg-opacity-10 text-info"><i class="fa-solid fa-circle-check"></i></div>
+          <h5 class="fw-bold mb-2">Guest Ready</h5>
+          <p class="text-muted small mb-0">Dynamically computed per-room readiness — a room is only guest-ready when all open issues are resolved, in real-time.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="guest-impact">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <h5 class="fw-bold mb-2">Guest Impact Alerts</h5>
+          <p class="text-muted small mb-0">Automatically identifies upcoming reservations whose room has unresolved maintenance issues — alerting staff before check-in.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="search">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-secondary bg-opacity-10 text-secondary"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <h5 class="fw-bold mb-2">Search &amp; Discovery</h5>
+          <p class="text-muted small mb-0">Full-text search across 12 property categories with price, date, type, and room-tier filtering.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="analytics">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-chart-line"></i></div>
+          <h5 class="fw-bold mb-2">Role Analytics</h5>
+          <p class="text-muted small mb-0">Organization-scoped dashboards for Owner/Manager. Customer trip history. Platform-wide metrics for Admin.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="rbac">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-shield-halved"></i></div>
+          <h5 class="fw-bold mb-2">Multi-Tenant RBAC</h5>
+          <p class="text-muted small mb-0">Five role tiers. Every route server-side authorized. Organization-scoped data isolation prevents cross-tenant access.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4" id="security">
+        <div class="wl-feature-card">
+          <div class="wl-feature-icon bg-success bg-opacity-10 text-success"><i class="fa-solid fa-lock"></i></div>
+          <h5 class="fw-bold mb-2">Enterprise Security</h5>
+          <p class="text-muted small mb-0">Cryptographic CSRF tokens, NoSQL sanitization, Strict CSP headers, rate limiting, and session fixation protection.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wl-flow-section py-5" aria-labelledby="workflow-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 id="workflow-heading" class="fw-bold fs-2 mb-2 text-white">The Guest Impact Workflow</h2>
+      <p class="text-white-50">What makes WanderLust different: operations and guest experience are connected end-to-end.</p>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center align-items-start gap-3 text-center">
+      <div class="px-2"><div class="wl-flow-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="text-white fw-semibold small">Booking</div><small class="text-white-50">Guest reserves room</small></div>
+      <div class="wl-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="px-2"><div class="wl-flow-circle"><i class="fa-solid fa-plane-arrival"></i></div><div class="text-white fw-semibold small">Upcoming Check-In</div><small class="text-white-50">Reservation confirmed</small></div>
+      <div class="wl-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="px-2"><div class="wl-flow-circle"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="text-white fw-semibold small">Room Has Issue</div><small class="text-white-50">Unresolved maintenance</small></div>
+      <div class="wl-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="px-2"><div class="wl-flow-circle" style="color:#ffc107;border-color:rgba(255,193,7,.5);background:rgba(255,193,7,.1)"><i class="fa-solid fa-bell"></i></div><div class="fw-semibold small" style="color:#ffc107">Guest Impact Alert</div><small class="text-white-50">Staff notified</small></div>
+      <div class="wl-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="px-2"><div class="wl-flow-circle"><i class="fa-solid fa-screwdriver-wrench"></i></div><div class="text-white fw-semibold small">Staff Resolves</div><small class="text-white-50">Issue marked RESOLVED</small></div>
+      <div class="wl-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="px-2"><div class="wl-flow-circle" style="color:#198754;border-color:rgba(25,135,84,.6);background:rgba(25,135,84,.1)"><i class="fa-solid fa-circle-check"></i></div><div class="fw-semibold small" style="color:#198754">Guest Ready</div><small class="text-white-50">Room cleared for check-in</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light" id="roles" aria-labelledby="roles-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 id="roles-heading" class="fw-bold fs-2 mb-2">One Platform. Five Roles.</h2>
+      <p class="text-muted">Every team member has a purpose-built experience.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-sm-6 col-lg"><div class="wl-role-card"><div class="wl-role-icon bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-user"></i></div><span class="wl-role-tag bg-danger bg-opacity-10 text-danger">Customer</span><h6 class="fw-bold mb-2">Guest &amp; Traveler</h6><ul class="list-unstyled small text-muted mb-3"><li><i class="fa-solid fa-check text-success me-1"></i>Discover stays</li><li><i class="fa-solid fa-check text-success me-1"></i>Book rooms</li><li><i class="fa-solid fa-check text-success me-1"></i>Manage trips</li><li><i class="fa-solid fa-check text-success me-1"></i>Write reviews</li></ul><a href="/login" class="btn btn-sm btn-outline-danger rounded-pill px-3">Get Started</a></div></div>
+      <div class="col-sm-6 col-lg"><div class="wl-role-card"><div class="wl-role-icon bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-clipboard-user"></i></div><span class="wl-role-tag bg-warning bg-opacity-10 text-warning">Staff</span><h6 class="fw-bold mb-2">Operations Desk</h6><ul class="list-unstyled small text-muted mb-3"><li><i class="fa-solid fa-check text-success me-1"></i>Arrivals &amp; departures</li><li><i class="fa-solid fa-check text-success me-1"></i>Service issues</li><li><i class="fa-solid fa-check text-success me-1"></i>Guest ready</li><li><i class="fa-solid fa-check text-success me-1"></i>Impact alerts</li></ul><a href="/login" class="btn btn-sm btn-outline-warning rounded-pill px-3">Staff Login</a></div></div>
+      <div class="col-sm-6 col-lg"><div class="wl-role-card"><div class="wl-role-icon bg-info bg-opacity-10 text-info"><i class="fa-solid fa-building-user"></i></div><span class="wl-role-tag bg-info bg-opacity-10 text-info">Manager</span><h6 class="fw-bold mb-2">Property Manager</h6><ul class="list-unstyled small text-muted mb-3"><li><i class="fa-solid fa-check text-success me-1"></i>Properties &amp; rooms</li><li><i class="fa-solid fa-check text-success me-1"></i>Booking oversight</li><li><i class="fa-solid fa-check text-success me-1"></i>Operations</li><li><i class="fa-solid fa-check text-success me-1"></i>Analytics</li></ul><a href="/login" class="btn btn-sm btn-outline-info rounded-pill px-3">Manager Login</a></div></div>
+      <div class="col-sm-6 col-lg"><div class="wl-role-card"><div class="wl-role-icon bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-crown"></i></div><span class="wl-role-tag bg-primary bg-opacity-10 text-primary">Owner</span><h6 class="fw-bold mb-2">Organization Owner</h6><ul class="list-unstyled small text-muted mb-3"><li><i class="fa-solid fa-check text-success me-1"></i>Full org control</li><li><i class="fa-solid fa-check text-success me-1"></i>Revenue analytics</li><li><i class="fa-solid fa-check text-success me-1"></i>All properties</li><li><i class="fa-solid fa-check text-success me-1"></i>Org-wide ops</li></ul><a href="/login" class="btn btn-sm btn-outline-primary rounded-pill px-3">Owner Login</a></div></div>
+      <div class="col-sm-6 col-lg"><div class="wl-role-card"><div class="wl-role-icon bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-shield-halved"></i></div><span class="wl-role-tag bg-danger bg-opacity-10 text-danger">Admin</span><h6 class="fw-bold mb-2">Platform Admin</h6><ul class="list-unstyled small text-muted mb-3"><li><i class="fa-solid fa-check text-success me-1"></i>System-wide access</li><li><i class="fa-solid fa-check text-success me-1"></i>Organizations</li><li><i class="fa-solid fa-check text-success me-1"></i>Users</li><li><i class="fa-solid fa-check text-success me-1"></i>Platform metrics</li></ul><a href="/login" class="btn btn-sm btn-outline-danger rounded-pill px-3">Admin Login</a></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-white" id="how-it-works" aria-labelledby="how-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 id="how-heading" class="fw-bold fs-2 mb-2">How It Works</h2>
+      <p class="text-muted">Six steps. One connected hospitality experience.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-sm-6 col-lg-4"><div class="d-flex gap-3 p-3 rounded-4 bg-light h-100"><div class="wl-step-num flex-shrink-0">1</div><div><div class="d-flex gap-2 mb-1"><i class="fa-solid fa-magnifying-glass text-danger"></i><h6 class="fw-bold mb-0">Discover</h6></div><p class="text-muted small mb-0">Browse 65+ verified properties across 12 categories with price, date, and type filters.</p></div></div></div>
+      <div class="col-sm-6 col-lg-4"><div class="d-flex gap-3 p-3 rounded-4 bg-light h-100"><div class="wl-step-num flex-shrink-0">2</div><div><div class="d-flex gap-2 mb-1"><i class="fa-solid fa-calendar-check text-success"></i><h6 class="fw-bold mb-0">Book</h6></div><p class="text-muted small mb-0">Reserve a room with real-time availability checks and server-verified pricing including GST.</p></div></div></div>
+      <div class="col-sm-6 col-lg-4"><div class="d-flex gap-3 p-3 rounded-4 bg-light h-100"><div class="wl-step-num flex-shrink-0">3</div><div><div class="d-flex gap-2 mb-1"><i class="fa-solid fa-clipboard-check text-primary"></i><h6 class="fw-bold mb-0">Prepare</h6></div><p class="text-muted small mb-0">Staff review upcoming arrivals and ensure rooms are operationally ready for check-in.</p></div></div></div>
+      <div class="col-sm-6 col-lg-4"><div class="d-flex gap-3 p-3 rounded-4 bg-light h-100"><div class="wl-step-num flex-shrink-0">4</div><div><div class="d-flex gap-2 mb-1"><i class="fa-solid fa-screwdriver-wrench text-warning"></i><h6 class="fw-bold mb-0">Operate</h6></div><p class="text-muted small mb-0">Track and resolve service issues. Monitor in-house guests and pending departures.</p></div></div></div>
+      <div class="col-sm-6 col-lg-4"><div class="d-flex gap-3 p-3 rounded-4 bg-light h-100"><div class="wl-step-num flex-shrink-0">5</div><div><div class="d-flex gap-2 mb-1"><i class="fa-solid fa-circle-check text-info"></i><h6 class="fw-bold mb-0">Ready</h6></div><p class="text-muted small mb-0">System dynamically confirms room guest-readiness once all open issues are resolved.</p></div></div></div>
+      <div class="col-sm-6 col-lg-4"><div class="d-flex gap-3 p-3 rounded-4 bg-light h-100"><div class="wl-step-num flex-shrink-0">6</div><div><div class="d-flex gap-2 mb-1"><i class="fa-solid fa-star text-danger"></i><h6 class="fw-bold mb-0">Review</h6></div><p class="text-muted small mb-0">After checkout, guests leave verified reviews that help future travelers discover quality stays.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="wl-cta py-5 text-center" aria-labelledby="cta-heading">
+  <div class="container">
+    <h2 id="cta-heading" class="fw-bold fs-2 text-white mb-2">See WanderLust in Action</h2>
+    <p class="fs-5 mb-4 text-white-50">Explore real properties, experience the booking flow, and manage your stays.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="/listings" class="btn btn-light text-danger fw-bold rounded-pill px-4 py-2" id="cta-explore-btn"><i class="fa-solid fa-compass me-2"></i>Explore Stays</a>
+      <a href="/login" class="btn btn-outline-light fw-semibold rounded-pill px-4 py-2" id="cta-login-btn"><i class="fa-solid fa-right-to-bracket me-2"></i>Login</a>
+    </div>
+  </div>
+</section>

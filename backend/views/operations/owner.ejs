@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="fa-solid fa-crown text-primary me-2"></i>Organization Operations</h2>
+      <p class="text-muted small mb-0">Real-time operational view for Owner.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <span class="badge bg-primary rounded-pill px-3 py-2"><i class="fa-solid fa-circle-dot me-1"></i> Live</span>
+      <span class="badge bg-light text-dark border rounded-pill px-3 py-2"><%= new Date().toLocaleDateString('en-IN', {weekday:'short',day:'numeric',month:'short'}) %></span>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm rounded-4 p-3 text-center"><span class="text-muted small text-uppercase fw-semibold">Arrivals Today</span><h3 class="fw-bold my-1 text-success"><%= data.summary.todayArrivalsCount %></h3></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm rounded-4 p-3 text-center"><span class="text-muted small text-uppercase fw-semibold">Departures Today</span><h3 class="fw-bold my-1 text-danger"><%= data.summary.todayDeparturesCount %></h3></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm rounded-4 p-3 text-center"><span class="text-muted small text-uppercase fw-semibold">In-House Guests</span><h3 class="fw-bold my-1 text-info"><%= data.summary.inHouseGuestsCount %></h3></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm rounded-4 p-3 text-center"><span class="text-muted small text-uppercase fw-semibold">Maintenance Rooms</span><h3 class="fw-bold my-1 text-warning"><%= data.summary.maintenanceRoomsCount %></h3></div></div>
+  </div>
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-bolt text-warning me-2"></i>Owner Quick Actions</h5>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="/listings" class="btn btn-outline-primary rounded-pill"><i class="fa-solid fa-hotel me-1"></i>All Properties</a>
+      <a href="/listings/new" class="btn btn-danger rounded-pill"><i class="fa-solid fa-plus me-1"></i>New Property</a>
+      <a href="/owner/dashboard" class="btn btn-outline-info rounded-pill"><i class="fa-solid fa-chart-line me-1"></i>Revenue Dashboard</a>
+      <a href="/organizations" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-building me-1"></i>Organization</a>
+    </div>
+  </div>
+  <% if (data.guestImpactAlerts && data.guestImpactAlerts.length > 0) { %>
+  <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3">
+    <i class="fa-solid fa-triangle-exclamation fa-lg"></i>
+    <strong><%= data.guestImpactAlerts.length %> Guest Impact Alert(s)</strong> require staff attention before upcoming check-ins.
+  </div>
+  <% } %>
+</div>

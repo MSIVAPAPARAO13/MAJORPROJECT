@@ -30,12 +30,16 @@ const dashboardRouter = require("./routes/dashboard");
 const organizationRouter = require("./routes/organization");
 const pagesRouter = require("./routes/pages");
 const serviceIssueRouter = require("./routes/serviceIssue");
+const operationsRouter = require("./routes/operations");
+const roleDashboardRouter = require("./routes/roleDashboard");
 
 // API Route handlers
 const apiListingsRouter = require("./routes/api/apiListings");
 const apiAuthRouter = require("./routes/api/apiAuth");
 const apiBookingsRouter = require("./routes/api/apiBookings");
 const apiDashboardRouter = require("./routes/api/apiDashboard");
+const apiV1DashboardsRouter = require("./routes/api/apiV1Dashboards");
+const apiV1OperationsRouter = require("./routes/api/apiV1Operations");
 
 const createApp = () => {
   const app = express();
@@ -166,10 +170,30 @@ const createApp = () => {
   app.use("/api/auth", apiAuthRouter);
   app.use("/api/bookings", apiBookingsRouter);
   app.use("/api/dashboard", apiDashboardRouter);
+  // Thin role dashboard & operations REST APIs
+  app.use("/api/v1", apiV1DashboardsRouter);
+  app.use("/api/v1", apiV1OperationsRouter);
+  app.use("/api", apiV1DashboardsRouter);
+  app.use("/api", apiV1OperationsRouter);
 
-  // 12. SSR Web Routes (for backward compatibility)
+  // 12. SSR Web Routes
+  // Root: serve SaaS landing page (not a redirect)
   app.get("/", (req, res) => {
-    res.redirect("/listings");
+    // If already logged in, go straight to their dashboard
+    if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+      const role = req.user.role;
+      const dashboardUrls = {
+        CUSTOMER: "/customer/dashboard",
+        STAFF: "/staff/dashboard",
+        MANAGER: "/manager/dashboard",
+        OWNER: "/owner/dashboard",
+        ADMIN: "/admin/dashboard"
+      };
+      return res.redirect(dashboardUrls[role] || "/listings");
+    }
+    return res.render("pages/home.ejs", {
+      pageTitle: "WanderLust — Enterprise Hospitality SaaS"
+    });
   });
 
   app.use("/listings", listingRouter);
@@ -180,6 +204,10 @@ const createApp = () => {
   app.use("/listings/:id/bookings", bookingRouter);
   app.use("/bookings", guestBookingRouter);
   app.use("/dashboard", dashboardRouter);
+  // Role-specific dashboard URLs (/customer/dashboard, /staff/dashboard, etc.)
+  app.use("/", roleDashboardRouter);
+  // Role-specific operations URLs (/staff/operations, /manager/operations, etc.)
+  app.use("/", operationsRouter);
   app.use("/organizations", organizationRouter);
   app.use("/", pagesRouter);
   app.use("/", userRouter);

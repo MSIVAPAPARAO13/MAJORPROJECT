@@ -68,6 +68,14 @@ router.post("/login", (req, res, next) => {
         message: info ? info.message : "Invalid username or password",
       });
     }
+    // Server-authoritative role validation
+    const selectedRole = req.body.selectedRole;
+    if (selectedRole && selectedRole !== user.role) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied: Selected role '${selectedRole}' does not match authenticated user role '${user.role}'`
+      });
+    }
     req.login(user, (loginErr) => {
       if (loginErr) return next(loginErr);
       return res.json({

@@ -23,6 +23,7 @@
 
     "test:phase11": "npm run test:unit && npm run test:integration:bookings && npm run test:integration:services && npm run test:e2e",
     "test:phase13": "node tests/phase13_hospitality_operations.test.js",
+    "test:phase16.4.1": "node tests/phase16_4_1_saas_platform.test.js",
 
     "test:regression": "npm run test:phase3 && npm run test:phase4 && npm run test:phase5 && npm run test:phase6 && npm run test:phase7 && npm run test:phase8 && npm run test:phase9 && npm run test:phase10",
 

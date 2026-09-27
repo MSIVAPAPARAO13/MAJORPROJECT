@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
+// SaaS Landing Page
+router.get('/home', (req, res) => {
+  res.render('pages/home.ejs', { pageTitle: 'WanderLust — Enterprise Hospitality SaaS' });
+});
+
 // Privacy Policy
 router.get("/privacy", (req, res) => {
   res.render("pages/privacy.ejs", { pageTitle: "Privacy Policy" });

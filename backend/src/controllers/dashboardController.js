@@ -35,9 +35,9 @@ module.exports.renderDashboard = async (req, res) => {
   }
 
   // =========================================================================
-  // 2. OWNER & MANAGER DASHBOARD (Organization Analytics & Management)
+  // 2. OWNER DASHBOARD (Organization Analytics & Management)
   // =========================================================================
-  if (user.role === "OWNER" || user.role === "MANAGER") {
+  if (user.role === "OWNER") {
     if (!user.organization) {
       if (isJsonRequest(req)) {
         return res.status(400).json({
@@ -54,6 +54,28 @@ module.exports.renderDashboard = async (req, res) => {
       return res.json({ success: true, role: user.role, data });
     }
     return res.render("dashboard/owner.ejs", { data, user, query: filterOptions });
+  }
+
+  // =========================================================================
+  // 3. MANAGER DASHBOARD (Organization Analytics - Manager view)
+  // =========================================================================
+  if (user.role === "MANAGER") {
+    if (!user.organization) {
+      if (isJsonRequest(req)) {
+        return res.status(400).json({
+          success: false,
+          message: "No organization associated with this account."
+        });
+      }
+      req.flash("error", "No organization associated with your account.");
+      return res.redirect("/organizations/new");
+    }
+
+    const data = await dashboardService.getOrganizationDashboard(user.organization, filterOptions);
+    if (isJsonRequest(req)) {
+      return res.json({ success: true, role: user.role, data });
+    }
+    return res.render("dashboard/manager.ejs", { data, user, query: filterOptions });
   }
 
   // =========================================================================

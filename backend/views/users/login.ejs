@@ -1,17 +1,80 @@
 <% layout('layouts/boilerplate') %>
 
+<style>
+.role-card-input { display: none; }
+.role-card-label {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 2px solid #e8eaf0; border-radius: 1rem; padding: 1rem 0.5rem;
+  cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s;
+  background: #fff; text-align: center; min-height: 90px; gap: 0.4rem;
+}
+.role-card-label:hover { border-color: #fe424d; transform: translateY(-2px); }
+.role-card-input:checked + .role-card-label { border-color: #fe424d; box-shadow: 0 0 0 3px rgba(254,66,77,.15); background: #fff8f8; }
+.role-card-label .role-icon { font-size: 1.3rem; margin-bottom: 0.2rem; }
+.role-card-label .role-name { font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.role-card-label .role-desc { font-size: 0.7rem; color: #888; }
+#role-help-text { min-height: 1.4rem; }
+</style>
+
 <div class="row mt-4 mb-5 justify-content-center">
-  <div class="col-lg-5 col-md-7 col-sm-9">
+  <div class="col-lg-6 col-md-8 col-sm-10">
     <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
       <div class="text-center mb-4">
         <i class="fa-regular fa-compass text-danger fa-3x mb-2"></i>
         <h3 class="fw-bold mb-1">Welcome Back</h3>
-        <p class="text-muted small">Log in to manage properties or access your trip reservations.</p>
+        <p class="text-muted small">Select your role, then enter your credentials.</p>
       </div>
+
+      <!-- Role Selector -->
+      <p class="fw-semibold small text-uppercase text-muted mb-2 letter-spacing-1">Continue as:</p>
+      <div class="row g-2 mb-3" id="role-selector" role="group" aria-label="Select your role">
+        <div class="col">
+          <input type="radio" name="selectedRole" id="role-customer" value="CUSTOMER" class="role-card-input" checked>
+          <label for="role-customer" class="role-card-label">
+            <span class="role-icon text-danger"><i class="fa-solid fa-user"></i></span>
+            <span class="role-name">Customer</span>
+            <span class="role-desc">Discover &amp; book stays</span>
+          </label>
+        </div>
+        <div class="col">
+          <input type="radio" name="selectedRole" id="role-staff" value="STAFF" class="role-card-input">
+          <label for="role-staff" class="role-card-label">
+            <span class="role-icon text-warning"><i class="fa-solid fa-clipboard-user"></i></span>
+            <span class="role-name">Staff</span>
+            <span class="role-desc">Daily operations</span>
+          </label>
+        </div>
+        <div class="col">
+          <input type="radio" name="selectedRole" id="role-manager" value="MANAGER" class="role-card-input">
+          <label for="role-manager" class="role-card-label">
+            <span class="role-icon text-info"><i class="fa-solid fa-building-user"></i></span>
+            <span class="role-name">Manager</span>
+            <span class="role-desc">Property oversight</span>
+          </label>
+        </div>
+        <div class="col">
+          <input type="radio" name="selectedRole" id="role-owner" value="OWNER" class="role-card-input">
+          <label for="role-owner" class="role-card-label">
+            <span class="role-icon text-primary"><i class="fa-solid fa-crown"></i></span>
+            <span class="role-name">Owner</span>
+            <span class="role-desc">Manage organization</span>
+          </label>
+        </div>
+        <div class="col">
+          <input type="radio" name="selectedRole" id="role-admin" value="ADMIN" class="role-card-input">
+          <label for="role-admin" class="role-card-label">
+            <span class="role-icon text-danger"><i class="fa-solid fa-shield-halved"></i></span>
+            <span class="role-name">Admin</span>
+            <span class="role-desc">Platform admin</span>
+          </label>
+        </div>
+      </div>
+      <p id="role-help-text" class="text-muted small text-center mb-3">Discovering and booking stays as a guest</p>
 
       <form action="/login" method="POST" class="needs-validation" novalidate>
         <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
-        
+        <input type="hidden" name="selectedRole" id="selectedRoleHidden" value="CUSTOMER">
+
         <div class="mb-3">
           <label for="username" class="form-label fw-semibold required-field">Username</label>
           <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" autocomplete="username" required />
@@ -34,3 +97,23 @@
     </div>
   </div>
 </div>
+
+<script>
+(function() {
+  const helpTexts = {
+    CUSTOMER: 'Discovering and booking stays as a guest',
+    STAFF: 'Running day-to-day hospitality operations',
+    MANAGER: 'Managing properties, rooms, and bookings',
+    OWNER: 'Managing your organization and analytics',
+    ADMIN: 'Platform administration and system monitoring'
+  };
+  const hidden = document.getElementById('selectedRoleHidden');
+  const helpEl = document.getElementById('role-help-text');
+  document.querySelectorAll('.role-card-input').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      hidden.value = this.value;
+      helpEl.textContent = helpTexts[this.value] || '';
+    });
+  });
+})();
+</script>
