@@ -39,6 +39,14 @@ function csrfMiddleware(req, res, next) {
     return next();
   }
 
+  // Exempt stateless API endpoints and requests authenticated via Bearer token
+  if (
+    req.path.startsWith("/api/v2/auth/") ||
+    (req.headers.authorization && req.headers.authorization.startsWith("Bearer "))
+  ) {
+    return next();
+  }
+
   // Unauthenticated public API login/signup do not have an active session to guard against session-riding CSRF
   if (
     (req.path === "/api/auth/login" || req.path === "/api/auth/signup") &&

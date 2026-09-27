@@ -11,6 +11,10 @@ const isLoggedIn = (req, res, next) => {
     req.flash("error", "You must be logged in to access that page");
     return res.redirect("/login");
   }
+  // Prevent browser caching of sensitive authenticated pages (back button protection)
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
   next();
 };
 

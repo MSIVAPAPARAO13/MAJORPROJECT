@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node src/server.js",
-
     "test:phase3": "node tests/phase3_authorization.test.js",
     "test:phase4": "node tests/phase4_room_management.test.js",
     "test:phase5": "node tests/phase5_booking_engine.test.js",
@@ -15,18 +14,17 @@
     "test:phase8": "node tests/phase8_dashboard_analytics.test.js",
     "test:phase9": "node tests/phase9_customer_experience.test.js",
     "test:phase10": "node tests/phase10_security_hardening.test.js",
-
     "test:unit": "node tests/unit/unit.test.js",
     "test:integration:bookings": "node tests/integration/bookingEdgeCases.test.js",
     "test:integration:services": "node tests/integration/serviceInteractions.test.js",
     "test:e2e": "node tests/e2e/userJourneys.test.js",
-
     "test:phase11": "npm run test:unit && npm run test:integration:bookings && npm run test:integration:services && npm run test:e2e",
     "test:phase13": "node tests/phase13_hospitality_operations.test.js",
     "test:phase16.4.1": "node tests/phase16_4_1_saas_platform.test.js",
-
+    "test:phase16.4.2": "node tests/phase16_4_2_jwt_features_auth.test.js",
+    "seed:test": "node scripts/seedTestDb.js",
+    "reset:test": "node scripts/resetTestDb.js",
     "test:regression": "npm run test:phase3 && npm run test:phase4 && npm run test:phase5 && npm run test:phase6 && npm run test:phase7 && npm run test:phase8 && npm run test:phase9 && npm run test:phase10",
-
     "test:all": "npm run test:regression && npm run test:phase11",
     "test:full": "npm run test:all && npm run test:phase13"
   },
@@ -52,6 +50,7 @@
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.3",
     "method-override": "^3.0.0",
     "mongoose": "^8.13.1",
     "multer": "^2.0.1",

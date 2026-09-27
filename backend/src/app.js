@@ -40,6 +40,11 @@ const apiBookingsRouter = require("./routes/api/apiBookings");
 const apiDashboardRouter = require("./routes/api/apiDashboard");
 const apiV1DashboardsRouter = require("./routes/api/apiV1Dashboards");
 const apiV1OperationsRouter = require("./routes/api/apiV1Operations");
+const apiV2AuthRouter = require("./routes/api/apiV2Auth");
+const apiV2FeaturesRouter = require("./routes/api/apiV2Features");
+const apiV2DashboardsRouter = require("./routes/api/apiV2Dashboards");
+const apiV2PreferencesRouter = require("./routes/api/apiV2Preferences");
+const { getFeaturesForUser } = require("./config/featureRegistry");
 
 const createApp = () => {
   const app = express();
@@ -131,6 +136,7 @@ const createApp = () => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currentUser = req.user;
+    res.locals.availableFeatures = getFeaturesForUser(req.user);
     next();
   });
 
@@ -161,6 +167,8 @@ const createApp = () => {
   app.use("/signup", authLimiter);
   app.use("/api/auth/login", authLimiter);
   app.use("/api/auth/signup", authLimiter);
+  app.use("/api/v2/auth/login", authLimiter);
+  app.use("/api/v2/auth/signup", authLimiter);
   app.use("/api/bookings", mutationLimiter);
 
   // 11. REST API Endpoints (Client Services & Integrations)
@@ -170,11 +178,17 @@ const createApp = () => {
   app.use("/api/auth", apiAuthRouter);
   app.use("/api/bookings", apiBookingsRouter);
   app.use("/api/dashboard", apiDashboardRouter);
-  // Thin role dashboard & operations REST APIs
+  // Thin role dashboard & operations REST APIs (v1)
   app.use("/api/v1", apiV1DashboardsRouter);
   app.use("/api/v1", apiV1OperationsRouter);
   app.use("/api", apiV1DashboardsRouter);
   app.use("/api", apiV1OperationsRouter);
+
+  // API v2 Endpoints (JWT Authentication, Feature Registry, Preferences, Dashboards)
+  app.use("/api/v2/auth", apiV2AuthRouter);
+  app.use("/api/v2/features", apiV2FeaturesRouter);
+  app.use("/api/v2/preferences", apiV2PreferencesRouter);
+  app.use("/api/v2", apiV2DashboardsRouter);
 
   // 12. SSR Web Routes
   // Root: serve SaaS landing page (not a redirect)

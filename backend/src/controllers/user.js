@@ -1,7 +1,18 @@
 const userService = require("../services/userService");
 const { sanitizeRedirectUrl } = require("../middleware/auth");
 
+const roleDashboardUrls = {
+  CUSTOMER: "/customer/dashboard",
+  STAFF: "/staff/dashboard",
+  MANAGER: "/manager/dashboard",
+  OWNER: "/owner/dashboard",
+  ADMIN: "/admin/dashboard"
+};
+
 module.exports.renderSignupForm = (req, res) => {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+    return res.redirect(roleDashboardUrls[req.user.role] || "/dashboard");
+  }
   res.render("users/signup.ejs");
 };
 
@@ -32,6 +43,9 @@ module.exports.signup = async (req, res, next) => {
 };
 
 module.exports.renderLoginForm = (req, res) => {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+    return res.redirect(roleDashboardUrls[req.user.role] || "/dashboard");
+  }
   res.render("users/login.ejs");
 };
 
@@ -83,13 +97,14 @@ module.exports.login = async (req, res, next) => {
 module.exports.logout = (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
+    res.clearCookie("connect.sid");
+    res.clearCookie("refreshToken");
     if (req.session) {
       req.session.destroy(() => {
-        res.clearCookie("connect.sid");
-        res.redirect("/listings");
+        res.redirect("/");
       });
     } else {
-      res.redirect("/listings");
+      res.redirect("/");
     }
   });
 };
